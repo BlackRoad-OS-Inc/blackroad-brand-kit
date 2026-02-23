@@ -161,7 +161,7 @@ jobs:
 
           ACCOUNT_ID="848cf0b18d51e0170e0d1537aec3505a"
 
-          for DOMAIN in brand.blackroad.io chat.blackroad.io; do
+          for DOMAIN in brand.blackroad.io chat.blackroad.io os.blackroad.io; do
           echo "=== Registering $DOMAIN on CF Pages ==="
           curl -s -X POST \
             "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/pages/projects/blackroad-brand-kit/domains" \
