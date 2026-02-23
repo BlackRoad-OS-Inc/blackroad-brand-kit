@@ -471,9 +471,14 @@
 
 <script>
 // ── State ──────────────────────────────────────────────────────────────────
+// Read URL params — ?model=llama3.2:1b&endpoint=http://...
+const _params = new URLSearchParams(window.location.search);
+const _pEndpoint = _params.get('endpoint') ? decodeURIComponent(_params.get('endpoint')) : null;
+const _pModel    = _params.get('model')    ? decodeURIComponent(_params.get('model'))    : null;
+
 const state = {
-  endpoint: localStorage.getItem('br_endpoint') || 'http://192.168.4.38:9083',
-  model:    localStorage.getItem('br_model')    || '',
+  endpoint: _pEndpoint || localStorage.getItem('br_endpoint') || 'http://192.168.4.38:9083',
+  model:    _pModel    || localStorage.getItem('br_model')    || '',
   system:   localStorage.getItem('br_system')   || 'You are a helpful AI assistant running on BlackRoad infrastructure. Be concise and clear.',
   temp:     parseFloat(localStorage.getItem('br_temp') || '0.7'),
   ctx:      parseInt(localStorage.getItem('br_ctx')    || '8192'),
