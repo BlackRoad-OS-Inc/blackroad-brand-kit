@@ -31,13 +31,15 @@ jobs:
             'tagline': 'Your AI. Your Hardware. Your Rules.',
             'description': 'The AI-native developer platform.',
             'cta_text': 'Get Started',
-            'cta_url': '/docs',
+            'cta_url': '/blackroad-brand-kit/docs/',
             'footer': '© 2026 BlackRoad OS, Inc.',
+            'og_url': 'https://blackroad-os-inc.github.io/blackroad-brand-kit/',
+            'twitter': '@blackroadOS',
             'nav': [
-              {'label': 'Docs', 'url': '/docs'},
-              {'label': 'Pricing', 'url': '/pricing'},
-              {'label': 'Agents', 'url': '/agents'},
-              {'label': 'Team', 'url': '/team'}
+              {'label': 'Docs',    'url': '/blackroad-brand-kit/docs/'},
+              {'label': 'Pricing', 'url': '/blackroad-brand-kit/pricing/'},
+              {'label': 'Agents',  'url': '/blackroad-brand-kit/agents.html'},
+              {'label': 'About',   'url': '/blackroad-brand-kit/about/'}
             ]
           }
           with open('brand.json', 'w') as f:
@@ -47,12 +49,63 @@ jobs:
 
       - name: Build site
         run: |
-          chmod +x tools/br-brand.sh
-          zsh tools/br-brand.sh site --config brand.json --out ./site
-          zsh tools/br-brand.sh new team --title "The Team" --subtitle "The agents behind BlackRoad OS." --config brand.json --output ./site/team/index.html
-          zsh tools/br-brand.sh new changelog --title "Changelog" --subtitle "Whats new in BlackRoad OS." --config brand.json --output ./site/changelog/index.html
-          zsh tools/br-brand.sh new checkout --title "BlackRoad Pro" --price '$49/mo' --price-id "price_1T3nxYChUUSEbzyhRA8XeENr" --worker "https://blackroad-stripe.848cf0b18d51e0170e0d1537aec3505a.workers.dev" --feature "All 16 brand templates" --feature "br brand deploy to Cloudflare Pages" --feature "Stripe checkout and billing portal" --feature "GitHub Actions auto-deploy" --feature "Priority support" --cta "Start Free Trial" --output ./site/checkout/index.html
-          ls -la site/
+          chmod +x br-brand.sh
+          # Core 7 pages (hero, pricing, 2 checkout, docs, about, 404)
+          zsh br-brand.sh site --config brand.json --out ./site
+          # Extra pages
+          zsh br-brand.sh new feature \
+            --config brand.json \
+            --title "AI Agent System" \
+            --subtitle "30,000 concurrent agents. Modular. Autonomous. Yours." \
+            --item "🤖|Agent Mesh|Deploy up to 30,000 agents across cloud, edge, and hardware." \
+            --item "🧠|CECE Identity|Portable AI identity that persists across models and providers." \
+            --item "⚡|Tokenless Gateway|Agents never embed API keys. Trust boundary at the gateway." \
+            --item "💾|PS-SHA∞ Memory|Hash-chained journals — every action verifiable and tamper-evident." \
+            --output ./site/agents.html
+          zsh br-brand.sh new team \
+            --title "The Team" \
+            --subtitle "The builders behind BlackRoad OS." \
+            --config brand.json \
+            --output ./site/team/index.html
+          zsh br-brand.sh new changelog \
+            --title "Changelog" \
+            --subtitle "What's new in BlackRoad OS." \
+            --config brand.json \
+            --output ./site/changelog/index.html
+          # Success / cancel pages for Stripe checkout flow
+          python3 - << 'PYEOF'
+          success = open('templates/success.html').read() if __import__('os').path.exists('templates/success.html') else None
+          PYEOF
+          # Copy static success/cancel if they exist, otherwise generate inline
+          if [ -f templates/success.html ]; then
+            cp templates/success.html site/success.html
+          else
+            cat > site/success.html << 'HTMLEOF'
+          <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Payment Successful — BlackRoad OS</title>
+          <meta http-equiv="refresh" content="3;url=/blackroad-brand-kit/docs/"></head>
+          <body style="background:#000;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;">
+          <div><div style="font-size:4rem;margin-bottom:1rem">✅</div>
+          <h1 style="background:linear-gradient(135deg,#F5A623,#FF1D6C,#9C27B0,#2979FF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:2rem;font-weight:900;">Payment Successful!</h1>
+          <p style="color:rgba(255,255,255,.7);margin-top:1rem;">Redirecting to docs in 3 seconds…</p>
+          <a href="/blackroad-brand-kit/docs/" style="display:inline-block;margin-top:2rem;padding:12px 28px;background:linear-gradient(135deg,#F5A623,#FF1D6C);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Go to Docs →</a></div>
+          </body></html>
+          HTMLEOF
+          fi
+          if [ -f templates/cancel.html ]; then
+            cp templates/cancel.html site/cancel.html
+          else
+            cat > site/cancel.html << 'HTMLEOF'
+          <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Checkout Cancelled — BlackRoad OS</title></head>
+          <body style="background:#000;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;">
+          <div><div style="font-size:4rem;margin-bottom:1rem">↩️</div>
+          <h1 style="color:#fff;font-size:2rem;font-weight:900;margin-bottom:1rem;">No worries — nothing was charged.</h1>
+          <p style="color:rgba(255,255,255,.65)">Come back whenever you're ready.</p>
+          <a href="/blackroad-brand-kit/pricing/pro/" style="display:inline-block;margin-top:2rem;padding:12px 28px;background:linear-gradient(135deg,#F5A623,#FF1D6C);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Try Again →</a></div>
+          </body></html>
+          HTMLEOF
+          fi
+          echo "--- Site structure ---"
+          find site -name "*.html" | sort
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
