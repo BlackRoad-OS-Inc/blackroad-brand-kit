@@ -9,14 +9,12 @@ account_id = "848cf0b18d51e0170e0d1537aec3505a"
 ALLOWED_ORIGIN = "https://blackroad-brand-kit.pages.dev"
 ENVIRONMENT = "production"
 
+# Worker URL: https://blackroad-stripe.amundsonalexa.workers.dev
+# Pages URL:  https://blackroad-brand-kit.pages.dev
+
 # Secrets — set via: wrangler secret put STRIPE_SECRET_KEY
 # STRIPE_SECRET_KEY        = "sk_live_..."   ← set with: wrangler secret put STRIPE_SECRET_KEY
 # STRIPE_WEBHOOK_SECRET    = "whsec_..."     ← set with: wrangler secret put STRIPE_WEBHOOK_SECRET
 
 [triggers]
 crons = []
-
-# Routes (update after deploying):
-# routes = [
-#   { pattern = "stripe.blackroad.io/*", zone_name = "blackroad.io" }
-# ]
