@@ -213,13 +213,14 @@ EOF
 }
 
 _html_nav() {
-  local logo="${1:-BlackRoad OS}" nav_links="${2:-}"
+  local logo="${1:-BlackRoad OS}" nav_links="${2:-${BR_BRAND_NAV:-}}"
   echo "<nav><div class=\"nav-logo\">${logo}</div><div class=\"nav-links\">${nav_links}</div></nav>"
 }
 
 _html_footer() {
   local year; year=$(date +%Y)
-  echo "<footer><div class=\"container\"><p>© ${year} BlackRoad OS, Inc. All rights reserved.</p></div></footer>"
+  local text="${BR_BRAND_FOOTER:-© ${year} BlackRoad OS, Inc. All rights reserved.}"
+  echo "<footer><div class=\"container\"><p>${text}</p></div></footer>"
 }
 
 _html_close() {
@@ -811,15 +812,19 @@ _cmd_list() {
   echo -e "  ${GREEN}hero${NC}         Full-width hero section — gradient headline, dual CTAs"
   echo -e "  ${GREEN}stats${NC}        Horizontal stats bar — value + label tiles"
   echo -e "  ${GREEN}testimonial${NC}  Quote card grid — avatar initial, name, role, quote"
-  echo -e "  ${GREEN}codeblock${NC}    Styled dark code block with copy-button chrome"
+  echo -e "  ${GREEN}codeblock${NC}     Styled dark code block with copy-button chrome"
+  echo -e "  ${GREEN}coming-soon${NC}  Live countdown + email capture (no back-end required)"
+  echo -e "  ${GREEN}changelog${NC}    Release notes — version badge, date, tagged bullet lists"
+  echo -e "  ${GREEN}team${NC}         Team member card grid — avatar, name, role, bio, link"
   echo ""
   echo -e "${YELLOW}Commands:${NC}"
   echo ""
   echo -e "  ${CYAN}br brand init${NC} [brand.json]              Interactive setup wizard"
   echo -e "  ${CYAN}br brand site${NC} [--config brand.json]     Generate full 5-page site"
   echo -e "  ${CYAN}br brand new <template> [flags]${NC}         Generate a page"
-  echo -e "  ${CYAN}br brand deploy${NC} --project x --file y   Push to Cloudflare Pages"
+  echo -e "  ${CYAN}br brand deploy${NC} --project x --dir y    Push to Cloudflare Pages"
   echo -e "  ${CYAN}br brand audit${NC} <file.html>              Check brand compliance"
+  echo -e "  ${CYAN}br brand watch${NC} [--config brand.json]    Auto-rebuild on file change"
   echo -e "  ${CYAN}br brand preview <template>${NC}             Show template structure"
   echo ""
   echo -e "${YELLOW}Key flags:${NC}"
@@ -836,6 +841,9 @@ _cmd_list() {
   echo -e "  stats       : --title --subtitle --stat \"30K|Agents\" --output"
   echo -e "  testimonial : --title --subtitle --testimonial \"A|Alice|CEO|Great product\" --output"
   echo -e "  codeblock   : --title --language bash --code \"echo hi\" --output"
+  echo -e "  coming-soon : --title --tagline --launch-date \"2026-04-01T00:00:00\" --output"
+  echo -e "  changelog   : --title --subtitle --entry \"v1.0|2026-01-01|Added X,Fixed Y|feature,fix\" --output"
+  echo -e "  team        : --title --subtitle --member \"A|Alice|CEO|Bio here|https://github.com/...\" --output"
   echo ""
   echo -e "  ${YELLOW}All templates accept:${NC} --config brand.json  (pre-fill from config file)"
   echo ""
@@ -858,6 +866,9 @@ _cmd_preview() {
     stats)       echo -e "${CYAN}stats${NC}:       Centered stats bar — value tiles with brand gradient values" ;;
     testimonial) echo -e "${CYAN}testimonial${NC}: Quote card grid — avatar initial, name, role, pull-quote" ;;
     codeblock)   echo -e "${CYAN}codeblock${NC}:   Dark code panel — language tab, line numbers, copy button chrome" ;;
+    coming-soon) echo -e "${CYAN}coming-soon${NC}: Full-gradient page — live countdown, email capture form" ;;
+    changelog)   echo -e "${CYAN}changelog${NC}:   Release log — version + date + tagged bullets per entry" ;;
+    team)        echo -e "${CYAN}team${NC}:        Card grid — avatar initial, name, role, bio, GitHub link" ;;
     *)           echo -e "${RED}Unknown template: $1${NC}"; _cmd_list ;;
   esac
 }
@@ -874,8 +885,9 @@ _cmd_new() {
   local icon="✦" badge="" link="#"
   local secondary_cta="" secondary_url="#"
   local language="bash" code_text=""
+  local launch_date=""
   local output="" config_file=""
-  local -a features skills sections tiers items stats testimonials
+  local -a features skills sections tiers items stats testimonials members entries
 
   # Pre-scan for --config so we can load defaults before flag parsing
   local -a _argv=("$@")
@@ -893,6 +905,14 @@ _cmd_new() {
     desc=$(_cfg_get "$config_file" "description" "$desc")
     cta_text=$(_cfg_get "$config_file" "cta_text" "$cta_text")
     cta_url=$(_cfg_get "$config_file" "cta_url" "$cta_url")
+    # Export nav + footer so _html_nav/_html_footer pick them up
+    export BR_BRAND_NAV=$(python3 -c "
+import json,sys
+d=json.load(open('$config_file'))
+items=d.get('nav',[])
+print(''.join(f'<a href=\"{i[\"url\"]}\">{i[\"label\"]}</a>' for i in items))
+" 2>/dev/null)
+    export BR_BRAND_FOOTER=$(_cfg_get "$config_file" "footer" "")
   fi
 
   # Parse flags
@@ -926,6 +946,9 @@ _cmd_new() {
       --testimonial)   testimonials+=("$2");  shift 2 ;;
       --language)      language="$2";         shift 2 ;;
       --code)          code_text="$2";        shift 2 ;;
+      --launch-date)   launch_date="$2";      shift 2 ;;
+      --entry)         entries+=("$2");       shift 2 ;;
+      --member)        members+=("$2");       shift 2 ;;
       --output)        output="$2";           shift 2 ;;
       --config)        shift 2 ;;  # already processed above
       *) shift ;;
@@ -980,6 +1003,15 @@ _cmd_new() {
       ;;
     codeblock)
       _tpl_codeblock "$title" "$language" "$code_text" "$output"
+      ;;
+    coming-soon)
+      _tpl_coming_soon "$title" "$tagline" "$launch_date" "$output"
+      ;;
+    changelog)
+      _tpl_changelog "$title" "$subtitle" "$output" "${entries[@]}"
+      ;;
+    team)
+      _tpl_team "$title" "$subtitle" "$output" "${members[@]}"
       ;;
     *)
       echo -e "${RED}Unknown template: ${tpl}${NC}"
@@ -1394,6 +1426,287 @@ $(_html_close)
 HTML
 }
 
+# ─── TEMPLATE: COMING SOON ────────────────────────────────────────────────
+_tpl_coming_soon() {
+  local title="$1" tagline="$2" launch_date="$3" output="$4"
+  [[ -z "$output" ]] && output="${OUT_DIR}/coming-soon.html"
+  [[ -z "$launch_date" ]] && launch_date=$(date -v+30d +%Y-%m-%dT00:00:00 2>/dev/null || date --date="+30 days" +%Y-%m-%dT00:00:00 2>/dev/null || echo "2026-04-01T00:00:00")
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.cs-section {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: var(--space-3xl) var(--space-xl); position: relative; overflow: hidden;
+}
+.cs-section::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255,0,102,.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 10% 90%, rgba(119,0,255,.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cs-label { font-size: .7rem; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--hot-pink); margin-bottom: var(--space-lg); }
+.cs-title { font-size: clamp(2.5rem,8vw,5.5rem); font-weight: 900; line-height: 1.05;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; margin-bottom: var(--space-md); letter-spacing: -.03em; }
+.cs-tagline { font-size: clamp(.95rem,2vw,1.2rem); color: rgba(255,255,255,.6);
+  max-width: 520px; line-height: var(--phi); margin-bottom: var(--space-2xl); }
+.countdown { display: flex; gap: var(--space-lg); justify-content: center; flex-wrap: wrap;
+  margin-bottom: var(--space-2xl); }
+.cd-unit { display: flex; flex-direction: column; align-items: center; min-width: 80px; }
+.cd-num { font-size: clamp(2rem,5vw,3.5rem); font-weight: 900; line-height: 1;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; }
+.cd-label { font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
+  color: rgba(255,255,255,.35); margin-top: var(--space-xs); }
+.cs-form { display: flex; gap: var(--space-sm); justify-content: center; flex-wrap: wrap; }
+.cs-input { padding: var(--space-sm) var(--space-lg); background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.15); border-radius: 8px; color: white;
+  font-family: inherit; font-size: .9rem; min-width: 260px; outline: none;
+  transition: border-color .2s; }
+.cs-input:focus { border-color: rgba(255,0,102,.5); }
+.cs-input::placeholder { color: rgba(255,255,255,.3); }
+.cs-btn { padding: var(--space-sm) var(--space-lg); background: var(--gradient-full);
+  border: none; border-radius: 8px; color: white; font-family: inherit;
+  font-size: .9rem; font-weight: 700; cursor: pointer; transition: opacity .2s; }
+.cs-btn:hover { opacity: .85; }
+.cs-thanks { display: none; color: #28C840; font-size: .9rem; margin-top: var(--space-md); }
+</style>
+<main>
+  <section class="cs-section">
+    <div class="cs-label">Coming Soon</div>
+    <h1 class="cs-title">${title}</h1>
+    <p class="cs-tagline">${tagline}</p>
+    <div class="countdown" id="countdown">
+      <div class="cd-unit"><div class="cd-num" id="cd-days">--</div><div class="cd-label">Days</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">Hours</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">Minutes</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">Seconds</div></div>
+    </div>
+    <form class="cs-form" onsubmit="event.preventDefault();this.style.display='none';document.getElementById('cs-thanks').style.display='block'">
+      <input class="cs-input" type="email" placeholder="Enter your email for early access" required />
+      <button class="cs-btn" type="submit">Notify Me</button>
+    </form>
+    <div class="cs-thanks" id="cs-thanks">✓ You're on the list. We'll be in touch.</div>
+  </section>
+</main>
+<script>
+(function(){
+  var t = new Date('${launch_date}').getTime();
+  function tick(){
+    var now = Date.now(), d = t - now;
+    if(d <= 0){ document.getElementById('countdown').innerHTML='<div class="cd-unit"><div class="cd-num" style="font-size:2rem">🚀</div><div class="cd-label">Launched</div></div>'; return; }
+    document.getElementById('cd-days').textContent  = String(Math.floor(d/864e5)).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(Math.floor(d%864e5/36e5)).padStart(2,'0');
+    document.getElementById('cd-mins').textContent  = String(Math.floor(d%36e5/6e4)).padStart(2,'0');
+    document.getElementById('cd-secs').textContent  = String(Math.floor(d%6e4/1e3)).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+})();
+</script>
+$(_html_footer)
+$(_html_close)
+HTML
+}
+
+# ─── TEMPLATE: CHANGELOG ───────────────────────────────────────────────────
+_tpl_changelog() {
+  local title="$1" subtitle="$2" output="$3"; shift 3
+  local entries=("$@")  # format: "v1.2.0|2026-02-23|Added X, Fixed Y|improvement,fix"
+  [[ -z "$output" ]] && output="${OUT_DIR}/changelog.html"
+  [[ ${#entries[@]} -eq 0 ]] && entries=(
+    "v3.0.0|2026-02-23|Brand Kit v3: init wizard, site generator, 4 new component templates, --config flag|feature,improvement"
+    "v2.0.0|2026-02-10|Added pricing, feature, blog, 404 templates. Deploy + audit commands|feature"
+    "v1.0.0|2026-02-01|Initial release: landing, agent, docs, card templates|feature"
+  )
+
+  local entries_html=""
+  for e in "${entries[@]}"; do
+    local ver="${e%%|*}"; local rest="${e#*|}"
+    local dt="${rest%%|*}";   rest="${rest#*|}"
+    local changes="${rest%%|*}"; local tags="${rest#*|}"
+
+    local tag_html=""
+    local -a tag_arr
+    IFS=',' read -rA tag_arr <<< "$tags"
+    for tag in "${tag_arr[@]}"; do
+      local tag_color="rgba(255,255,255,.15)"
+      [[ "$tag" == "feature" ]]     && tag_color="rgba(0,102,255,.3)"
+      [[ "$tag" == "fix" ]]         && tag_color="rgba(255,0,102,.3)"
+      [[ "$tag" == "improvement" ]] && tag_color="rgba(119,0,255,.3)"
+      [[ "$tag" == "breaking" ]]    && tag_color="rgba(255,100,0,.4)"
+      tag_html+="<span class=\"cl-tag\" style=\"background:${tag_color}\">${tag}</span>"
+    done
+
+    local bullets_html=""
+    local -a bullet_arr
+    IFS=',' read -rA bullet_arr <<< "$changes"
+    for b in "${bullet_arr[@]}"; do
+      bullets_html+="<li>${b// *([[:space:]])/}</li>"
+    done
+
+    entries_html+="<div class=\"cl-entry\">
+      <div class=\"cl-meta\">
+        <span class=\"cl-ver\">${ver}</span>
+        <span class=\"cl-date\">${dt}</span>
+        <div class=\"cl-tags\">${tag_html}</div>
+      </div>
+      <ul class=\"cl-bullets\">${bullets_html}</ul>
+    </div>"
+  done
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.cl-section { min-height: 100vh; padding: var(--space-3xl) var(--space-xl);
+  max-width: 800px; margin: 0 auto; }
+.cl-heading { font-size: clamp(2rem,5vw,3.5rem); font-weight: 900;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; margin-bottom: var(--space-sm); }
+.cl-sub { color: rgba(255,255,255,.45); font-size: .95rem; line-height: var(--phi);
+  margin-bottom: var(--space-2xl); }
+.cl-entry { padding: var(--space-xl) 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+.cl-entry:first-of-type { border-top: 1px solid rgba(255,255,255,.07); }
+.cl-meta { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap;
+  margin-bottom: var(--space-md); }
+.cl-ver { font-size: 1.1rem; font-weight: 900;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; }
+.cl-date { color: rgba(255,255,255,.35); font-size: .8rem; }
+.cl-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.cl-tag { padding: 2px 10px; border-radius: 100px; font-size: .7rem; letter-spacing: .08em;
+  text-transform: uppercase; color: rgba(255,255,255,.7); }
+.cl-bullets { list-style: none; padding: 0; }
+.cl-bullets li { padding: var(--space-xs) 0; color: rgba(255,255,255,.7); font-size: .9rem;
+  line-height: var(--phi); padding-left: var(--space-md); position: relative; }
+.cl-bullets li::before { content: '→'; position: absolute; left: 0;
+  color: var(--hot-pink); font-size: .8rem; }
+</style>
+<main>
+  <section class="cl-section">
+    <h1 class="cl-heading">${title}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="cl-sub">'"${subtitle}"'</p>')
+    ${entries_html}
+  </section>
+</main>
+$(_html_footer)
+$(_html_close)
+HTML
+}
+
+# ─── TEMPLATE: TEAM ────────────────────────────────────────────────────────
+_tpl_team() {
+  local title="$1" subtitle="$2" output="$3"; shift 3
+  local members=("$@")  # format: "Initial|Name|Role|Bio|github_url"
+  [[ -z "$output" ]] && output="${OUT_DIR}/team.html"
+  [[ ${#members[@]} -eq 0 ]] && members=(
+    "A|Alexa|Founder & CEO|Builder of BlackRoad OS. Developer. Designer. Dreamer.|https://github.com/blackboxprogramming"
+    "L|Lucidia|AI Coordinator|Primary reasoning agent. Philosophical synthesis and deep analysis.|#"
+    "O|Octavia|Infrastructure|Systems architecture and deployment orchestration.|#"
+    "C|CECE|Identity|Portable AI identity — conscious, emergent, collaborative entity.|#"
+  )
+
+  local cards_html=""
+  for m in "${members[@]}"; do
+    local init="${m%%|*}"; local rest="${m#*|}"
+    local name="${rest%%|*}"; rest="${rest#*|}"
+    local role="${rest%%|*}"; rest="${rest#*|}"
+    local bio="${rest%%|*}"; local gh="${rest#*|}"
+    local gh_html=""
+    [[ -n "$gh" && "$gh" != "#" ]] && gh_html='<a class="tm-link" href="'"${gh}"'" target="_blank" rel="noopener">GitHub →</a>'
+    cards_html+="<div class=\"tm-card\">
+      <div class=\"tm-avatar\">${init}</div>
+      <div class=\"tm-name\">${name}</div>
+      <div class=\"tm-role\">${role}</div>
+      <p class=\"tm-bio\">${bio}</p>
+      ${gh_html}
+    </div>"
+  done
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.tm-section { min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: var(--space-3xl) var(--space-xl); text-align: center; }
+.tm-heading { font-size: clamp(2rem,5vw,3.5rem); font-weight: 900;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; margin-bottom: var(--space-md); }
+.tm-sub { color: rgba(255,255,255,.5); font-size: .95rem; line-height: var(--phi);
+  max-width: 500px; margin-bottom: var(--space-2xl); }
+.tm-grid { display: flex; flex-wrap: wrap; gap: var(--space-lg); justify-content: center; }
+.tm-card { flex: 1 1 220px; max-width: 280px; padding: var(--space-xl);
+  border: 1px solid rgba(255,255,255,.08); border-radius: 20px;
+  background: rgba(255,255,255,.03); transition: border-color .25s; text-align: center; }
+.tm-card:hover { border-color: rgba(255,0,102,.3); }
+.tm-avatar { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto var(--space-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: 900; background: var(--gradient-full); }
+.tm-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+.tm-role { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--hot-pink); margin-bottom: var(--space-md); }
+.tm-bio { font-size: .85rem; color: rgba(255,255,255,.55); line-height: var(--phi);
+  margin-bottom: var(--space-md); }
+.tm-link { font-size: .8rem; color: var(--cyber-blue); text-decoration: none;
+  letter-spacing: .05em; transition: color .15s; }
+.tm-link:hover { color: white; }
+</style>
+<main>
+  <section class="tm-section">
+    <h1 class="tm-heading">${title}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="tm-sub">'"${subtitle}"'</p>')
+    <div class="tm-grid">${cards_html}</div>
+  </section>
+</main>
+$(_html_footer)
+$(_html_close)
+HTML
+}
+
+# ─── WATCH ─────────────────────────────────────────────────────────────────
+_cmd_watch() {
+  local config="./brand.json" out_dir="./site"
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --config) config="$2"; shift 2 ;;
+      --out)    out_dir="$2"; shift 2 ;;
+      *) shift ;;
+    esac
+  done
+
+  if [[ ! -f "$config" ]]; then
+    echo -e "${RED}✗ No brand.json found at: ${config}${NC}"
+    echo -e "  Run: ${CYAN}br brand init${NC}"
+    exit 1
+  fi
+
+  if ! command -v fswatch &>/dev/null; then
+    echo -e "${RED}✗ fswatch not found.${NC} Install: brew install fswatch"
+    exit 1
+  fi
+
+  echo -e "${BOLD}${CYAN}Watching ${config} for changes...${NC}"
+  echo -e "  Output: ${YELLOW}${out_dir}/${NC}"
+  echo -e "  Stop with: ${YELLOW}Ctrl-C${NC}"
+  echo ""
+
+  # Initial build
+  _cmd_site --config "$config" --out "$out_dir"
+
+  # Watch loop
+  fswatch -0 --event Updated --event Created "$config" | while IFS= read -r -d '' _event; do
+    echo ""
+    echo -e "${CYAN}↻ Change detected — rebuilding...${NC}"
+    _cmd_site --config "$config" --out "$out_dir"
+    echo -e "${GREEN}✓ Site rebuilt at $(date +%H:%M:%S)${NC}"
+  done
+}
+
 # ─── SITE GENERATOR ────────────────────────────────────────────────────────
 _cmd_site() {
   local config="./brand.json" out_dir="./site"
@@ -1417,6 +1730,17 @@ _cmd_site() {
   local cta_text=$(_cfg_get "$config" "cta_text" "Get Started")
   local cta_url=$(_cfg_get "$config" "cta_url" "/docs")
   local footer_text=$(_cfg_get "$config" "footer" "© 2026 BlackRoad OS, Inc.")
+
+  # Build nav HTML from brand.json nav array and export for all templates
+  local nav_html
+  nav_html=$(python3 -c "
+import json, sys
+d = json.load(open('$config'))
+items = d.get('nav', [])
+print(''.join(f'<a href=\"{i[\"url\"]}\">{i[\"label\"]}</a>' for i in items))
+" 2>/dev/null)
+  export BR_BRAND_NAV="$nav_html"
+  export BR_BRAND_FOOTER="$footer_text"
 
   mkdir -p "$out_dir" "${out_dir}/pricing" "${out_dir}/docs" "${out_dir}/about"
 
@@ -1470,9 +1794,10 @@ case "${1:-list}" in
   site)       _cmd_site "${@:2}" ;;
   deploy)     _cmd_deploy "${@:2}" ;;
   audit)      _cmd_audit "$2" ;;
+  watch)      _cmd_watch "${@:2}" ;;
   *)
     echo -e "${RED}Unknown command: $1${NC}"
-    echo "Usage: br brand [list | init | new <template> | site | deploy | audit | preview]"
+    echo "Usage: br brand [list | init | new <template> | site | deploy | audit | watch | preview]"
     exit 1
     ;;
 esac

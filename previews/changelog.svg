@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a"/>
+      <stop offset="100%" style="stop-color:#060606"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9D00"/>
+      <stop offset="38.2%" style="stop-color:#FF0066"/>
+      <stop offset="61.8%" style="stop-color:#7700FF"/>
+      <stop offset="100%" style="stop-color:#0066FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#bg)"/>
+
+  <!-- Nav -->
+  <rect width="800" height="52" fill="rgba(10,10,10,.95)"/>
+  <text x="32" y="33" font-family="system-ui,sans-serif" font-size="14" font-weight="900" fill="url(#g1)">BlackRoad OS</text>
+  <text x="660" y="33" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.5)">Changelog</text>
+
+  <!-- Page heading -->
+  <text x="48" y="110" font-family="system-ui,sans-serif" font-size="38" font-weight="900" fill="url(#g1)">Changelog</text>
+  <text x="48" y="135" font-family="system-ui,sans-serif" font-size="13" fill="rgba(255,255,255,.4)">What's new in BlackRoad OS.</text>
+
+  <!-- Divider -->
+  <rect x="48" y="150" width="704" height="1" fill="rgba(255,255,255,.07)"/>
+
+  <!-- Entry v3.0.0 -->
+  <text x="48" y="185" font-family="system-ui,sans-serif" font-size="18" font-weight="900" fill="url(#g1)">v3.0.0</text>
+  <text x="120" y="185" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.35)">2026-02-23</text>
+  <rect x="200" y="170" width="58" height="18" rx="9" fill="rgba(0,102,255,.3)"/>
+  <text x="229" y="183" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.7)" text-anchor="middle" letter-spacing="1">feature</text>
+  <rect x="264" y="170" width="78" height="18" rx="9" fill="rgba(119,0,255,.3)"/>
+  <text x="303" y="183" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.7)" text-anchor="middle" letter-spacing="1">improvement</text>
+
+  <text x="64" y="212" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.65)">→ Brand Kit v3: init wizard, site generator, 4 new component templates</text>
+  <text x="64" y="232" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.65)">→ Added --config flag for all templates</text>
+
+  <!-- Divider -->
+  <rect x="48" y="250" width="704" height="1" fill="rgba(255,255,255,.07)"/>
+
+  <!-- Entry v2.0.0 -->
+  <text x="48" y="285" font-family="system-ui,sans-serif" font-size="18" font-weight="900" fill="url(#g1)">v2.0.0</text>
+  <text x="120" y="285" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.35)">2026-02-10</text>
+  <rect x="200" y="270" width="58" height="18" rx="9" fill="rgba(0,102,255,.3)"/>
+  <text x="229" y="283" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.7)" text-anchor="middle" letter-spacing="1">feature</text>
+
+  <text x="64" y="312" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.65)">→ Added pricing, feature, blog, 404 templates</text>
+  <text x="64" y="332" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.65)">→ Deploy and audit commands</text>
+
+  <!-- Divider -->
+  <rect x="48" y="350" width="704" height="1" fill="rgba(255,255,255,.07)"/>
+
+  <!-- Entry v1.0.0 -->
+  <text x="48" y="385" font-family="system-ui,sans-serif" font-size="18" font-weight="900" fill="url(#g1)">v1.0.0</text>
+  <text x="120" y="385" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.35)">2026-02-01</text>
+  <rect x="200" y="370" width="58" height="18" rx="9" fill="rgba(0,102,255,.3)"/>
+  <text x="229" y="383" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.7)" text-anchor="middle" letter-spacing="1">feature</text>
+
+  <text x="64" y="412" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.65)">→ Initial release: landing, agent, docs, card templates</text>
+
+  <!-- Footer -->
+  <rect y="460" width="800" height="40" fill="rgba(0,0,0,.4)"/>
+  <text x="400" y="485" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.3)" text-anchor="middle">© 2026 BlackRoad OS, Inc.</text>
+</svg>

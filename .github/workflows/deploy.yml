@@ -1,0 +1,75 @@
+name: Deploy Brand Site
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'brand.json'
+      - 'tools/br-brand.sh'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build & Deploy to Cloudflare Pages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install wrangler
+        run: npm install -g wrangler
+
+      - name: Build site
+        run: |
+          chmod +x tools/br-brand.sh
+
+          # Generate brand.json if not committed
+          if [ ! -f brand.json ]; then
+            cat > brand.json <<'EOF'
+          {
+            "name": "BlackRoad OS",
+            "tagline": "Your AI. Your Hardware. Your Rules.",
+            "description": "The AI-native developer platform.",
+            "cta_text": "Get Started",
+            "cta_url": "/docs",
+            "footer": "© 2026 BlackRoad OS, Inc.",
+            "nav": [
+              {"label": "Docs", "url": "/docs"},
+              {"label": "Pricing", "url": "/pricing"},
+              {"label": "Agents", "url": "/agents"},
+              {"label": "Team", "url": "/team"}
+            ]
+          }
+          EOF
+          fi
+
+          # Generate 5-page site into ./site/
+          export OUT_DIR=./site
+          zsh tools/br-brand.sh site --config brand.json --out ./site
+
+          # Add team + changelog pages
+          zsh tools/br-brand.sh new team \
+            --title "The Team" \
+            --subtitle "The agents behind BlackRoad OS." \
+            --config brand.json \
+            --output ./site/team/index.html
+
+          zsh tools/br-brand.sh new changelog \
+            --title "Changelog" \
+            --subtitle "What's new in BlackRoad OS." \
+            --config brand.json \
+            --output ./site/changelog/index.html
+
+          ls -la site/
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler pages deploy site \
+            --project-name=blackroad-brand-kit \
+            --branch=main \
+            --commit-dirty=true

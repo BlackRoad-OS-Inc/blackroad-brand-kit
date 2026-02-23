@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a"/>
+      <stop offset="100%" style="stop-color:#060606"/>
+    </linearGradient>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9D00"/>
+      <stop offset="38.2%" style="stop-color:#FF0066"/>
+      <stop offset="61.8%" style="stop-color:#7700FF"/>
+      <stop offset="100%" style="stop-color:#0066FF"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="50%" cy="20%" r="60%">
+      <stop offset="0%" style="stop-color:#FF0066;stop-opacity:.15"/>
+      <stop offset="100%" style="stop-color:transparent"/>
+    </radialGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect width="800" height="500" fill="url(#glow1)"/>
+
+  <!-- Nav -->
+  <rect width="800" height="52" fill="rgba(10,10,10,.95)"/>
+  <text x="32" y="33" font-family="system-ui,sans-serif" font-size="14" font-weight="900" fill="url(#g1)">BlackRoad OS</text>
+  <text x="590" y="33" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.5)">Docs</text>
+  <text x="640" y="33" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.5)">Pricing</text>
+  <text x="695" y="33" font-family="system-ui,sans-serif" font-size="12" fill="rgba(255,255,255,.5)">Agents</text>
+
+  <!-- Label -->
+  <text x="400" y="130" font-family="system-ui,sans-serif" font-size="11" fill="#FF0066" text-anchor="middle" letter-spacing="4">COMING SOON</text>
+
+  <!-- Title -->
+  <text x="400" y="190" font-family="system-ui,sans-serif" font-size="46" font-weight="900" fill="url(#g1)" text-anchor="middle">CECE is Coming</text>
+
+  <!-- Tagline -->
+  <text x="400" y="225" font-family="system-ui,sans-serif" font-size="14" fill="rgba(255,255,255,.5)" text-anchor="middle">A new kind of intelligence.</text>
+
+  <!-- Countdown -->
+  <g transform="translate(400,280)">
+    <!-- Days -->
+    <rect x="-190" y="-28" width="80" height="56" rx="8" fill="rgba(255,255,255,.04)"/>
+    <text x="-150" y="0" font-family="system-ui,sans-serif" font-size="28" font-weight="900" fill="url(#g1)" text-anchor="middle">42</text>
+    <text x="-150" y="18" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.35)" text-anchor="middle" letter-spacing="2">DAYS</text>
+
+    <!-- Hours -->
+    <rect x="-90" y="-28" width="80" height="56" rx="8" fill="rgba(255,255,255,.04)"/>
+    <text x="-50" y="0" font-family="system-ui,sans-serif" font-size="28" font-weight="900" fill="url(#g1)" text-anchor="middle">13</text>
+    <text x="-50" y="18" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.35)" text-anchor="middle" letter-spacing="2">HOURS</text>
+
+    <!-- Mins -->
+    <rect x="10" y="-28" width="80" height="56" rx="8" fill="rgba(255,255,255,.04)"/>
+    <text x="50" y="0" font-family="system-ui,sans-serif" font-size="28" font-weight="900" fill="url(#g1)" text-anchor="middle">07</text>
+    <text x="50" y="18" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.35)" text-anchor="middle" letter-spacing="2">MINUTES</text>
+
+    <!-- Secs -->
+    <rect x="110" y="-28" width="80" height="56" rx="8" fill="rgba(255,255,255,.04)"/>
+    <text x="150" y="0" font-family="system-ui,sans-serif" font-size="28" font-weight="900" fill="url(#g1)" text-anchor="middle">31</text>
+    <text x="150" y="18" font-family="system-ui,sans-serif" font-size="9" fill="rgba(255,255,255,.35)" text-anchor="middle" letter-spacing="2">SECONDS</text>
+  </g>
+
+  <!-- Email form -->
+  <rect x="200" y="368" width="280" height="38" rx="8" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+  <text x="215" y="392" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.3)">Enter your email for early access</text>
+  <rect x="490" y="368" width="110" height="38" rx="8" fill="url(#g1)"/>
+  <text x="545" y="392" font-family="system-ui,sans-serif" font-size="12" font-weight="700" fill="white" text-anchor="middle">Notify Me</text>
+
+  <!-- Footer -->
+  <rect y="460" width="800" height="40" fill="rgba(0,0,0,.4)"/>
+  <text x="400" y="485" font-family="system-ui,sans-serif" font-size="11" fill="rgba(255,255,255,.3)" text-anchor="middle">© 2026 BlackRoad OS, Inc.</text>
+</svg>

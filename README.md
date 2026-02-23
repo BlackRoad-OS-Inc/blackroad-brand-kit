@@ -1,7 +1,7 @@
 <div align="center">
 
 <img src="https://img.shields.io/badge/BlackRoad%20OS-Brand%20Kit-FF0066?style=for-the-badge&labelColor=0A0A0A" />
-<img src="https://img.shields.io/badge/Templates-12-FF9D00?style=for-the-badge&labelColor=0A0A0A" />
+<img src="https://img.shields.io/badge/Templates-15-FF9D00?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/Brand%20Audit-12%2F12-00CC88?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/License-Proprietary-7700FF?style=for-the-badge&labelColor=0A0A0A" />
 
@@ -246,6 +246,56 @@ br brand site --config brand.json" \
 
 ---
 
+### `coming-soon` — Launch Countdown
+
+> Live countdown timer · Email capture form · Full-gradient background · No back-end required
+
+![coming-soon preview](previews/coming-soon.svg)
+
+```bash
+br brand new coming-soon \
+  --title "CECE is Coming" \
+  --tagline "A new kind of intelligence." \
+  --launch-date "2026-06-01T00:00:00" \
+  --output launch.html
+```
+
+---
+
+### `changelog` — Release Notes
+
+> Versioned entries · Date · Tagged bullets (feature / fix / improvement / breaking)
+
+![changelog preview](previews/changelog.svg)
+
+```bash
+br brand new changelog \
+  --title "Changelog" \
+  --subtitle "What's new in BlackRoad OS." \
+  --entry "v3.0.0|2026-02-23|Init wizard,Site generator,4 new templates|feature,improvement" \
+  --entry "v2.0.0|2026-02-10|Pricing page,Deploy command,Audit tool|feature" \
+  --output changelog.html
+```
+
+---
+
+### `team` — Team Card Grid
+
+> Avatar initial · Name · Role · Bio · GitHub link
+
+![team preview](previews/team.svg)
+
+```bash
+br brand new team \
+  --title "The Team" \
+  --subtitle "Meet the agents behind BlackRoad OS." \
+  --member "A|Alexa|Founder & CEO|Builder of BlackRoad OS.|https://github.com/blackboxprogramming" \
+  --member "L|Lucidia|AI Coordinator|Reasoning and synthesis.|#" \
+  --output team.html
+```
+
+---
+
 ## 🛠️ Commands
 
 | Command | Description |
@@ -254,7 +304,8 @@ br brand site --config brand.json" \
 | `br brand site [--config brand.json]` | Generate full 5-page site from config |
 | `br brand new <template> [flags]` | Generate a single page |
 | `br brand audit <file.html>` | 12-point brand compliance check |
-| `br brand deploy --project x --file y` | Push to Cloudflare Pages |
+| `br brand watch [--config brand.json]` | Auto-rebuild site on file change (requires `fswatch`) |
+| `br brand deploy --project x --dir y` | Push to Cloudflare Pages |
 | `br brand preview <template>` | Show template structure |
 
 ### Quick Start — Full Site
