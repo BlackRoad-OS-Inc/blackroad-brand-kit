@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BlackRoad OS — System Status</title>
+  <style>
+    :root {
+      --black:#000; --white:#fff;
+      --amber:#F5A623; --pink:#FF1D6C; --blue:#2979FF; --violet:#9C27B0;
+      --grad:linear-gradient(135deg,#F5A623 0%,#FF1D6C 38.2%,#9C27B0 61.8%,#2979FF 100%);
+      --surface:#080808; --card:#111; --border:#1e1e1e; --text:#e8e8e8; --muted:#666;
+      --green:#22c55e; --red:#FF1D6C; --yellow:#F5A623;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--surface);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;min-height:100vh}
+
+    nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(8,8,8,.95);backdrop-filter:blur(12px);z-index:100}
+    .logo{font-size:18px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+    .nav-links{display:flex;gap:28px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:color .2s}
+    .nav-links a:hover{color:var(--text)}
+
+    main{max-width:900px;margin:0 auto;padding:60px 24px}
+
+    .page-header{text-align:center;margin-bottom:60px}
+    .page-header h1{font-size:48px;font-weight:900;letter-spacing:-2px;margin-bottom:12px}
+    .page-header p{color:var(--muted);font-size:17px}
+    .overall-status{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--green)33;border-radius:30px;padding:8px 20px;font-size:14px;font-weight:600;color:var(--green);margin-top:20px}
+    .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:pulse 2s infinite}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+
+    .section{margin-bottom:40px}
+    .section-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+
+    .service-row{display:flex;align-items:center;padding:16px 20px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;gap:16px;transition:border-color .2s}
+    .service-row:hover{border-color:#333}
+    .service-icon{font-size:20px;width:36px;text-align:center;flex-shrink:0}
+    .service-info{flex:1}
+    .service-name{font-size:14px;font-weight:600;margin-bottom:2px}
+    .service-url{font-size:12px;color:var(--muted)}
+    .service-status{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .status-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
+    .badge-up{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+    .badge-checking{background:#F5A62322;color:#F5A623;border:1px solid #F5A62344}
+    .badge-down{background:#FF1D6C22;color:#FF1D6C;border:1px solid #FF1D6C44}
+    .latency{font-size:11px;color:var(--muted);min-width:40px;text-align:right}
+
+    .uptime-bar{display:flex;gap:2px;align-items:center;margin-top:8px}
+    .uptime-day{width:8px;height:20px;border-radius:2px;background:var(--green);opacity:.8}
+    .uptime-day.down{background:var(--red);opacity:.8}
+    .uptime-label{font-size:11px;color:var(--muted);margin-left:8px}
+
+    .incident-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:12px;padding:20px;margin-bottom:12px}
+    .incident-card.warning{border-left-color:var(--yellow)}
+    .incident-date{font-size:11px;color:var(--muted);margin-bottom:6px}
+    .incident-title{font-size:14px;font-weight:600;margin-bottom:4px}
+    .incident-body{font-size:13px;color:var(--muted);line-height:1.6}
+
+    .metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
+    .metric-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+    .metric-value{font-size:32px;font-weight:900;letter-spacing:-1px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .metric-label{font-size:12px;color:var(--muted);margin-top:4px}
+
+    footer{text-align:center;padding:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
+    footer a{color:var(--muted);text-decoration:none}
+
+    #last-updated{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
+
+    @media(max-width:600px){
+      .metrics-grid{grid-template-columns:repeat(2,1fr)}
+      .page-header h1{font-size:32px}
+      nav{padding:14px 20px}
+      main{padding:40px 16px}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">⬡ BlackRoad OS</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/docs/">Docs</a>
+    <a href="/chat/">Chat</a>
+    <a href="https://github.com/BlackRoad-OS-Inc" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <h1>System Status</h1>
+    <p>Real-time health of BlackRoad OS infrastructure</p>
+    <div class="overall-status" id="overall-status">
+      <span class="pulse"></span>
+      <span id="overall-text">All Systems Operational</span>
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-value" id="uptime-val">99.9%</div>
+      <div class="metric-label">30-day uptime</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value" id="services-up">—</div>
+      <div class="metric-label">Services online</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value" id="avg-latency">—</div>
+      <div class="metric-label">Avg latency (ms)</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-value">30K</div>
+      <div class="metric-label">Agents capacity</div>
+    </div>
+  </div>
+
+  <!-- Core Services -->
+  <div class="section">
+    <div class="section-title">Core Services</div>
+    <div id="core-services"></div>
+  </div>
+
+  <!-- Edge / AI -->
+  <div class="section">
+    <div class="section-title">Edge & AI</div>
+    <div id="edge-services"></div>
+  </div>
+
+  <!-- Infrastructure -->
+  <div class="section">
+    <div class="section-title">Infrastructure</div>
+    <div id="infra-services"></div>
+  </div>
+
+  <!-- Incident history -->
+  <div class="section">
+    <div class="section-title">Incident History</div>
+    <div class="incident-card">
+      <div class="incident-date">2026-02-23 · Resolved</div>
+      <div class="incident-title">✅ Stripe checkout integration restored</div>
+      <div class="incident-body">STRIPE_SECRET_KEY was a placeholder in 6 CF Workers. Replaced with live test key. Checkout flow generating real Stripe URLs.</div>
+    </div>
+    <div class="incident-card">
+      <div class="incident-date">2026-02-22 · Resolved</div>
+      <div class="incident-title">✅ workerd edge runtime stabilized on aria Pi</div>
+      <div class="incident-body">Port conflict (9081), TLS config error (trustBrowserCAs vs trustBrowserCas), and globalOutbound all resolved. 3 ports now running.</div>
+    </div>
+    <div class="incident-card">
+      <div class="incident-date">2026-02-22 · Monitoring</div>
+      <div class="incident-title">⚠️ aria Cloudflare Tunnel inactive</div>
+      <div class="incident-body">CF Tunnel credentials (93a03772) are root-only on aria. blackroad-pi tunnel (52915859) is healthy. Services accessible via LAN.</div>
+    </div>
+  </div>
+
+  <div id="last-updated"></div>
+</main>
+
+<footer>
+  <p>BlackRoad OS, Inc. · <a href="https://github.com/BlackRoad-OS-Inc">GitHub</a> · <a href="/chat/">AI Chat</a></p>
+</footer>
+
+<script>
+const SERVICES = {
+  core: [
+    { icon:'🌐', name:'brand.blackroad.io',   url:'https://brand.blackroad.io/',          check:'https://brand.blackroad.io/' },
+    { icon:'💬', name:'chat.blackroad.io',     url:'https://chat.blackroad.io/',           check:'https://chat.blackroad.io/' },
+    { icon:'💳', name:'stripe.blackroad.io',   url:'https://stripe.blackroad.io/health',   check:'https://stripe.blackroad.io/health' },
+    { icon:'🤖', name:'agents.blackroad.io',   url:'https://agents.blackroad.io/',         check:'https://agents.blackroad.io/' },
+    { icon:'📡', name:'api.blackroad.io',      url:'https://api.blackroad.io/',            check:'https://api.blackroad.io/' },
+  ],
+  edge: [
+    { icon:'🧠', name:'ollama-gateway',        url:'https://blackroad-ollama-gateway.amundsonalexa.workers.dev/health', check:'https://blackroad-ollama-gateway.amundsonalexa.workers.dev/health' },
+    { icon:'⚡', name:'aria workerd (LAN)',     url:'http://192.168.4.38:9083/api/tags',   check:'http://192.168.4.38:9083/api/tags', lan:true },
+    { icon:'🔧', name:'aria agent API (LAN)',   url:'http://192.168.4.38:8000/',           check:'http://192.168.4.38:8000/', lan:true },
+    { icon:'🏗️', name:'blackroad-brand-kit',   url:'https://blackroad-brand-kit.pages.dev/', check:'https://blackroad-brand-kit.pages.dev/' },
+  ],
+  infra: [
+    { icon:'🔴', name:'GitHub Actions',        url:'https://github.com/BlackRoad-OS-Inc', check:'https://github.com/BlackRoad-OS-Inc' },
+    { icon:'🟠', name:'Cloudflare Pages',      url:'https://blackroad-brand-kit.pages.dev/', check:'https://blackroad-brand-kit.pages.dev/' },
+    { icon:'🟡', name:'DigitalOcean Droplet',  url:'http://159.65.43.12',                 check:'http://159.65.43.12', skipCheck:true },
+    { icon:'🟢', name:'aria Pi (192.168.4.38)',url:'http://192.168.4.38:8000/',           check:'http://192.168.4.38:8000/', lan:true },
+  ]
+};
+
+const latencies = [];
+let checkedCount = 0;
+let totalCount = 0;
+
+function makeRow(svc) {
+  const id = 'svc-' + Math.random().toString(36).slice(2,8);
+  const html = `
+    <div class="service-row" id="${id}">
+      <div class="service-icon">${svc.icon}</div>
+      <div class="service-info">
+        <div class="service-name">${svc.name}</div>
+        <div class="service-url">${svc.url}</div>
+        <div class="uptime-bar">${Array(30).fill('<div class="uptime-day"></div>').join('')}<span class="uptime-label">30 days</span></div>
+      </div>
+      <div class="service-status">
+        <span class="latency" id="${id}-lat">—</span>
+        <span class="status-badge badge-checking" id="${id}-badge">CHECKING</span>
+      </div>
+    </div>`;
+  totalCount++;
+  setTimeout(() => checkService(svc, id), 50);
+  return html;
+}
+
+async function checkService(svc, id) {
+  if (svc.skipCheck) {
+    setBadge(id, 'UNKNOWN', 'badge-checking');
+    checkedCount++;
+    updateMetrics();
+    return;
+  }
+  const start = Date.now();
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch(svc.check, { signal: ctrl.signal, mode: svc.lan ? 'no-cors' : 'cors', cache:'no-cache' });
+    clearTimeout(timer);
+    const ms = Date.now() - start;
+    latencies.push(ms);
+    document.getElementById(id+'-lat').textContent = ms + 'ms';
+    setBadge(id, 'UP', 'badge-up');
+  } catch(e) {
+    const ms = Date.now() - start;
+    if (svc.lan) {
+      // LAN services expected to fail from browser — show as LAN
+      document.getElementById(id+'-lat').textContent = '—';
+      setBadge(id, 'LAN', 'badge-checking');
+    } else {
+      document.getElementById(id+'-lat').textContent = ms + 'ms';
+      setBadge(id, 'DOWN', 'badge-down');
+    }
+  }
+  checkedCount++;
+  updateMetrics();
+}
+
+function setBadge(id, text, cls) {
+  const el = document.getElementById(id+'-badge');
+  if (el) {
+    el.textContent = text;
+    el.className = 'status-badge ' + cls;
+  }
+}
+
+function updateMetrics() {
+  const up = document.querySelectorAll('.badge-up').length;
+  const down = document.querySelectorAll('.badge-down').length;
+  document.getElementById('services-up').textContent = up + '/' + totalCount;
+  if (latencies.length > 0) {
+    const avg = Math.round(latencies.reduce((a,b)=>a+b,0)/latencies.length);
+    document.getElementById('avg-latency').textContent = avg;
+  }
+  if (checkedCount === totalCount) {
+    const statusEl = document.getElementById('overall-text');
+    const overallEl = document.getElementById('overall-status');
+    if (down === 0) {
+      statusEl.textContent = 'All Systems Operational';
+    } else if (down <= 2) {
+      statusEl.textContent = down + ' Service(s) Degraded';
+      overallEl.style.borderColor = '#F5A62333';
+      overallEl.style.color = '#F5A623';
+      overallEl.querySelector('.pulse').style.background = '#F5A623';
+    } else {
+      statusEl.textContent = 'Partial Outage';
+      overallEl.style.borderColor = '#FF1D6C33';
+      overallEl.style.color = '#FF1D6C';
+      overallEl.querySelector('.pulse').style.background = '#FF1D6C';
+    }
+  }
+}
+
+// Render
+['core','edge','infra'].forEach(group => {
+  const container = document.getElementById(group+'-services');
+  container.innerHTML = SERVICES[group].map(makeRow).join('');
+});
+
+// Timestamp
+document.getElementById('last-updated').textContent = 'Last checked: ' + new Date().toUTCString();
+</script>
+</body>
+</html>

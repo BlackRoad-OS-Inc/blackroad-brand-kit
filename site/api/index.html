@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Console — BlackRoad OS</title>
+  <style>
+    :root {
+      --black:#000; --white:#fff;
+      --amber:#F5A623; --pink:#FF1D6C; --blue:#2979FF; --violet:#9C27B0;
+      --grad:linear-gradient(135deg,#F5A623 0%,#FF1D6C 38.2%,#9C27B0 61.8%,#2979FF 100%);
+      --surface:#080808; --card:#0e0e0e; --border:#1e1e1e; --text:#e8e8e8; --muted:#666;
+      --green:#22c55e;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--surface);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid var(--border);flex-shrink:0}
+    .logo{font-size:17px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+    .nav-links{display:flex;gap:24px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;transition:color .2s}
+    .nav-links a:hover{color:var(--text)}
+    .workspace{display:flex;flex:1;overflow:hidden}
+
+    /* Sidebar */
+    .sidebar{width:260px;border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;background:#0a0a0a}
+    .sidebar::-webkit-scrollbar{width:3px}
+    .sidebar::-webkit-scrollbar-thumb{background:var(--border)}
+    .sidebar-section{padding:16px 16px 8px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+    .endpoint-item{display:flex;align-items:center;gap:10px;padding:8px 16px;cursor:pointer;transition:background .15s;font-size:13px}
+    .endpoint-item:hover{background:#ffffff08}
+    .endpoint-item.active{background:#FF1D6C11;border-right:2px solid var(--pink)}
+    .method-badge{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:.5px;min-width:34px;text-align:center}
+    .method-get{background:#22c55e22;color:#22c55e}
+    .method-post{background:#2979FF22;color:#2979FF}
+    .method-put{background:#F5A62322;color:#F5A623}
+    .method-delete{background:#FF1D6C22;color:#FF1D6C}
+    .endpoint-path{font-family:'SF Mono','Fira Code',monospace;font-size:12px;color:var(--text)}
+
+    /* Main panel */
+    .main-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .request-bar{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+    .method-select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;font-weight:700;outline:none;cursor:pointer;font-family:inherit}
+    .url-input{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;font-family:'SF Mono','Fira Code',monospace;outline:none;transition:border-color .2s}
+    .url-input:focus{border-color:var(--pink)}
+    .send-btn{background:var(--grad);border:none;color:#fff;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;transition:opacity .2s;white-space:nowrap}
+    .send-btn:hover{opacity:.9}
+    .send-btn:disabled{opacity:.4;cursor:default}
+
+    .panels{flex:1;display:flex;overflow:hidden}
+    .req-panel,.res-panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .req-panel{border-right:1px solid var(--border)}
+    .panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+    .panel-tab{padding:10px 16px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.3px}
+    .panel-tab.active{color:var(--pink);border-bottom-color:var(--pink)}
+    .panel-content{flex:1;overflow:auto;padding:16px}
+    .panel-content::-webkit-scrollbar{width:3px}
+    .panel-content::-webkit-scrollbar-thumb{background:var(--border)}
+    textarea.body-input{width:100%;height:100%;min-height:200px;background:transparent;border:none;color:var(--text);font-family:'SF Mono','Fira Code',monospace;font-size:12px;resize:none;outline:none;line-height:1.6}
+    .headers-table{width:100%;border-collapse:collapse;font-size:12px}
+    .headers-table td,th{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left}
+    .headers-table th{color:var(--muted);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+    .headers-table input{background:transparent;border:none;color:var(--text);font-size:12px;outline:none;width:100%;font-family:inherit}
+
+    /* Response */
+    .res-meta{display:flex;align-items:center;gap:16px;padding:10px 16px;background:#0a0a0a;border-bottom:1px solid var(--border);font-size:12px;flex-shrink:0}
+    .status-code{font-weight:700;padding:2px 8px;border-radius:4px}
+    .status-2xx{background:#22c55e22;color:#22c55e}
+    .status-4xx,.status-5xx{background:#FF1D6C22;color:#FF1D6C}
+    .res-time{color:var(--muted)}
+    .res-size{color:var(--muted)}
+    .pre-response{font-family:'SF Mono','Fira Code',monospace;font-size:12px;white-space:pre;color:#e8e8e8;line-height:1.6}
+    .key{color:#9C27B0}.string{color:#22c55e}.number{color:#F5A623}.bool{color:#2979FF}.null{color:#FF1D6C}
+
+    .empty-response{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:8px}
+    .empty-response .icon{font-size:40px;opacity:.3}
+    .empty-response p{font-size:13px}
+
+    @media(max-width:768px){
+      .sidebar{display:none}
+      .panels{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">⬡ BlackRoad OS</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/docs/">Docs</a>
+    <a href="/chat/">Chat</a>
+    <a href="/status/">Status</a>
+  </div>
+</nav>
+
+<div class="workspace">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-section">Stripe API</div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','https://stripe.blackroad.io/health',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/health</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','https://stripe.blackroad.io/products',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/products</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','https://stripe.blackroad.io/prices',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/prices</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('POST','https://stripe.blackroad.io/checkout',JSON.stringify({price_id:'price_1T3nxYChUUSEbzyhRA8XeENr',success_url:'https://brand.blackroad.io/success.html',cancel_url:'https://brand.blackroad.io/cancel.html'},null,2))">
+      <span class="method-badge method-post">POST</span>
+      <span class="endpoint-path">/checkout</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','https://stripe.blackroad.io/subscriptions',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/subscriptions</span>
+    </div>
+
+    <div class="sidebar-section">Ollama API</div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','http://192.168.4.38:9083/api/tags',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/api/tags</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('POST','http://192.168.4.38:9083/api/generate',JSON.stringify({model:'llama3.2:1b',prompt:'Hello! What are you?',stream:false},null,2))">
+      <span class="method-badge method-post">POST</span>
+      <span class="endpoint-path">/api/generate</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('POST','http://192.168.4.38:9083/api/chat',JSON.stringify({model:'llama3.2:1b',messages:[{role:'user',content:'Hello!'}],stream:false},null,2))">
+      <span class="method-badge method-post">POST</span>
+      <span class="endpoint-path">/api/chat</span>
+    </div>
+
+    <div class="sidebar-section">Agent API (aria)</div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','http://192.168.4.38:8000/',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','http://192.168.4.38:8000/health',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/health</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','http://192.168.4.38:8000/info',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/info</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('POST','http://192.168.4.38:8000/exec',JSON.stringify({command:'echo hello'},null,2))">
+      <span class="method-badge method-post">POST</span>
+      <span class="endpoint-path">/exec</span>
+    </div>
+
+    <div class="sidebar-section">Ollama Gateway</div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','https://blackroad-ollama-gateway.amundsonalexa.workers.dev/health',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/health</span>
+    </div>
+    <div class="endpoint-item" onclick="loadEndpoint('GET','https://blackroad-ollama-gateway.amundsonalexa.workers.dev/api/tags',null)">
+      <span class="method-badge method-get">GET</span>
+      <span class="endpoint-path">/api/tags</span>
+    </div>
+  </div>
+
+  <!-- Main panel -->
+  <div class="main-panel">
+    <div class="request-bar">
+      <select class="method-select" id="method">
+        <option>GET</option>
+        <option>POST</option>
+        <option>PUT</option>
+        <option>DELETE</option>
+        <option>PATCH</option>
+      </select>
+      <input type="text" class="url-input" id="url-input" placeholder="https://stripe.blackroad.io/health" value="https://stripe.blackroad.io/health">
+      <button class="send-btn" id="send-btn" onclick="sendRequest()">Send →</button>
+    </div>
+
+    <div class="panels">
+      <!-- Request -->
+      <div class="req-panel">
+        <div class="panel-tabs">
+          <div class="panel-tab active" onclick="switchReqTab('body',this)">Body</div>
+          <div class="panel-tab" onclick="switchReqTab('headers',this)">Headers</div>
+        </div>
+        <div class="panel-content" id="req-body-panel">
+          <textarea class="body-input" id="body-input" placeholder='{\n  "key": "value"\n}'></textarea>
+        </div>
+        <div class="panel-content" id="req-headers-panel" style="display:none">
+          <table class="headers-table">
+            <tr><th>Key</th><th>Value</th></tr>
+            <tr><td><input id="h-key-1" value="Content-Type"></td><td><input id="h-val-1" value="application/json"></td></tr>
+            <tr><td><input id="h-key-2" placeholder="Authorization"></td><td><input id="h-val-2" placeholder="Bearer ..."></td></tr>
+            <tr><td><input id="h-key-3" placeholder="X-Custom-Header"></td><td><input id="h-val-3" placeholder="value"></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Response -->
+      <div class="res-panel">
+        <div class="res-meta" id="res-meta" style="display:none">
+          <span class="status-code" id="res-status">—</span>
+          <span class="res-time" id="res-time">—</span>
+          <span class="res-size" id="res-size">—</span>
+        </div>
+        <div class="panel-content" id="res-content">
+          <div class="empty-response">
+            <div class="icon">📡</div>
+            <p>Hit Send to see the response</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchReqTab(tab, el) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('req-body-panel').style.display = tab === 'body' ? '' : 'none';
+  document.getElementById('req-headers-panel').style.display = tab === 'headers' ? '' : 'none';
+}
+
+function loadEndpoint(method, url, body) {
+  document.getElementById('method').value = method;
+  document.getElementById('url-input').value = url;
+  if (body) document.getElementById('body-input').value = body;
+  document.querySelectorAll('.endpoint-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+async function sendRequest() {
+  const method = document.getElementById('method').value;
+  const url    = document.getElementById('url-input').value.trim();
+  const body   = document.getElementById('body-input').value.trim();
+  if (!url) return;
+
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const headers = { 'Content-Type': 'application/json' };
+  for (let i = 1; i <= 3; i++) {
+    const k = document.getElementById('h-key-'+i)?.value.trim();
+    const v = document.getElementById('h-val-'+i)?.value.trim();
+    if (k && v) headers[k] = v;
+  }
+
+  const start = Date.now();
+  try {
+    const opts = { method, headers };
+    if (method !== 'GET' && method !== 'HEAD' && body) opts.body = body;
+    const res = await fetch(url, opts);
+    const ms  = Date.now() - start;
+    const text = await res.text();
+    let size = new Blob([text]).size;
+    const sizeStr = size < 1024 ? size + ' B' : (size/1024).toFixed(1) + ' KB';
+
+    document.getElementById('res-meta').style.display = 'flex';
+    const statusEl = document.getElementById('res-status');
+    statusEl.textContent = res.status + ' ' + res.statusText;
+    statusEl.className = 'status-code ' + (res.ok ? 'status-2xx' : (res.status >= 500 ? 'status-5xx' : 'status-4xx'));
+    document.getElementById('res-time').textContent = ms + 'ms';
+    document.getElementById('res-size').textContent = sizeStr;
+
+    let formatted = text;
+    try {
+      formatted = syntaxHighlight(JSON.stringify(JSON.parse(text), null, 2));
+    } catch {}
+    document.getElementById('res-content').innerHTML = '<pre class="pre-response">' + formatted + '</pre>';
+  } catch(e) {
+    document.getElementById('res-meta').style.display = 'flex';
+    document.getElementById('res-status').textContent = 'ERROR';
+    document.getElementById('res-status').className = 'status-code status-5xx';
+    document.getElementById('res-time').textContent = (Date.now() - start) + 'ms';
+    document.getElementById('res-size').textContent = '—';
+    document.getElementById('res-content').innerHTML = `<pre class="pre-response" style="color:#FF1D6C">${e.message}\n\nNote: LAN endpoints (192.168.4.x) are only reachable from the local network.</pre>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send →';
+  }
+}
+
+function syntaxHighlight(json) {
+  return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+      let cls = 'number';
+      if (/^"/.test(match)) cls = /:$/.test(match) ? 'key' : 'string';
+      else if (/true|false/.test(match)) cls = 'bool';
+      else if (/null/.test(match)) cls = 'null';
+      return `<span class="${cls}">${match}</span>`;
+    });
+}
+
+// Send on Ctrl+Enter
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') sendRequest();
+});
+</script>
+</body>
+</html>
