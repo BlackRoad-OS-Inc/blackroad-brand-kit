@@ -435,6 +435,353 @@ _tpl_card() {
 EOF
 }
 
+# ─── TEMPLATE: PRICING ───────────────────────────────────────────────────
+# Tiers format: "Name|Price|Period|Desc|feat1,feat2,feat3|cta_text|cta_url|highlight"
+# highlight = "true" to make a tier pop with gradient border
+_tpl_pricing() {
+  local title="$1" subtitle="$2" output="$3"
+  shift 3
+  local tiers=("$@")
+
+  {
+    _html_head "$title" "$subtitle"
+    _html_nav "BlackRoad OS" "<a href=\"/\">Home</a>"
+
+    cat <<EOF
+<main>
+  <section class="section" style="text-align:center;">
+    <div class="container">
+      <div class="section-label animate-in">Pricing</div>
+      <h1 class="gradient-text animate-in">${title}</h1>
+      <p style="font-size:1.1rem;max-width:560px;margin:var(--space-lg) auto 0;" class="animate-in">${subtitle}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-${#tiers[@]}" style="align-items:start;">
+EOF
+
+    for tier in "${tiers[@]}"; do
+      local tname="${tier%%|*}"; local r1="${tier#*|}"; local tprice="${r1%%|*}"; local r2="${r1#*|}"
+      local tperiod="${r2%%|*}"; local r3="${r2#*|}"; local tdesc="${r3%%|*}"; local r4="${r3#*|}"
+      local tfeats="${r4%%|*}"; local r5="${r4#*|}"; local tcta="${r5%%|*}"; local r6="${r5#*|}"
+      local tcta_url="${r6%%|*}"; local thighlight="${r6#*|}"
+
+      local wrapper_open="" wrapper_close=""
+      if [[ "$thighlight" == "true" ]]; then
+        wrapper_open='<div class="gradient-border" style="border-radius:var(--space-md);padding:1px;">'
+        wrapper_close='</div>'
+      fi
+
+      echo "        ${wrapper_open}"
+      cat <<EOF
+        <div class="card animate-in" style="text-align:center;$([ "$thighlight" = "true" ] && echo "background:rgba(255,255,255,0.07);")">
+          <div class="section-label" style="text-align:center;">${tname}</div>
+          <div style="margin:var(--space-lg) 0;">
+            <span style="font-size:3.5rem;font-weight:700;background:var(--gradient-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${tprice}</span>
+            <span style="color:rgba(255,255,255,0.5);font-size:0.9rem;"> / ${tperiod}</span>
+          </div>
+          <p style="font-size:0.9rem;margin-bottom:var(--space-xl);">${tdesc}</p>
+          <ul style="list-style:none;text-align:left;margin-bottom:var(--space-xl);">
+EOF
+      IFS=',' read -rA feat_list <<< "$tfeats"
+      for feat in "${feat_list[@]}"; do
+        feat="${feat## }"; feat="${feat%% }"
+        echo "            <li style=\"padding:var(--space-xs) 0;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.05);\">✓ &nbsp;${feat}</li>"
+      done
+      cat <<EOF
+          </ul>
+          <a href="${tcta_url}" class="btn $([ "$thighlight" = "true" ] && echo "btn-primary" || echo "btn-outline")" style="width:100%;text-align:center;">${tcta}</a>
+        </div>
+EOF
+      echo "        ${wrapper_close}"
+    done
+
+    cat <<EOF
+      </div>
+    </div>
+  </section>
+</main>
+EOF
+    _html_footer
+    _html_close
+  } > "$output"
+}
+
+# ─── TEMPLATE: 404 ────────────────────────────────────────────────────────
+_tpl_404() {
+  local title="${1:-404}" message="${2:-Page not found}" home_url="${3:-/}" output="$4"
+
+  {
+    _html_head "404 — ${title}" "$message"
+    _html_nav "BlackRoad OS"
+
+    cat <<EOF
+<main style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;">
+  <div class="container" style="max-width:600px;">
+    <div style="font-size:8rem;font-weight:900;line-height:1;
+                background:var(--gradient-brand);
+                -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+                background-clip:text;
+                animation:glitch 2s infinite;
+                margin-bottom:var(--space-lg);">404</div>
+    <h2 class="animate-in" style="margin-bottom:var(--space-md);">${title}</h2>
+    <p class="animate-in" style="margin-bottom:var(--space-xl);">${message}</p>
+    <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;" class="animate-in">
+      <a href="${home_url}" class="btn btn-primary">← Go Home</a>
+      <a href="javascript:history.back()" class="btn btn-outline">Go Back</a>
+    </div>
+    <div style="margin-top:var(--space-3xl);opacity:0.2;font-size:0.8rem;font-family:monospace;">
+      ERROR_CODE: 404 | AGENT: NULL | STATUS: NOT_FOUND
+    </div>
+  </div>
+</main>
+<style>
+@keyframes glitch {
+  0%,100% { text-shadow: none; }
+  20% { text-shadow: -3px 0 var(--hot-pink), 3px 0 var(--cyber-blue); }
+  40% { text-shadow: 3px 0 var(--vivid-purple), -3px 0 var(--sunrise-orange); }
+  60% { text-shadow: none; }
+  80% { text-shadow: -2px 0 var(--electric-magenta), 2px 0 var(--cyber-blue); }
+}
+</style>
+EOF
+    _html_footer
+    _html_close
+  } > "$output"
+}
+
+# ─── TEMPLATE: FEATURE ────────────────────────────────────────────────────
+# Alternating split-layout rows. items format: "Icon|Title|Desc"
+_tpl_feature() {
+  local title="$1" subtitle="$2" output="$3"
+  shift 3
+  local items=("$@")
+
+  {
+    _html_head "$title" "$subtitle"
+    _html_nav "BlackRoad OS" "<a href=\"/\">Home</a> <a href=\"#features\">Features</a>"
+
+    cat <<EOF
+<main>
+  <section class="section" style="text-align:center;">
+    <div class="container">
+      <div class="section-label animate-in">Features</div>
+      <h1 class="gradient-text animate-in">${title}</h1>
+      <p style="font-size:1.1rem;max-width:640px;margin:var(--space-lg) auto 0;" class="animate-in">${subtitle}</p>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="container" style="max-width:960px;">
+EOF
+
+    local idx=0
+    for item in "${items[@]}"; do
+      local iicon="${item%%|*}"; local rest="${item#*|}"; local ititle="${rest%%|*}"; local idesc="${rest#*|}"
+      local reverse=""
+      [[ $((idx % 2)) -eq 1 ]] && reverse="flex-direction:row-reverse;"
+      cat <<EOF
+      <div class="animate-in" style="display:flex;gap:var(--space-2xl);align-items:center;margin-bottom:var(--space-3xl);${reverse}flex-wrap:wrap;">
+        <div style="flex:0 0 140px;text-align:center;">
+          <div style="font-size:4rem;background:var(--charcoal);border-radius:var(--space-lg);padding:var(--space-xl);display:inline-block;border:1px solid rgba(255,255,255,0.06);">${iicon}</div>
+        </div>
+        <div style="flex:1;min-width:240px;">
+          <h3 style="margin-bottom:var(--space-md);">${ititle}</h3>
+          <p style="line-height:1.8;">${idesc}</p>
+        </div>
+      </div>
+EOF
+      idx=$((idx + 1))
+    done
+
+    cat <<EOF
+    </div>
+  </section>
+</main>
+EOF
+    _html_footer
+    _html_close
+  } > "$output"
+}
+
+# ─── TEMPLATE: BLOG ───────────────────────────────────────────────────────
+# sections format: "Heading|Body text"
+# tags format: comma-separated string passed as single arg
+_tpl_blog() {
+  local title="$1" subtitle="$2" author="${3:-BlackRoad OS}" date_str="${4:-}" tags="${5:-}" output="$6"
+  shift 6
+  local sections=("$@")
+
+  [[ -z "$date_str" ]] && date_str=$(date "+%B %d, %Y")
+
+  {
+    _html_head "$title" "$subtitle"
+    _html_nav "BlackRoad OS" "<a href=\"/blog\">Blog</a> <a href=\"/\">Home</a>"
+
+    cat <<EOF
+<main>
+  <!-- Hero -->
+  <section class="section" style="text-align:center;max-width:860px;margin:0 auto;">
+    <div class="container">
+EOF
+    # Tags
+    if [[ -n "$tags" ]]; then
+      echo "      <div style=\"display:flex;gap:var(--space-sm);justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-lg);\" class=\"animate-in\">"
+      IFS=',' read -rA tag_list <<< "$tags"
+      for tag in "${tag_list[@]}"; do
+        tag="${tag## }"; tag="${tag%% }"
+        echo "        <span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,157,0,0.4);color:var(--sunrise-orange);\">${tag}</span>"
+      done
+      echo "      </div>"
+    fi
+
+    cat <<EOF
+      <h1 class="animate-in" style="margin-bottom:var(--space-lg);">${title}</h1>
+      <p style="font-size:1.1rem;color:rgba(255,255,255,0.6);margin-bottom:var(--space-xl);" class="animate-in">${subtitle}</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-md);color:rgba(255,255,255,0.4);font-size:0.85rem;" class="animate-in">
+        <span>✍ ${author}</span>
+        <span>·</span>
+        <span>${date_str}</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="border-top:1px solid rgba(255,255,255,0.06);padding:var(--space-3xl) 0;">
+    <div class="container" style="max-width:740px;">
+EOF
+
+    for sec in "${sections[@]}"; do
+      local sheading="${sec%%|*}"
+      local sbody="${sec#*|}"
+      cat <<EOF
+      <div class="animate-in" style="margin-bottom:var(--space-2xl);">
+        <h2 style="font-size:1.6rem;margin-bottom:var(--space-md);color:var(--white);">${sheading}</h2>
+        <p style="line-height:1.9;font-size:1.05rem;">${sbody}</p>
+      </div>
+EOF
+    done
+
+    cat <<EOF
+    </div>
+  </section>
+</main>
+EOF
+    _html_footer
+    _html_close
+  } > "$output"
+}
+
+# ─── DEPLOY ──────────────────────────────────────────────────────────────
+_cmd_deploy() {
+  local project="" file="" dir="" env="production"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --project|-p) project="$2"; shift 2 ;;
+      --file|-f)    file="$2";    shift 2 ;;
+      --dir|-d)     dir="$2";     shift 2 ;;
+      --env)        env="$2";     shift 2 ;;
+      *) shift ;;
+    esac
+  done
+
+  if [[ -z "$project" ]]; then
+    echo -e "${RED}✗ --project required${NC}  e.g. br brand deploy --project my-site --file index.html"
+    exit 1
+  fi
+
+  # Resolve deploy target: single file → temp dir, or use dir
+  local deploy_dir=""
+  if [[ -n "$file" ]]; then
+    deploy_dir=$(mktemp -d)
+    cp "$file" "${deploy_dir}/index.html"
+    echo -e "${CYAN}→ Deploying file:${NC} $file"
+  elif [[ -n "$dir" ]]; then
+    deploy_dir="$dir"
+    echo -e "${CYAN}→ Deploying dir:${NC} $dir"
+  else
+    echo -e "${RED}✗ Provide --file or --dir${NC}"
+    exit 1
+  fi
+
+  if ! command -v wrangler &>/dev/null; then
+    echo -e "${RED}✗ wrangler not found.${NC} Install: npm install -g wrangler"
+    exit 1
+  fi
+
+  echo -e "${CYAN}→ Project:${NC} $project"
+  echo -e "${CYAN}→ Env:${NC}     $env"
+  echo ""
+  wrangler pages deploy "$deploy_dir" \
+    --project-name="$project" \
+    --branch="$([[ "$env" == "production" ]] && echo main || echo "$env")"
+
+  local exit_code=$?
+  [[ -n "$file" ]] && rm -rf "$deploy_dir"
+
+  if [[ $exit_code -eq 0 ]]; then
+    echo ""
+    echo -e "${GREEN}✓ Deployed to Cloudflare Pages${NC}"
+    echo -e "  https://${project}.pages.dev"
+  else
+    echo -e "${RED}✗ Deploy failed (exit $exit_code)${NC}"
+    exit $exit_code
+  fi
+}
+
+# ─── AUDIT ───────────────────────────────────────────────────────────────
+_cmd_audit() {
+  local file="$1"
+  if [[ -z "$file" || ! -f "$file" ]]; then
+    echo -e "${RED}✗ Usage: br brand audit <file.html>${NC}"
+    exit 1
+  fi
+
+  echo ""
+  echo -e "${BOLD}${CYAN}Brand Compliance Audit${NC} — ${file}"
+  echo -e "${CYAN}─────────────────────────────────────────${NC}"
+
+  local pass=0 fail=0
+
+  _check() {
+    local label="$1" pattern="$2"
+    if grep -q "$pattern" "$file" 2>/dev/null; then
+      echo -e "  ${GREEN}✓${NC} $label"
+      pass=$((pass+1))
+    else
+      echo -e "  ${RED}✗${NC} $label"
+      fail=$((fail+1))
+    fi
+  }
+
+  _check "Brand colors defined (--sunrise-orange)"  "sunrise-orange"
+  _check "Brand gradient (--gradient-brand)"        "gradient-brand"
+  _check "Hot pink (#FF0066)"                       "FF0066\|hot-pink"
+  _check "Cyber blue (#0066FF)"                     "0066FF\|cyber-blue"
+  _check "Vivid purple (#7700FF)"                   "7700FF\|vivid-purple"
+  _check "Golden ratio spacing (--space-)"          "\-\-space-"
+  _check "Scroll progress bar"                      "scroll-progress\|scroll-bar"
+  _check "backdrop-filter / glassmorphism"          "backdrop-filter"
+  _check "animate-in class"                         "animate-in"
+  _check "Gradient text (.gradient-text)"           "gradient-text\|background-clip:text\|background-clip: text"
+  _check "Brand font stack"                         "JetBrains Mono\|SF Mono\|Courier New"
+  _check "Golden ratio line-height (1.618)"         "1\.618"
+
+  echo ""
+  local total=$((pass+fail))
+  local pct=$(( pass * 100 / total ))
+  if [[ $fail -eq 0 ]]; then
+    echo -e "  ${GREEN}${BOLD}✓ PASS${NC} — ${pass}/${total} checks (${pct}%)"
+  elif [[ $pct -ge 75 ]]; then
+    echo -e "  ${YELLOW}${BOLD}⚠ PARTIAL${NC} — ${pass}/${total} checks (${pct}%)"
+  else
+    echo -e "  ${RED}${BOLD}✗ FAIL${NC} — ${pass}/${total} checks (${pct}%)"
+  fi
+  echo ""
+}
+
 # ─── LIST ─────────────────────────────────────────────────────────────────
 _cmd_list() {
   echo ""
@@ -444,57 +791,48 @@ _cmd_list() {
   echo ""
   echo -e "${YELLOW}Available Templates:${NC}"
   echo ""
-  echo -e "  ${GREEN}landing${NC}   Full landing page with hero, features, CTA"
-  echo -e "  ${GREEN}agent${NC}     Agent profile page with skills bars"
-  echo -e "  ${GREEN}docs${NC}      Documentation / article page"
-  echo -e "  ${GREEN}card${NC}      Reusable card HTML snippet (no full page)"
+  echo -e "  ${GREEN}landing${NC}   Full landing page with hero, features grid, CTA"
+  echo -e "  ${GREEN}agent${NC}     Agent profile page with skill progress bars"
+  echo -e "  ${GREEN}docs${NC}      Documentation / article page with sections"
+  echo -e "  ${GREEN}pricing${NC}   Pricing tiers page with feature lists"
+  echo -e "  ${GREEN}feature${NC}   Alternating split-layout feature showcase"
+  echo -e "  ${GREEN}blog${NC}      Blog post with author, tags, and sections"
+  echo -e "  ${GREEN}404${NC}       Branded 404 error page with glitch animation"
+  echo -e "  ${GREEN}card${NC}      Reusable card HTML snippet (embed anywhere)"
   echo ""
-  echo -e "${YELLOW}Usage:${NC}"
+  echo -e "${YELLOW}Commands:${NC}"
   echo ""
-  echo -e "  ${CYAN}br brand new landing${NC} \\"
-  echo -e "    --title \"My Product\" \\"
-  echo -e "    --tagline \"Build the future\" \\"
-  echo -e "    --desc \"Long description here\" \\"
-  echo -e "    --cta \"Get Started\" \\"
-  echo -e "    --cta-url \"https://blackroad.ai\" \\"
-  echo -e "    --feature \"🚀|Fast|Deploy in seconds\" \\"
-  echo -e "    --feature \"🔒|Secure|Enterprise grade\" \\"
-  echo -e "    --output index.html"
+  echo -e "  ${CYAN}br brand new <template> [flags]${NC}   Generate a page"
+  echo -e "  ${CYAN}br brand deploy${NC} --project x --file y.html   Push to Cloudflare Pages"
+  echo -e "  ${CYAN}br brand audit${NC} <file.html>         Check brand compliance"
+  echo -e "  ${CYAN}br brand preview <template>${NC}        Show template structure"
   echo ""
-  echo -e "  ${CYAN}br brand new agent${NC} \\"
-  echo -e "    --title \"LUCIDIA\" \\"
-  echo -e "    --type \"Reasoning Agent\" \\"
-  echo -e "    --tagline \"The Dreamer\" \\"
-  echo -e "    --bio \"LUCIDIA reasons across dimensions...\" \\"
-  echo -e "    --emoji \"🌀\" \\"
-  echo -e "    --skill \"Reasoning|95\" \\"
-  echo -e "    --skill \"Memory|88\" \\"
-  echo -e "    --output lucidia.html"
+  echo -e "${YELLOW}Key flags:${NC}"
   echo ""
-  echo -e "  ${CYAN}br brand new docs${NC} \\"
-  echo -e "    --title \"Getting Started\" \\"
-  echo -e "    --subtitle \"Up and running in 5 minutes\" \\"
-  echo -e "    --author \"BlackRoad Docs\" \\"
-  echo -e "    --section \"Installation|pip install blackroad\" \\"
-  echo -e "    --section \"First Steps|Run br cece init\" \\"
-  echo -e "    --output getting-started.html"
+  echo -e "  landing : --title --tagline --desc --cta --cta-url --feature \"🚀|Title|Desc\" --output"
+  echo -e "  agent   : --title --type --tagline --bio --emoji --skill \"Name|pct\" --output"
+  echo -e "  docs    : --title --subtitle --author --section \"Heading|Body\" --output"
+  echo -e "  pricing : --title --subtitle --tier \"Name|Price|Period|Desc|feat1,feat2|CTA|url|highlight\" --output"
+  echo -e "  feature : --title --subtitle --item \"🔥|Title|Desc\" --output"
+  echo -e "  blog    : --title --subtitle --author --date --tags \"ai,agents\" --section \"H|Body\" --output"
+  echo -e "  404     : --title --message --home-url --output"
+  echo -e "  card    : --title --desc --icon --badge --link --output"
   echo ""
-  echo -e "  ${CYAN}br brand new card${NC} \\"
-  echo -e "    --title \"Agent Mesh\" --desc \"30K agents\" \\"
-  echo -e "    --icon \"🕸️\" --badge \"New\" --link \"/mesh\" \\"
-  echo -e "    --output card.html"
-  echo ""
-  echo -e "${PURPLE}Output dir: ${OUT_DIR}${NC}"
+  echo -e "${PURPLE}Default output dir: ${OUT_DIR}${NC}"
   echo ""
 }
 
 # ─── PREVIEW ──────────────────────────────────────────────────────────────
 _cmd_preview() {
   case "$1" in
-    landing) echo -e "${CYAN}landing${NC}: Hero → Description → Feature Grid → CTA section" ;;
-    agent)   echo -e "${CYAN}agent${NC}:   Emoji hero → About card → Skill progress bars" ;;
-    docs)    echo -e "${CYAN}docs${NC}:    Title/subtitle → Sectioned content with dividers" ;;
-    card)    echo -e "${CYAN}card${NC}:    Standalone card HTML snippet (embed anywhere)" ;;
+    landing) echo -e "${CYAN}landing${NC}: Hero → Description → Feature Grid (2-4 cols) → CTA section" ;;
+    agent)   echo -e "${CYAN}agent${NC}:   Emoji hero → Bio card → Skill progress bars" ;;
+    docs)    echo -e "${CYAN}docs${NC}:    Title/subtitle → Divider → Sectioned content" ;;
+    pricing) echo -e "${CYAN}pricing${NC}: Hero → Tier cards (gradient-border on highlight tier)" ;;
+    feature) echo -e "${CYAN}feature${NC}: Hero → Alternating split rows (icon left/right + text)" ;;
+    blog)    echo -e "${CYAN}blog${NC}:    Tags → Hero title → Author/date → Body sections" ;;
+    404)     echo -e "${CYAN}404${NC}:     Glitch-animated 404 → message → Home + Back buttons" ;;
+    card)    echo -e "${CYAN}card${NC}:    Standalone card HTML snippet (embed in any grid)" ;;
     *)       echo -e "${RED}Unknown template: $1${NC}"; _cmd_list ;;
   esac
 }
@@ -506,10 +844,11 @@ _cmd_new() {
   # Defaults
   local title="BlackRoad OS" tagline="" desc="" cta_text="Get Started" cta_url="#"
   local type="Agent" bio="" emoji="🤖"
-  local subtitle="" author="BlackRoad OS"
+  local subtitle="" author="BlackRoad OS" date_str="" tags=""
+  local message="Page not found" home_url="/"
   local icon="✦" badge="" link="#"
-  local output="" 
-  local -a features skills sections
+  local output=""
+  local -a features skills sections tiers items
 
   # Parse flags
   while [[ $# -gt 0 ]]; do
@@ -527,6 +866,12 @@ _cmd_new() {
       --subtitle)  subtitle="$2";  shift 2 ;;
       --author)    author="$2";    shift 2 ;;
       --section)   sections+=("$2"); shift 2 ;;
+      --tier)      tiers+=("$2");  shift 2 ;;
+      --item)      items+=("$2");  shift 2 ;;
+      --date)      date_str="$2";  shift 2 ;;
+      --tags)      tags="$2";      shift 2 ;;
+      --message)   message="$2";   shift 2 ;;
+      --home-url)  home_url="$2";  shift 2 ;;
       --icon)      icon="$2";      shift 2 ;;
       --badge)     badge="$2";     shift 2 ;;
       --link)      link="$2";      shift 2 ;;
@@ -557,6 +902,18 @@ _cmd_new() {
     docs)
       _tpl_docs "$title" "$subtitle" "$author" "$output" "${sections[@]}"
       ;;
+    pricing)
+      _tpl_pricing "$title" "$subtitle" "$output" "${tiers[@]}"
+      ;;
+    feature)
+      _tpl_feature "$title" "$subtitle" "$output" "${items[@]}"
+      ;;
+    blog)
+      _tpl_blog "$title" "$subtitle" "$author" "$date_str" "$tags" "$output" "${sections[@]}"
+      ;;
+    404)
+      _tpl_404 "$title" "$message" "$home_url" "$output"
+      ;;
     card)
       _tpl_card "$title" "$desc" "$icon" "$badge" "$link" "$output"
       ;;
@@ -581,9 +938,11 @@ case "${1:-list}" in
   list|ls)    _cmd_list ;;
   preview)    _cmd_preview "$2" ;;
   new|gen)    _cmd_new "$2" "${@:3}" ;;
+  deploy)     _cmd_deploy "${@:2}" ;;
+  audit)      _cmd_audit "$2" ;;
   *)
     echo -e "${RED}Unknown command: $1${NC}"
-    echo "Usage: br brand [list | new <template> | preview <template>]"
+    echo "Usage: br brand [list | new <template> | deploy | audit <file> | preview <template>]"
     exit 1
     ;;
 esac
