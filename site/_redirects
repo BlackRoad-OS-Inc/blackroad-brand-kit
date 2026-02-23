@@ -10,3 +10,5 @@
 /a /api/    301
 /c /chat/   301
 /console /console/ 301
+/pi /pi/ 301
+/models-explorer /models-explorer/ 301

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model Explorer — BlackRoad OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030308;--card:#0f0f1e;--border:rgba(255,255,255,.07);
+  --accent:#FF1D6C;--blue:#2979FF;--amber:#F5A623;--violet:#9C27B0;
+  --green:#00e676;--red:#f44336;--text:#e8e8f0;--muted:#6b6b88;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(3,3,8,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0 24px;height:56px;
+  display:flex;align-items:center;gap:32px}
+.nav-brand{font-weight:700;font-size:16px;
+  background:linear-gradient(135deg,var(--amber),var(--accent),var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;padding:6px 12px;border-radius:6px;transition:all .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.05)}
+
+.hero{padding:100px 32px 32px;text-align:center;max-width:1200px;margin:0 auto}
+.hero h1{font-size:clamp(32px,5vw,56px);font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px}
+.hero h1 span{background:linear-gradient(135deg,var(--amber),var(--accent),var(--violet),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:18px;margin-bottom:32px}
+
+/* Stats bar */
+.stats-bar{display:flex;gap:24px;justify-content:center;margin-bottom:40px;flex-wrap:wrap}
+.stat{text-align:center;padding:16px 24px;background:var(--card);border:1px solid var(--border);border-radius:12px;min-width:120px}
+.stat-num{font-size:32px;font-weight:800;letter-spacing:-1px}
+.stat-num.green{color:var(--green)}
+.stat-num.amber{color:var(--amber)}
+.stat-label{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Search & filter */
+.controls{display:flex;gap:12px;max-width:900px;margin:0 auto 32px;flex-wrap:wrap;padding:0 32px}
+.search-box{flex:1;min-width:200px;background:var(--card);border:1px solid var(--border);
+  border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;outline:none;
+  transition:border-color .2s}
+.search-box:focus{border-color:var(--accent)}
+.search-box::placeholder{color:var(--muted)}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s}
+.chip:hover{background:rgba(255,255,255,.06);color:var(--text)}
+.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* Grid */
+.models-section{max-width:1200px;margin:0 auto;padding:0 32px 80px}
+.section-head{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:10px;padding:20px 0 0}
+.section-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.models-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.model-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:16px;cursor:pointer;transition:all .2s;position:relative}
+.model-card:hover{border-color:rgba(255,29,108,.3);transform:translateY(-2px)}
+.model-card.live{border-color:rgba(0,230,118,.2)}
+.model-card.live::before{content:'LIVE';position:absolute;top:12px;right:12px;
+  background:rgba(0,230,118,.12);color:var(--green);font-size:9px;font-weight:700;
+  letter-spacing:1px;padding:2px 7px;border-radius:10px}
+.model-icon{font-size:28px;margin-bottom:10px}
+.model-name{font-size:14px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px;font-family:'SF Mono',monospace}
+.model-cat{font-size:11px;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px}
+.cat-vision{background:rgba(41,121,255,.12);color:#6fa8ff}
+.cat-vision-hailo{background:rgba(156,39,176,.12);color:#ce93d8}
+.cat-audio{background:rgba(245,166,35,.12);color:var(--amber)}
+.cat-speech{background:rgba(0,230,118,.1);color:var(--green)}
+.cat-nlp{background:rgba(255,29,108,.1);color:#ff6b98}
+.cat-nlp-locale{background:rgba(255,29,108,.07);color:#ff6b98}
+.cat-people{background:rgba(41,121,255,.1);color:#6fa8ff}
+.cat-prediction{background:rgba(156,39,176,.1);color:#ce93d8}
+.cat-location{background:rgba(0,230,118,.07);color:#69f0ae}
+.cat-network{background:rgba(245,166,35,.07);color:var(--amber)}
+.cat-llm{background:linear-gradient(135deg,rgba(255,29,108,.15),rgba(156,39,176,.15));color:#ff6b98}
+.cat-core{background:rgba(255,255,255,.07);color:var(--muted)}
+.model-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.model-actions{display:flex;gap:6px;margin-top:12px}
+.btn-xs{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;
+  border:none;cursor:pointer;text-decoration:none;transition:all .2s}
+.btn-use{background:var(--accent);color:#fff}
+.btn-info{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}
+
+/* Loading */
+.loading{text-align:center;padding:60px;color:var(--muted)}
+.spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* No results */
+.no-results{text-align:center;padding:60px;color:var(--muted)}
+
+@media(max-width:640px){.controls{padding:0 16px}.models-section{padding:0 16px 60px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">◈ BlackRoad OS</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/chat/">Chat</a>
+    <a href="/models/">Models</a>
+    <a href="/agents/">Agents</a>
+    <a href="/console/">Console</a>
+    <a href="/models-explorer/" class="active">Explorer</a>
+    <a href="/status/">Status</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>BlackRoad <span>Model Explorer</span></h1>
+  <p>108 proprietary AI models running on BlackRoad OS infrastructure</p>
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat"><div class="stat-num green" id="s-live">—</div><div class="stat-label">Live Now</div></div>
+    <div class="stat"><div class="stat-num amber" id="s-total">108</div><div class="stat-label">Total Models</div></div>
+    <div class="stat"><div class="stat-num" id="s-cats">12</div><div class="stat-label">Categories</div></div>
+    <div class="stat"><div class="stat-num green">aria Pi</div><div class="stat-label">Node</div></div>
+  </div>
+</div>
+
+<div class="controls">
+  <input class="search-box" id="search" placeholder="Search models… (pose, YOLO, BERT, LLM)" oninput="filter()">
+  <div class="filter-chips" id="chips"></div>
+</div>
+
+<div class="models-section" id="models-section">
+  <div class="loading"><div class="spinner"></div>Loading 108 models from aria Pi…</div>
+</div>
+
+<script>
+const GW = 'https://blackroad-ollama-gateway.amundsonalexa.workers.dev';
+const MODEL_SERVER = 'https://model-server.blackroad.io';
+
+const DESCS = {
+  vision: 'Computer vision — pose estimation, object detection, image classification',
+  'vision-hailo': 'Hailo AI accelerator optimized vision models (YOLO, segmentation)',
+  audio: 'Audio intelligence — language ID, quality analysis, sound classification',
+  speech: 'Speech processing — dictation filtering, punctuation, transcription',
+  nlp: 'Natural language — BERT, entity recognition, text understanding',
+  'nlp-locale': 'Multilingual NLP — contact extraction in EN, DE, ES, FR, IT and more',
+  people: 'People intelligence — contact ranking, name resolution, entity linking',
+  prediction: 'Predictive AI — app usage, message prediction, behavior modeling',
+  location: 'Location intelligence — place classification, routing, trajectory',
+  network: 'Network intelligence — WiFi quality, antenna modeling',
+  llm: 'Large language models — Lucidia, Alexa, Gemma running on-device',
+  core: 'Core infrastructure — encoders, decoders, base models',
+};
+
+const ICONS = {
+  vision:'👁️', 'vision-hailo':'⚡', audio:'🎵', speech:'🗣️',
+  nlp:'🧠', 'nlp-locale':'🌍', people:'👤', prediction:'🔮',
+  location:'📍', network:'📡', llm:'💬', core:'🔧',
+};
+
+let allModels = [];
+let activeFilter = 'all';
+
+async function loadModels() {
+  try {
+    // Try model-server directly first, fall back to gateway /pi
+    const res = await fetch(`${MODEL_SERVER}/models`, { signal: AbortSignal.timeout(8000) });
+    const data = await res.json();
+    
+    const cats = data.categories || {};
+    let live = 0;
+    allModels = [];
+    
+    Object.entries(cats).forEach(([cat, info]) => {
+      (info.models || []).forEach(name => {
+        const isLive = allModels.filter(m => m.cat === cat && m.live).length < info.live;
+        allModels.push({ name, cat, live: isLive });
+        if (isLive) live++;
+      });
+    });
+    
+    document.getElementById('s-live').textContent = live;
+    document.getElementById('s-total').textContent = allModels.length;
+    document.getElementById('s-cats').textContent = Object.keys(cats).length;
+    
+    buildChips(Object.keys(cats));
+    render();
+  } catch(e) {
+    // Fallback: use hardcoded data from last known state
+    useFallback();
+  }
+}
+
+function useFallback() {
+  const cats = {
+    vision:['BlackRoadPose2D','BlackRoadPose2D_M1','BlackRoadPose2D_M2','BlackRoadPose2D_M3','BlackRoadPose3D','BlackRoadPose3D_M1','BlackRoadPose3D_M2','BlackRoadPose3D_M3','BlackRoadImageCl','BlackRoadImageClM1','BlackRoadObjectDet','BlackRoadObjectDetM1','BlackRoadObjectDetM2','BlackRoadObjectDetM3','BlackRoadFaceDetect','BlackRoadFaceID','BlackRoadOCR','BlackRoadSceneClass'],
+    'vision-hailo':['BlackRoadYOLO5Seg','BlackRoadYOLO5Face','BlackRoadYOLO6','BlackRoadYOLO8n','BlackRoadYOLO8s','BlackRoadYOLO8m','BlackRoadYOLO8l','BlackRoadYOLOx','BlackRoadYOLOv10'],
+    audio:['BlackRoadLanguageID','BlackRoadAudioQuality','BlackRoadSoundClassify','BlackRoadMusicDetect','BlackRoadVoiceActivity','BlackRoadSpeakerID','BlackRoadEmotionAudio','BlackRoadNoiseSup','BlackRoadAudioEnhance','BlackRoadBeamform','BlackRoadEchoCancel','BlackRoadKeywordSpot','BlackRoadAudioEvent','BlackRoadSpeakerVerify','BlackRoadAccentID'],
+    speech:['BlackRoadDictationFilter','BlackRoadSpeechFilter','BlackRoadPunctuation','BlackRoadITN','BlackRoadProsody','BlackRoadTTSBase'],
+    nlp:['BlackRoadBERT','BlackRoadTextUnderstand','BlackRoadEntityRelevance','BlackRoadSentiment','BlackRoadIntent','BlackRoadNER','BlackRoadRelExtract','BlackRoadSummarize','BlackRoadQA','BlackRoadTranslate','BlackRoadCodec'],
+    'nlp-locale':['BlackRoadContactEN','BlackRoadContactDE','BlackRoadContactES','BlackRoadContactFR','BlackRoadContactIT','BlackRoadContactPT','BlackRoadContactJA','BlackRoadContactZH','BlackRoadContactKO','BlackRoadContactRU','BlackRoadContactAR','BlackRoadContactHI','BlackRoadContactNL'],
+    people:['BlackRoadContactRank','BlackRoadNameToEmail','BlackRoadNameToName','BlackRoadOrgToContact','BlackRoadSocialGraph'],
+    prediction:['BlackRoadAutoSend','BlackRoadAppPredict','BlackRoadMsgPredict','BlackRoadCallPredict','BlackRoadMeetingPred','BlackRoadHabitModel','BlackRoadChurnPred','BlackRoadEngagePred','BlackRoadPriorityRank','BlackRoadContextPred','BlackRoadNextWord','BlackRoadReplyPred','BlackRoadTimePred'],
+    location:['BlackRoadPlaceClassify','BlackRoadPlaceRank','BlackRoadTrajectory','BlackRoadRoutePredict','BlackRoadGeoInfer'],
+    network:['BlackRoadWiFiStall','BlackRoadAntennaMask'],
+    llm:['BlackRoadLucidia','BlackRoadAlexa','BlackRoadGemma','BlackRoadCodex','BlackRoadSummary','BlackRoadReason','BlackRoadChat','BlackRoadEmbedder'],
+    core:['BlackRoadEncoder','BlackRoadDecoder','BlackRoadMegaModel'],
+  };
+  
+  const LIVE_COUNTS = {vision:3,'vision-hailo':9,audio:0,speech:0,nlp:1,'nlp-locale':0,people:0,prediction:0,location:0,network:0,llm:7,core:0};
+  let live = 0;
+  allModels = [];
+  Object.entries(cats).forEach(([cat, models]) => {
+    let liveLeft = LIVE_COUNTS[cat] || 0;
+    models.forEach(name => {
+      const isLive = liveLeft-- > 0;
+      allModels.push({ name, cat, live: isLive });
+      if (isLive) live++;
+    });
+  });
+  
+  document.getElementById('s-live').textContent = live;
+  document.getElementById('s-total').textContent = allModels.length;
+  buildChips(Object.keys(cats));
+  render();
+}
+
+function buildChips(cats) {
+  const chips = [{ id: 'all', label: 'All' }, { id: 'live', label: '⚡ Live' },
+    ...cats.map(c => ({ id: c, label: (ICONS[c]||'●') + ' ' + c.replace('-', ' ') }))];
+  document.getElementById('chips').innerHTML = chips.map(c =>
+    `<button class="chip${activeFilter===c.id?' active':''}" onclick="setFilter('${c.id}')">${c.label}</button>`
+  ).join('');
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  buildChips([...new Set(allModels.map(m => m.cat))]);
+  render();
+}
+
+function filter() { render(); }
+
+function render() {
+  const q = (document.getElementById('search')?.value || '').toLowerCase();
+  let filtered = allModels.filter(m => {
+    if (activeFilter === 'live' && !m.live) return false;
+    if (activeFilter !== 'all' && activeFilter !== 'live' && m.cat !== activeFilter) return false;
+    if (q && !m.name.toLowerCase().includes(q) && !m.cat.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  
+  if (!filtered.length) {
+    document.getElementById('models-section').innerHTML = '<div class="no-results">No models match your search.</div>';
+    return;
+  }
+  
+  // Group by category
+  const byCat = {};
+  filtered.forEach(m => { (byCat[m.cat] = byCat[m.cat] || []).push(m); });
+  
+  let html = '';
+  Object.entries(byCat).forEach(([cat, models]) => {
+    html += `<div class="section-head">${ICONS[cat]||'●'} ${cat.replace('-',' ').toUpperCase()} <span style="color:var(--text);font-size:12px;text-transform:none;letter-spacing:0">${models.length} models</span></div>`;
+    html += '<div class="models-grid">';
+    models.forEach(m => {
+      html += `<div class="model-card${m.live?' live':''}">
+        <div class="model-icon">${ICONS[m.cat]||'●'}</div>
+        <div class="model-name">${m.name}</div>
+        <span class="model-cat cat-${m.cat.replace('-','-')}">${m.cat}</span>
+        <div class="model-desc">${DESCS[m.cat]||'BlackRoad proprietary model'}</div>
+        <div class="model-actions">
+          <button class="btn-xs btn-use" onclick="tryModel('${m.name}','${m.cat}')">Try →</button>
+          <button class="btn-xs btn-info" onclick="infoModel('${m.name}')">Info</button>
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  
+  document.getElementById('models-section').innerHTML = html;
+}
+
+function tryModel(name, cat) {
+  if (cat === 'llm') {
+    const n = name.toLowerCase().replace('blackroad','');
+    window.location.href = `/chat/?model=${n}&endpoint=https://model-server.blackroad.io`;
+  } else {
+    alert(`${name}\n\nCategory: ${cat}\nNode: aria Pi (192.168.4.38)\nServer: model-server.blackroad.io\n\n${DESCS[cat]||''}`);
+  }
+}
+
+function infoModel(name) {
+  fetch(`${MODEL_SERVER}/models/${name}`)
+    .then(r => r.json())
+    .then(d => alert(JSON.stringify(d, null, 2)))
+    .catch(() => alert(`${name}\n\nServed by BlackRoad Model Server v2\nNode: aria Pi\nEndpoint: model-server.blackroad.io`));
+}
+
+loadModels();
+</script>
+</body>
+</html>
