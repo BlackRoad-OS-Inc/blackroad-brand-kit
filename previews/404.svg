@@ -1,0 +1,57 @@
+<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" width="400" height="260">
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FF9D00"/>
+      <stop offset="28%"  stop-color="#FF0066"/>
+      <stop offset="57%"  stop-color="#D600AA"/>
+      <stop offset="100%" stop-color="#0066FF"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="glitch_a">
+      <feOffset dx="-3" dy="0" result="shift_a"/>
+      <feFlood flood-color="#FF0066" flood-opacity="1" result="color_a"/>
+      <feComposite in="color_a" in2="shift_a" operator="in" result="g_a"/>
+    </filter>
+    <filter id="glitch_b">
+      <feOffset dx="3" dy="0" result="shift_b"/>
+      <feFlood flood-color="#0066FF" flood-opacity="1" result="color_b"/>
+      <feComposite in="color_b" in2="shift_b" operator="in" result="g_b"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="260" fill="#0A0A0A"/>
+  <line x1="55" y1="0" x2="55" y2="260" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="220" y1="0" x2="220" y2="260" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="330" y1="0" x2="330" y2="260" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="0" y1="110" x2="400" y2="110" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="0" y1="165" x2="400" y2="165" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+
+  <!-- Glow orbs -->
+  <ellipse cx="200" cy="120" rx="140" ry="100" fill="#7700FF" opacity="0.08" filter="url(#glow)"/>
+  <ellipse cx="200" cy="120" rx="80" ry="60" fill="#FF0066" opacity="0.07" filter="url(#glow)"/>
+
+  <!-- NAV -->
+  <rect width="400" height="28" fill="rgba(0,0,0,0.75)"/>
+  <rect width="400" height="1" y="27" fill="rgba(255,255,255,0.07)"/>
+  <rect width="400" height="2" fill="url(#brand)" y="0"/>
+  <text x="14" y="18" font-family="monospace" font-size="9" font-weight="bold" fill="url(#brand)">BlackRoad OS</text>
+
+  <!-- Glitch 404 — shadow layers -->
+  <text x="203" y="130" text-anchor="middle" font-family="monospace" font-size="72" font-weight="900" fill="none" stroke="#FF0066" stroke-width="1" opacity="0.5">404</text>
+  <text x="197" y="130" text-anchor="middle" font-family="monospace" font-size="72" font-weight="900" fill="none" stroke="#0066FF" stroke-width="1" opacity="0.5">404</text>
+  <!-- Main 404 -->
+  <text x="200" y="130" text-anchor="middle" font-family="monospace" font-size="72" font-weight="900" fill="url(#brand)">404</text>
+
+  <!-- Message -->
+  <text x="200" y="158" text-anchor="middle" font-family="monospace" font-size="10" font-weight="bold" fill="white">Lost in the mesh</text>
+  <text x="200" y="173" text-anchor="middle" font-family="monospace" font-size="7.5" fill="rgba(255,255,255,0.45)">The agent you are looking for has gone offline</text>
+
+  <!-- Buttons -->
+  <rect x="100" y="184" width="80" height="17" rx="4" fill="url(#brand)"/>
+  <text x="140" y="196" text-anchor="middle" font-family="monospace" font-size="7" fill="white" font-weight="bold">← Go Home</text>
+  <rect x="190" y="184" width="70" height="17" rx="4" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <text x="225" y="196" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(255,255,255,0.6)">Go Back</text>
+
+  <!-- Error code line -->
+  <text x="200" y="240" text-anchor="middle" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.15)">ERROR_CODE: 404 | AGENT: NULL | STATUS: NOT_FOUND</text>
+</svg>

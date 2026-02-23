@@ -1,0 +1,71 @@
+<svg viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" width="400" height="260">
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FF9D00"/>
+      <stop offset="28%"  stop-color="#FF0066"/>
+      <stop offset="57%"  stop-color="#D600AA"/>
+      <stop offset="100%" stop-color="#0066FF"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <rect width="400" height="260" fill="#0A0A0A"/>
+  <line x1="55" y1="0" x2="55" y2="260" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="110" y1="0" x2="110" y2="260" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="220" y1="0" x2="220" y2="260" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="330" y1="0" x2="330" y2="260" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="0" y1="55" x2="400" y2="55" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+
+  <ellipse cx="340" cy="30" rx="80" ry="60" fill="#7700FF" opacity="0.10" filter="url(#glow)"/>
+
+  <!-- NAV -->
+  <rect width="400" height="28" fill="rgba(0,0,0,0.75)"/>
+  <rect width="400" height="1" y="27" fill="rgba(255,255,255,0.07)"/>
+  <rect width="400" height="2" fill="url(#brand)" y="0"/>
+  <text x="14" y="18" font-family="monospace" font-size="9" font-weight="bold" fill="url(#brand)">BlackRoad OS</text>
+  <text x="340" y="18" font-family="monospace" font-size="7" fill="rgba(255,255,255,0.4)">Home</text>
+
+  <!-- Hero -->
+  <text x="200" y="52" text-anchor="middle" font-family="monospace" font-size="7" letter-spacing="2" fill="#FF9D00" font-weight="700">PRICING</text>
+  <text x="200" y="70" text-anchor="middle" font-family="monospace" font-size="15" font-weight="900" fill="url(#brand)">BlackRoad OS Pricing</text>
+  <text x="200" y="86" text-anchor="middle" font-family="monospace" font-size="7" fill="rgba(255,255,255,0.5)">Scale from zero to 30,000 agents</text>
+
+  <!-- Tier 1: Starter -->
+  <rect x="14" y="96" width="112" height="152" rx="7" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="70" y="114" text-anchor="middle" font-family="monospace" font-size="6.5" letter-spacing="1.5" fill="#FF9D00">STARTER</text>
+  <text x="70" y="133" text-anchor="middle" font-family="monospace" font-size="18" font-weight="900" fill="url(#brand)">Free</text>
+  <text x="70" y="145" text-anchor="middle" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.4)">/month</text>
+  <line x1="26" y1="153" x2="114" y2="153" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="26" y="164" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  br CLI</text>
+  <text x="26" y="176" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  3 agents</text>
+  <text x="26" y="188" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  Community support</text>
+  <rect x="26" y="228" width="88" height="14" rx="4" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <text x="70" y="238" text-anchor="middle" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,0.6)">Get Started</text>
+
+  <!-- Tier 2: Pro (highlight) — gradient border -->
+  <!-- gradient border bg -->
+  <rect x="142" y="93" width="116" height="158" rx="8" fill="url(#brand)"/>
+  <rect x="143" y="94" width="114" height="156" rx="7" fill="#111"/>
+  <text x="200" y="113" text-anchor="middle" font-family="monospace" font-size="6.5" letter-spacing="1.5" fill="#FF9D00">PRO</text>
+  <text x="200" y="132" text-anchor="middle" font-family="monospace" font-size="18" font-weight="900" fill="url(#brand)">$99</text>
+  <text x="200" y="144" text-anchor="middle" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.4)">/month</text>
+  <line x1="154" y1="152" x2="244" y2="152" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="154" y="163" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  Everything in Starter</text>
+  <text x="154" y="175" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  30 agents</text>
+  <text x="154" y="187" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  Gateway priority</text>
+  <text x="154" y="199" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  Email support</text>
+  <rect x="154" y="228" width="92" height="14" rx="4" fill="url(#brand)"/>
+  <text x="200" y="238" text-anchor="middle" font-family="monospace" font-size="6.5" fill="white" font-weight="bold">Start Free Trial</text>
+
+  <!-- Tier 3: Enterprise -->
+  <rect x="274" y="96" width="112" height="152" rx="7" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <text x="330" y="114" text-anchor="middle" font-family="monospace" font-size="6.5" letter-spacing="1.5" fill="#FF9D00">ENTERPRISE</text>
+  <text x="330" y="133" text-anchor="middle" font-family="monospace" font-size="14" font-weight="900" fill="url(#brand)">Custom</text>
+  <text x="330" y="145" text-anchor="middle" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.4)">/month</text>
+  <line x1="286" y1="153" x2="374" y2="153" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="286" y="164" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  Unlimited agents</text>
+  <text x="286" y="176" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  SLA</text>
+  <text x="286" y="188" font-family="monospace" font-size="6" fill="rgba(255,255,255,0.5)">✓  Dedicated infra</text>
+  <rect x="286" y="228" width="88" height="14" rx="4" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+  <text x="330" y="238" text-anchor="middle" font-family="monospace" font-size="6.5" fill="rgba(255,255,255,0.6)">Contact Us</text>
+</svg>
