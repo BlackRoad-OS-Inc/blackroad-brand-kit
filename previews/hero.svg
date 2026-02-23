@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FF9D00"/>
+      <stop offset="28%"  stop-color="#FF0066"/>
+      <stop offset="57%"  stop-color="#D600AA"/>
+      <stop offset="100%" stop-color="#0066FF"/>
+    </linearGradient>
+    <linearGradient id="bgGlow" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#FF0066" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#0066FF" stop-opacity=".04"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="18" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- bg -->
+  <rect width="800" height="500" fill="#0A0A0A"/>
+  <rect width="800" height="500" fill="url(#bgGlow)"/>
+  <!-- grid lines -->
+  <g stroke="#ffffff" stroke-opacity=".03" stroke-width="1">
+    <line x1="0" y1="55" x2="800" y2="55"/><line x1="0" y1="110" x2="800" y2="110"/>
+    <line x1="0" y1="165" x2="800" y2="165"/><line x1="0" y1="220" x2="800" y2="220"/>
+    <line x1="0" y1="275" x2="800" y2="275"/><line x1="0" y1="330" x2="800" y2="330"/>
+    <line x1="0" y1="385" x2="800" y2="385"/><line x1="0" y1="440" x2="800" y2="440"/>
+    <line x1="55" y1="0" x2="55" y2="500"/><line x1="110" y1="0" x2="110" y2="500"/>
+    <line x1="165" y1="0" x2="165" y2="500"/><line x1="220" y1="0" x2="220" y2="500"/>
+    <line x1="275" y1="0" x2="275" y2="500"/><line x1="330" y1="0" x2="330" y2="500"/>
+    <line x1="385" y1="0" x2="385" y2="500"/><line x1="440" y1="0" x2="440" y2="500"/>
+    <line x1="495" y1="0" x2="495" y2="500"/><line x1="550" y1="0" x2="550" y2="500"/>
+    <line x1="605" y1="0" x2="605" y2="500"/><line x1="660" y1="0" x2="660" y2="500"/>
+    <line x1="715" y1="0" x2="715" y2="500"/><line x1="770" y1="0" x2="770" y2="500"/>
+  </g>
+  <!-- glow orb top -->
+  <ellipse cx="400" cy="60" rx="280" ry="80" fill="rgba(255,0,102,.08)" filter="url(#glow)"/>
+  <!-- nav bar -->
+  <rect width="800" height="52" fill="rgba(255,255,255,.03)" rx="0"/>
+  <rect width="800" height="1" y="52" fill="rgba(255,255,255,.08)"/>
+  <text x="34" y="32" font-family="monospace" font-size="13" fill="white" font-weight="900">BLACKROAD OS</text>
+  <text x="490" y="32" font-family="monospace" font-size="11" fill="rgba(255,255,255,.5)">Docs</text>
+  <text x="550" y="32" font-family="monospace" font-size="11" fill="rgba(255,255,255,.5)">Pricing</text>
+  <text x="620" y="32" font-family="monospace" font-size="11" fill="rgba(255,255,255,.5)">Agents</text>
+  <!-- scroll progress bar -->
+  <rect width="220" height="2" y="0" fill="url(#brand)" rx="1"/>
+  <!-- badge -->
+  <rect x="300" y="90" width="200" height="24" rx="12" fill="rgba(255,0,102,.08)" stroke="rgba(255,0,102,.4)" stroke-width="1"/>
+  <text x="400" y="107" font-family="monospace" font-size="10" fill="#FF0066" text-anchor="middle" letter-spacing="1">NOW IN PUBLIC BETA</text>
+  <!-- hero gradient headline -->
+  <text x="400" y="185" font-family="monospace" font-size="52" font-weight="900" fill="url(#brand)" text-anchor="middle">BlackRoad OS</text>
+  <!-- tagline -->
+  <text x="400" y="225" font-family="monospace" font-size="16" fill="rgba(255,255,255,.65)" text-anchor="middle">Your AI. Your Hardware. Your Rules.</text>
+  <!-- desc -->
+  <text x="400" y="255" font-family="monospace" font-size="12" fill="rgba(255,255,255,.35)" text-anchor="middle">The AI-native developer platform for teams who ship fast.</text>
+  <!-- dual CTAs -->
+  <rect x="260" y="288" width="130" height="40" rx="8" fill="url(#brand)"/>
+  <text x="325" y="313" font-family="monospace" font-size="12" fill="white" text-anchor="middle" font-weight="700">Get Started</text>
+  <rect x="410" y="288" width="130" height="40" rx="8" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+  <text x="475" y="313" font-family="monospace" font-size="12" fill="rgba(255,255,255,.8)" text-anchor="middle">View Docs</text>
+  <!-- scroll hint -->
+  <text x="400" y="465" font-family="monospace" font-size="9" fill="rgba(255,255,255,.2)" text-anchor="middle" letter-spacing="2">↓  SCROLL</text>
+</svg>

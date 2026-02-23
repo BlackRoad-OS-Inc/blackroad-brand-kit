@@ -797,26 +797,38 @@ _cmd_list() {
   echo -e "  ${GREEN}pricing${NC}   Pricing tiers page with feature lists"
   echo -e "  ${GREEN}feature${NC}   Alternating split-layout feature showcase"
   echo -e "  ${GREEN}blog${NC}      Blog post with author, tags, and sections"
-  echo -e "  ${GREEN}404${NC}       Branded 404 error page with glitch animation"
-  echo -e "  ${GREEN}card${NC}      Reusable card HTML snippet (embed anywhere)"
+  echo -e "  ${GREEN}404${NC}          Branded 404 error page with glitch animation"
+  echo -e "  ${GREEN}card${NC}         Reusable card HTML snippet (embed anywhere)"
+  echo -e "  ${GREEN}hero${NC}         Full-width hero section — gradient headline, dual CTAs"
+  echo -e "  ${GREEN}stats${NC}        Horizontal stats bar — value + label tiles"
+  echo -e "  ${GREEN}testimonial${NC}  Quote card grid — avatar initial, name, role, quote"
+  echo -e "  ${GREEN}codeblock${NC}    Styled dark code block with copy-button chrome"
   echo ""
   echo -e "${YELLOW}Commands:${NC}"
   echo ""
-  echo -e "  ${CYAN}br brand new <template> [flags]${NC}   Generate a page"
-  echo -e "  ${CYAN}br brand deploy${NC} --project x --file y.html   Push to Cloudflare Pages"
-  echo -e "  ${CYAN}br brand audit${NC} <file.html>         Check brand compliance"
-  echo -e "  ${CYAN}br brand preview <template>${NC}        Show template structure"
+  echo -e "  ${CYAN}br brand init${NC} [brand.json]              Interactive setup wizard"
+  echo -e "  ${CYAN}br brand site${NC} [--config brand.json]     Generate full 5-page site"
+  echo -e "  ${CYAN}br brand new <template> [flags]${NC}         Generate a page"
+  echo -e "  ${CYAN}br brand deploy${NC} --project x --file y   Push to Cloudflare Pages"
+  echo -e "  ${CYAN}br brand audit${NC} <file.html>              Check brand compliance"
+  echo -e "  ${CYAN}br brand preview <template>${NC}             Show template structure"
   echo ""
   echo -e "${YELLOW}Key flags:${NC}"
   echo ""
-  echo -e "  landing : --title --tagline --desc --cta --cta-url --feature \"🚀|Title|Desc\" --output"
-  echo -e "  agent   : --title --type --tagline --bio --emoji --skill \"Name|pct\" --output"
-  echo -e "  docs    : --title --subtitle --author --section \"Heading|Body\" --output"
-  echo -e "  pricing : --title --subtitle --tier \"Name|Price|Period|Desc|feat1,feat2|CTA|url|highlight\" --output"
-  echo -e "  feature : --title --subtitle --item \"🔥|Title|Desc\" --output"
-  echo -e "  blog    : --title --subtitle --author --date --tags \"ai,agents\" --section \"H|Body\" --output"
-  echo -e "  404     : --title --message --home-url --output"
-  echo -e "  card    : --title --desc --icon --badge --link --output"
+  echo -e "  landing     : --title --tagline --desc --cta --cta-url --feature \"🚀|Title|Desc\" --output"
+  echo -e "  agent       : --title --type --tagline --bio --emoji --skill \"Name|pct\" --output"
+  echo -e "  docs        : --title --subtitle --author --section \"Heading|Body\" --output"
+  echo -e "  pricing     : --title --subtitle --tier \"Name|Price|Period|Desc|feats|CTA|url|highlight\" --output"
+  echo -e "  feature     : --title --subtitle --item \"🔥|Title|Desc\" --output"
+  echo -e "  blog        : --title --subtitle --author --date --tags \"ai\" --section \"H|Body\" --output"
+  echo -e "  404         : --title --message --home-url --output"
+  echo -e "  card        : --title --desc --icon --badge --link --output"
+  echo -e "  hero        : --title --tagline --desc --cta --cta-url --secondary-cta --secondary-url --badge --output"
+  echo -e "  stats       : --title --subtitle --stat \"30K|Agents\" --output"
+  echo -e "  testimonial : --title --subtitle --testimonial \"A|Alice|CEO|Great product\" --output"
+  echo -e "  codeblock   : --title --language bash --code \"echo hi\" --output"
+  echo ""
+  echo -e "  ${YELLOW}All templates accept:${NC} --config brand.json  (pre-fill from config file)"
   echo ""
   echo -e "${PURPLE}Default output dir: ${OUT_DIR}${NC}"
   echo ""
@@ -825,15 +837,19 @@ _cmd_list() {
 # ─── PREVIEW ──────────────────────────────────────────────────────────────
 _cmd_preview() {
   case "$1" in
-    landing) echo -e "${CYAN}landing${NC}: Hero → Description → Feature Grid (2-4 cols) → CTA section" ;;
-    agent)   echo -e "${CYAN}agent${NC}:   Emoji hero → Bio card → Skill progress bars" ;;
-    docs)    echo -e "${CYAN}docs${NC}:    Title/subtitle → Divider → Sectioned content" ;;
-    pricing) echo -e "${CYAN}pricing${NC}: Hero → Tier cards (gradient-border on highlight tier)" ;;
-    feature) echo -e "${CYAN}feature${NC}: Hero → Alternating split rows (icon left/right + text)" ;;
-    blog)    echo -e "${CYAN}blog${NC}:    Tags → Hero title → Author/date → Body sections" ;;
-    404)     echo -e "${CYAN}404${NC}:     Glitch-animated 404 → message → Home + Back buttons" ;;
-    card)    echo -e "${CYAN}card${NC}:    Standalone card HTML snippet (embed in any grid)" ;;
-    *)       echo -e "${RED}Unknown template: $1${NC}"; _cmd_list ;;
+    landing)     echo -e "${CYAN}landing${NC}:     Hero → Description → Feature Grid (2-4 cols) → CTA section" ;;
+    agent)       echo -e "${CYAN}agent${NC}:       Emoji hero → Bio card → Skill progress bars" ;;
+    docs)        echo -e "${CYAN}docs${NC}:        Title/subtitle → Divider → Sectioned content" ;;
+    pricing)     echo -e "${CYAN}pricing${NC}:     Hero → Tier cards (gradient-border on highlight tier)" ;;
+    feature)     echo -e "${CYAN}feature${NC}:     Hero → Alternating split rows (icon left/right + text)" ;;
+    blog)        echo -e "${CYAN}blog${NC}:        Tags → Hero title → Author/date → Body sections" ;;
+    404)         echo -e "${CYAN}404${NC}:         Glitch-animated 404 → message → Home + Back buttons" ;;
+    card)        echo -e "${CYAN}card${NC}:        Standalone card HTML snippet (embed in any grid)" ;;
+    hero)        echo -e "${CYAN}hero${NC}:        Full-width hero — badge → gradient title → tagline → dual CTAs" ;;
+    stats)       echo -e "${CYAN}stats${NC}:       Centered stats bar — value tiles with brand gradient values" ;;
+    testimonial) echo -e "${CYAN}testimonial${NC}: Quote card grid — avatar initial, name, role, pull-quote" ;;
+    codeblock)   echo -e "${CYAN}codeblock${NC}:   Dark code panel — language tab, line numbers, copy button chrome" ;;
+    *)           echo -e "${RED}Unknown template: $1${NC}"; _cmd_list ;;
   esac
 }
 
@@ -847,35 +863,62 @@ _cmd_new() {
   local subtitle="" author="BlackRoad OS" date_str="" tags=""
   local message="Page not found" home_url="/"
   local icon="✦" badge="" link="#"
-  local output=""
-  local -a features skills sections tiers items
+  local secondary_cta="" secondary_url="#"
+  local language="bash" code_text=""
+  local output="" config_file=""
+  local -a features skills sections tiers items stats testimonials
+
+  # Pre-scan for --config so we can load defaults before flag parsing
+  local -a _argv=("$@")
+  for ((i=1; i<=${#_argv}; i++)); do
+    if [[ "${_argv[$i]}" == "--config" ]]; then
+      config_file="${_argv[$((i+1))]}"
+      break
+    fi
+  done
+
+  # Load brand.json defaults (explicit flags below will override these)
+  if [[ -n "$config_file" && -f "$config_file" ]]; then
+    title=$(_cfg_get "$config_file" "name" "$title")
+    tagline=$(_cfg_get "$config_file" "tagline" "$tagline")
+    desc=$(_cfg_get "$config_file" "description" "$desc")
+    cta_text=$(_cfg_get "$config_file" "cta_text" "$cta_text")
+    cta_url=$(_cfg_get "$config_file" "cta_url" "$cta_url")
+  fi
 
   # Parse flags
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --title)     title="$2";     shift 2 ;;
-      --tagline)   tagline="$2";   shift 2 ;;
-      --desc)      desc="$2";      shift 2 ;;
-      --cta)       cta_text="$2";  shift 2 ;;
-      --cta-url)   cta_url="$2";   shift 2 ;;
-      --feature)   features+=("$2"); shift 2 ;;
-      --type)      type="$2";      shift 2 ;;
-      --bio)       bio="$2";       shift 2 ;;
-      --emoji)     emoji="$2";     shift 2 ;;
-      --skill)     skills+=("$2"); shift 2 ;;
-      --subtitle)  subtitle="$2";  shift 2 ;;
-      --author)    author="$2";    shift 2 ;;
-      --section)   sections+=("$2"); shift 2 ;;
-      --tier)      tiers+=("$2");  shift 2 ;;
-      --item)      items+=("$2");  shift 2 ;;
-      --date)      date_str="$2";  shift 2 ;;
-      --tags)      tags="$2";      shift 2 ;;
-      --message)   message="$2";   shift 2 ;;
-      --home-url)  home_url="$2";  shift 2 ;;
-      --icon)      icon="$2";      shift 2 ;;
-      --badge)     badge="$2";     shift 2 ;;
-      --link)      link="$2";      shift 2 ;;
-      --output)    output="$2";    shift 2 ;;
+      --title)         title="$2";            shift 2 ;;
+      --tagline)       tagline="$2";          shift 2 ;;
+      --desc)          desc="$2";             shift 2 ;;
+      --cta)           cta_text="$2";         shift 2 ;;
+      --cta-url)       cta_url="$2";          shift 2 ;;
+      --feature)       features+=("$2");      shift 2 ;;
+      --type)          type="$2";             shift 2 ;;
+      --bio)           bio="$2";              shift 2 ;;
+      --emoji)         emoji="$2";            shift 2 ;;
+      --skill)         skills+=("$2");        shift 2 ;;
+      --subtitle)      subtitle="$2";         shift 2 ;;
+      --author)        author="$2";           shift 2 ;;
+      --section)       sections+=("$2");      shift 2 ;;
+      --tier)          tiers+=("$2");         shift 2 ;;
+      --item)          items+=("$2");         shift 2 ;;
+      --date)          date_str="$2";         shift 2 ;;
+      --tags)          tags="$2";             shift 2 ;;
+      --message)       message="$2";          shift 2 ;;
+      --home-url)      home_url="$2";         shift 2 ;;
+      --icon)          icon="$2";             shift 2 ;;
+      --badge)         badge="$2";            shift 2 ;;
+      --link)          link="$2";             shift 2 ;;
+      --secondary-cta) secondary_cta="$2";    shift 2 ;;
+      --secondary-url) secondary_url="$2";    shift 2 ;;
+      --stat)          stats+=("$2");         shift 2 ;;
+      --testimonial)   testimonials+=("$2");  shift 2 ;;
+      --language)      language="$2";         shift 2 ;;
+      --code)          code_text="$2";        shift 2 ;;
+      --output)        output="$2";           shift 2 ;;
+      --config)        shift 2 ;;  # already processed above
       *) shift ;;
     esac
   done
@@ -917,6 +960,18 @@ _cmd_new() {
     card)
       _tpl_card "$title" "$desc" "$icon" "$badge" "$link" "$output"
       ;;
+    hero)
+      _tpl_hero "$title" "$tagline" "$desc" "$cta_text" "$cta_url" "$secondary_cta" "$secondary_url" "$badge" "$output"
+      ;;
+    stats)
+      _tpl_stats "$title" "$subtitle" "$output" "${stats[@]}"
+      ;;
+    testimonial)
+      _tpl_testimonial "$title" "$subtitle" "$output" "${testimonials[@]}"
+      ;;
+    codeblock)
+      _tpl_codeblock "$title" "$language" "$code_text" "$output"
+      ;;
     *)
       echo -e "${RED}Unknown template: ${tpl}${NC}"
       echo "Run: br brand list"
@@ -933,16 +988,473 @@ _cmd_new() {
   echo ""
 }
 
+# ─── CONFIG HELPER ────────────────────────────────────────────────────────
+_cfg_get() {
+  # _cfg_get <json_file> <key> [default]
+  local file="$1" key="$2" default="${3:-}"
+  python3 -c "
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+    v = d.get(sys.argv[2])
+    print(v if v is not None else sys.argv[3])
+except:
+    print(sys.argv[3])
+" "$file" "$key" "$default" 2>/dev/null
+}
+
+# ─── INIT WIZARD ──────────────────────────────────────────────────────────
+_cmd_init() {
+  local output="./brand.json"
+  [[ "$1" == "--output" ]] && output="$2"
+  [[ -n "$1" && "$1" != --* ]] && output="$1"
+
+  echo -e "${BOLD}${CYAN}╔══════════════════════════════════════╗${NC}"
+  echo -e "${BOLD}${CYAN}║  BlackRoad Brand Kit — Init Wizard   ║${NC}"
+  echo -e "${BOLD}${CYAN}╚══════════════════════════════════════╝${NC}"
+  echo ""
+  echo -e "  Press ${YELLOW}Enter${NC} to accept the default shown in brackets."
+  echo ""
+
+  local name tagline desc cta_text cta_url footer_text nav_str
+
+  printf "${CYAN}Site / product name${NC} [BlackRoad OS]: "
+  read name; [[ -z "$name" ]] && name="BlackRoad OS"
+
+  printf "${CYAN}One-line tagline${NC} [Your AI. Your Hardware. Your Rules.]: "
+  read tagline; [[ -z "$tagline" ]] && tagline="Your AI. Your Hardware. Your Rules."
+
+  printf "${CYAN}Short description${NC} [The AI-native developer platform.]: "
+  read desc; [[ -z "$desc" ]] && desc="The AI-native developer platform."
+
+  printf "${CYAN}Primary CTA label${NC} [Get Started]: "
+  read cta_text; [[ -z "$cta_text" ]] && cta_text="Get Started"
+
+  printf "${CYAN}Primary CTA URL${NC} [/docs]: "
+  read cta_url; [[ -z "$cta_url" ]] && cta_url="/docs"
+
+  printf "${CYAN}Footer text${NC} [© 2026 BlackRoad OS, Inc.]: "
+  read footer_text; [[ -z "$footer_text" ]] && footer_text="© 2026 BlackRoad OS, Inc."
+
+  printf "${CYAN}Nav links — comma-separated label:url${NC}\n  [Docs:/docs,Pricing:/pricing,Agents:/agents]: "
+  read nav_str; [[ -z "$nav_str" ]] && nav_str="Docs:/docs,Pricing:/pricing,Agents:/agents"
+
+  # Build nav JSON array
+  local nav_json='['
+  local first=1
+  local -a nav_items
+  IFS=',' read -rA nav_items <<< "$nav_str"
+  for item in "${nav_items[@]}"; do
+    local lbl="${item%%:*}"
+    local url="${item#*:}"
+    [[ $first -eq 1 ]] && first=0 || nav_json+=','
+    nav_json+="{\"label\":\"${lbl}\",\"url\":\"${url}\"}"
+  done
+  nav_json+=']'
+
+  # Write brand.json (escape double-quotes in user input)
+  name="${name//\"/\\\"}"
+  tagline="${tagline//\"/\\\"}"
+  desc="${desc//\"/\\\"}"
+  cta_text="${cta_text//\"/\\\"}"
+  footer_text="${footer_text//\"/\\\"}"
+
+  cat > "$output" <<JSON
+{
+  "name": "${name}",
+  "tagline": "${tagline}",
+  "description": "${desc}",
+  "cta_text": "${cta_text}",
+  "cta_url": "${cta_url}",
+  "footer": "${footer_text}",
+  "nav": ${nav_json}
+}
+JSON
+
+  echo ""
+  echo -e "${GREEN}✓ Created:${NC} ${output}"
+  echo ""
+  echo -e "  Next steps:"
+  echo -e "  ${CYAN}br brand site --config ${output}${NC}              Generate full 5-page site"
+  echo -e "  ${CYAN}br brand new landing --config ${output}${NC}       Generate landing page"
+  echo ""
+}
+
+# ─── TEMPLATE: HERO ────────────────────────────────────────────────────────
+_tpl_hero() {
+  local title="$1" tagline="$2" desc="$3" cta_text="$4" cta_url="$5"
+  local secondary_cta="$6" secondary_url="$7" badge="$8" output="$9"
+  [[ -z "$output" ]] && output="${OUT_DIR}/hero.html"
+
+  local badge_html=""
+  [[ -n "$badge" ]] && badge_html='<div class="badge">'"${badge}"'</div>'
+  local secondary_html=""
+  [[ -n "$secondary_cta" ]] && secondary_html='<a href="'"${secondary_url}"'" class="btn btn-outline">'"${secondary_cta}"'</a>'
+  local desc_html=""
+  [[ -n "$desc" ]] && desc_html='<p class="hero-desc">'"${desc}"'</p>'
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.hero-section {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: var(--space-3xl) var(--space-xl);
+  position: relative; overflow: hidden;
+}
+.hero-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,0,102,.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(119,0,255,.1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 80% 60%, rgba(0,102,255,.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+.badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid rgba(255,0,102,.4);
+  border-radius: 100px;
+  font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--hot-pink); margin-bottom: var(--space-lg);
+  background: rgba(255,0,102,.05);
+}
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 900; line-height: 1.05; letter-spacing: -.03em;
+  background: var(--gradient-full);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-md);
+}
+.hero-tagline {
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: rgba(255,255,255,.7); max-width: 620px;
+  line-height: var(--phi); margin-bottom: var(--space-sm);
+}
+.hero-desc {
+  font-size: .95rem; color: rgba(255,255,255,.45);
+  max-width: 520px; line-height: var(--phi);
+  margin-bottom: var(--space-xl);
+}
+.hero-ctas { display: flex; gap: var(--space-md); justify-content: center; flex-wrap: wrap; }
+.btn { padding: var(--space-sm) var(--space-lg); border-radius: 8px; font-family: inherit;
+       font-size: .9rem; font-weight: 700; text-decoration: none; letter-spacing: .05em;
+       transition: all .2s var(--ease); cursor: pointer; border: none; }
+.btn-primary { background: var(--gradient-full); color: var(--white); }
+.btn-primary:hover { opacity: .85; transform: translateY(-2px); }
+.btn-outline { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,.25); }
+.btn-outline:hover { border-color: rgba(255,255,255,.6); background: rgba(255,255,255,.05); }
+.scroll-hint { position: absolute; bottom: var(--space-xl); left: 50%; transform: translateX(-50%);
+               color: rgba(255,255,255,.25); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+               animation: sbounce 2s infinite; }
+@keyframes sbounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+</style>
+<main>
+  <section class="hero-section">
+    ${badge_html}
+    <h1 class="hero-title">${title}</h1>
+    <p class="hero-tagline">${tagline}</p>
+    ${desc_html}
+    <div class="hero-ctas">
+      <a href="${cta_url}" class="btn btn-primary">${cta_text}</a>
+      ${secondary_html}
+    </div>
+    <div class="scroll-hint">↓ scroll</div>
+  </section>
+</main>
+$(_html_footer)
+$(_html_close)
+HTML
+}
+
+# ─── TEMPLATE: STATS ───────────────────────────────────────────────────────
+_tpl_stats() {
+  local title="$1" subtitle="$2" output="$3"; shift 3
+  local stats=("$@")
+  [[ -z "$output" ]] && output="${OUT_DIR}/stats.html"
+  [[ ${#stats[@]} -eq 0 ]] && stats=("30K|Agents" "99.9%|Uptime" "17|Orgs" "1825+|Repos")
+
+  local tiles_html=""
+  for s in "${stats[@]}"; do
+    local val="${s%%|*}" lbl="${s#*|}"
+    tiles_html+='<div class="stat-tile"><div class="stat-value">'"${val}"'</div><div class="stat-label">'"${lbl}"'</div></div>'
+  done
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.stats-section {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: var(--space-3xl) var(--space-xl); text-align: center;
+}
+.stats-heading { font-size: clamp(1.8rem,5vw,3rem); font-weight: 900;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; margin-bottom: var(--space-md); }
+.stats-sub { color: rgba(255,255,255,.55); font-size: .95rem; line-height: var(--phi);
+  max-width: 500px; margin-bottom: var(--space-2xl); }
+.stats-grid { display: flex; flex-wrap: wrap; gap: var(--space-lg); justify-content: center; width: 100%; }
+.stat-tile {
+  flex: 1 1 160px; max-width: 220px;
+  padding: var(--space-xl) var(--space-lg);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px; background: rgba(255,255,255,.03);
+  transition: border-color .2s;
+}
+.stat-tile:hover { border-color: rgba(255,0,102,.35); }
+.stat-value { font-size: clamp(2rem,5vw,3.5rem); font-weight: 900;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; margin-bottom: var(--space-sm); }
+.stat-label { color: rgba(255,255,255,.5); font-size: .8rem;
+  letter-spacing: .12em; text-transform: uppercase; }
+</style>
+<main>
+  <section class="stats-section">
+    <h1 class="stats-heading">${title}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="stats-sub">'"${subtitle}"'</p>')
+    <div class="stats-grid">${tiles_html}</div>
+  </section>
+</main>
+$(_html_footer)
+$(_html_close)
+HTML
+}
+
+# ─── TEMPLATE: TESTIMONIAL ─────────────────────────────────────────────────
+_tpl_testimonial() {
+  local title="$1" subtitle="$2" output="$3"; shift 3
+  local testimonials=("$@")
+  [[ -z "$output" ]] && output="${OUT_DIR}/testimonial.html"
+  [[ ${#testimonials[@]} -eq 0 ]] && testimonials=(
+    "A|Alice Chen|Head of AI, Acme|BlackRoad OS cut our deployment time by 80%. The agent system is unlike anything else."
+    "B|Bob Rivera|CTO, DevCo|The brand kit alone saved us a week. Every page looks flawless out of the box."
+    "C|Cleo Park|Founder, StartupX|CECE remembered my preferences across sessions. That's the future of AI tooling."
+  )
+
+  local cards_html=""
+  for t in "${testimonials[@]}"; do
+    local init="${t%%|*}"; local rest="${t#*|}"
+    local name="${rest%%|*}"; rest="${rest#*|}"
+    local role="${rest%%|*}"; local quote="${rest#*|}"
+    cards_html+='<div class="tc"><div class="tc-quote">'"${quote}"'</div>'
+    cards_html+='<div class="tc-author"><div class="tc-avatar">'"${init}"'</div>'
+    cards_html+='<div><div class="tc-name">'"${name}"'</div><div class="tc-role">'"${role}"'</div></div></div></div>'
+  done
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.tst-section { min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: var(--space-3xl) var(--space-xl); text-align: center; }
+.tst-heading { font-size: clamp(1.8rem,5vw,3rem); font-weight: 900;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; margin-bottom: var(--space-md); }
+.tst-sub { color: rgba(255,255,255,.55); font-size: .95rem; max-width: 500px;
+  line-height: var(--phi); margin-bottom: var(--space-2xl); }
+.tc-grid { display: flex; flex-wrap: wrap; gap: var(--space-lg); justify-content: center; }
+.tc { flex: 1 1 280px; max-width: 380px; text-align: left;
+  padding: var(--space-xl); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px; background: rgba(255,255,255,.03); transition: border-color .25s; }
+.tc:hover { border-color: rgba(255,0,102,.3); }
+.tc-quote { font-size: .95rem; color: rgba(255,255,255,.8); line-height: var(--phi);
+  margin-bottom: var(--space-lg); font-style: italic; }
+.tc-quote::before { content: '\\201C'; color: var(--hot-pink); font-size: 1.5rem; line-height: 0; vertical-align: -.2em; }
+.tc-author { display: flex; align-items: center; gap: var(--space-md); }
+.tc-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-weight: 900; font-size: 1.1rem;
+  background: var(--gradient-full); flex-shrink: 0; }
+.tc-name { font-weight: 700; font-size: .9rem; }
+.tc-role { color: rgba(255,255,255,.4); font-size: .75rem; margin-top: 2px; }
+</style>
+<main>
+  <section class="tst-section">
+    <h1 class="tst-heading">${title}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="tst-sub">'"${subtitle}"'</p>')
+    <div class="tc-grid">${cards_html}</div>
+  </section>
+</main>
+$(_html_footer)
+$(_html_close)
+HTML
+}
+
+# ─── TEMPLATE: CODEBLOCK ───────────────────────────────────────────────────
+_tpl_codeblock() {
+  local title="$1" language="${2:-bash}" code_text="$3" output="$4"
+  [[ -z "$output" ]] && output="${OUT_DIR}/codeblock.html"
+  [[ -z "$code_text" ]] && code_text='# Install BlackRoad CLI
+npm install -g @blackroad/cli
+
+# Initialize brand config
+br brand init
+
+# Generate full site
+br brand site --config brand.json
+
+# Deploy to Cloudflare Pages
+br brand deploy --project my-site --dir ./site'
+
+  # Escape HTML entities in code
+  local escaped_code
+  escaped_code=$(echo "$code_text" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
+
+  # Generate line numbers
+  local line_nums=""
+  local line_count
+  line_count=$(echo "$code_text" | wc -l | tr -d ' ')
+  for ((n=1; n<=line_count; n++)); do
+    line_nums+="${n}\n"
+  done
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.cb-section { min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: var(--space-3xl) var(--space-xl); }
+.cb-heading { font-size: clamp(1.8rem,5vw,3rem); font-weight: 900;
+  background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; margin-bottom: var(--space-2xl); text-align: center; }
+.cb-wrap { width: 100%; max-width: 860px; border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.1); box-shadow: 0 32px 80px rgba(0,0,0,.6); }
+.cb-titlebar { display: flex; align-items: center; gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg); background: rgba(255,255,255,.05);
+  border-bottom: 1px solid rgba(255,255,255,.08); }
+.cb-dot { width: 12px; height: 12px; border-radius: 50%; }
+.cb-dot-red   { background: #FF5F57; }
+.cb-dot-amber { background: #FEBC2E; }
+.cb-dot-green { background: #28C840; }
+.cb-lang { margin-left: auto; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
+  color: rgba(255,255,255,.35); }
+.cb-body { display: flex; background: rgba(255,255,255,.02); overflow-x: auto; }
+.cb-lines { padding: var(--space-lg) var(--space-md); text-align: right;
+  color: rgba(255,255,255,.2); font-size: .85rem; line-height: 1.7;
+  user-select: none; border-right: 1px solid rgba(255,255,255,.06); min-width: 48px; white-space: pre; }
+.cb-code { padding: var(--space-lg); font-size: .85rem; line-height: 1.7;
+  color: rgba(255,255,255,.85); white-space: pre; overflow-x: auto; flex: 1; }
+/* keyword coloring via CSS classes (manual) */
+.kw  { color: #7700FF; }
+.str { color: #FF9D00; }
+.cm  { color: rgba(255,255,255,.3); font-style: italic; }
+.fn  { color: #0066FF; }
+.cb-copy-row { display: flex; justify-content: flex-end;
+  padding: var(--space-sm) var(--space-lg); background: rgba(255,255,255,.02);
+  border-top: 1px solid rgba(255,255,255,.06); }
+.cb-copy { background: none; border: 1px solid rgba(255,255,255,.2); color: rgba(255,255,255,.5);
+  padding: 4px 12px; border-radius: 6px; font-family: inherit; font-size: .75rem;
+  cursor: pointer; transition: all .15s; }
+.cb-copy:hover { border-color: rgba(255,255,255,.5); color: white; }
+</style>
+<main>
+  <section class="cb-section">
+    <h1 class="cb-heading">${title}</h1>
+    <div class="cb-wrap">
+      <div class="cb-titlebar">
+        <div class="cb-dot cb-dot-red"></div>
+        <div class="cb-dot cb-dot-amber"></div>
+        <div class="cb-dot cb-dot-green"></div>
+        <span class="cb-lang">${language}</span>
+      </div>
+      <div class="cb-body">
+        <div class="cb-lines">$(printf "$line_nums")</div>
+        <pre class="cb-code">${escaped_code}</pre>
+      </div>
+      <div class="cb-copy-row">
+        <button class="cb-copy" onclick="navigator.clipboard.writeText(this.closest('.cb-wrap').querySelector('.cb-code').innerText);this.textContent='Copied!'">Copy</button>
+      </div>
+    </div>
+  </section>
+</main>
+$(_html_footer)
+$(_html_close)
+HTML
+}
+
+# ─── SITE GENERATOR ────────────────────────────────────────────────────────
+_cmd_site() {
+  local config="./brand.json" out_dir="./site"
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --config) config="$2"; shift 2 ;;
+      --out)    out_dir="$2"; shift 2 ;;
+      *) shift ;;
+    esac
+  done
+
+  if [[ ! -f "$config" ]]; then
+    echo -e "${RED}✗ No brand.json found at: ${config}${NC}"
+    echo -e "  Run: ${CYAN}br brand init${NC}"
+    exit 1
+  fi
+
+  local name=$(_cfg_get "$config" "name" "BlackRoad OS")
+  local tagline=$(_cfg_get "$config" "tagline" "Your AI. Your Hardware. Your Rules.")
+  local desc=$(_cfg_get "$config" "description" "The AI-native developer platform.")
+  local cta_text=$(_cfg_get "$config" "cta_text" "Get Started")
+  local cta_url=$(_cfg_get "$config" "cta_url" "/docs")
+  local footer_text=$(_cfg_get "$config" "footer" "© 2026 BlackRoad OS, Inc.")
+
+  mkdir -p "$out_dir" "${out_dir}/pricing" "${out_dir}/docs" "${out_dir}/about"
+
+  echo -e "${BOLD}${CYAN}Generating site from ${config}${NC}"
+  echo ""
+
+  # index.html — hero landing page
+  _tpl_hero "$name" "$tagline" "$desc" "$cta_text" "$cta_url" "View Docs" "/docs" "Now Available" "${out_dir}/index.html"
+  echo -e "  ${GREEN}✓${NC} ${out_dir}/index.html          (hero)"
+
+  # pricing/index.html
+  _tpl_pricing "$name Pricing" "Simple, transparent pricing." "${out_dir}/pricing/index.html" \
+    "Starter|Free|forever|Perfect to get started.|5 agents,1GB memory,Community support|Get Started|${cta_url}|false" \
+    "Pro|\$49|/month|For serious builders.|50 agents,10GB memory,Priority support,Custom domains|Start Pro Trial|/signup|true" \
+    "Enterprise|Custom|pricing|For teams and companies.|Unlimited agents,Unlimited memory,SLA + SSO,Dedicated support|Contact Sales|/contact|false"
+  echo -e "  ${GREEN}✓${NC} ${out_dir}/pricing/index.html  (pricing)"
+
+  # docs/index.html
+  _tpl_docs "${name} Docs" "Getting Started" "${name}" "${out_dir}/docs/index.html" \
+    "Installation|Install the CLI: npm install -g @blackroad/cli" \
+    "Quick Start|Run br brand init to scaffold your brand config, then br brand site to generate your site." \
+    "Templates|Use br brand list to see all 12 available templates." \
+    "Deploy|Run br brand deploy --project my-site --dir ./site to publish to Cloudflare Pages."
+  echo -e "  ${GREEN}✓${NC} ${out_dir}/docs/index.html     (docs)"
+
+  # about/index.html
+  _tpl_docs "About ${name}" "Our Story" "${name}" "${out_dir}/about/index.html" \
+    "Mission|${desc}" \
+    "Philosophy|${tagline}" \
+    "Built With|BlackRoad OS Brand Kit — br-brand.sh. Embedded design system, 12 templates, zero dependencies."
+  echo -e "  ${GREEN}✓${NC} ${out_dir}/about/index.html    (docs)"
+
+  # 404.html
+  _tpl_404 "404 — Not Found" "This page doesn't exist in ${name}." "/" "${out_dir}/404.html"
+  echo -e "  ${GREEN}✓${NC} ${out_dir}/404.html             (404)"
+
+  echo ""
+  echo -e "${GREEN}✓ Site complete:${NC} ${out_dir}/ (5 pages)"
+  echo ""
+  echo -e "  Preview : ${YELLOW}open ${out_dir}/index.html${NC}"
+  echo -e "  Deploy  : ${YELLOW}br brand deploy --project my-site --dir ${out_dir}${NC}"
+  echo ""
+}
+
 # ─── MAIN ─────────────────────────────────────────────────────────────────
 case "${1:-list}" in
   list|ls)    _cmd_list ;;
   preview)    _cmd_preview "$2" ;;
+  init)       _cmd_init "${@:2}" ;;
   new|gen)    _cmd_new "$2" "${@:3}" ;;
+  site)       _cmd_site "${@:2}" ;;
   deploy)     _cmd_deploy "${@:2}" ;;
   audit)      _cmd_audit "$2" ;;
   *)
     echo -e "${RED}Unknown command: $1${NC}"
-    echo "Usage: br brand [list | new <template> | deploy | audit <file> | preview <template>]"
+    echo "Usage: br brand [list | init | new <template> | site | deploy | audit | preview]"
     exit 1
     ;;
 esac

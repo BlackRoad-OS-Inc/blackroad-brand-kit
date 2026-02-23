@@ -1,7 +1,7 @@
 <div align="center">
 
 <img src="https://img.shields.io/badge/BlackRoad%20OS-Brand%20Kit-FF0066?style=for-the-badge&labelColor=0A0A0A" />
-<img src="https://img.shields.io/badge/Templates-8-FF9D00?style=for-the-badge&labelColor=0A0A0A" />
+<img src="https://img.shields.io/badge/Templates-12-FF9D00?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/Brand%20Audit-12%2F12-00CC88?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/License-Proprietary-7700FF?style=for-the-badge&labelColor=0A0A0A" />
 
@@ -172,15 +172,114 @@ br brand new card \
 
 ---
 
+### `hero` — Full-Width Hero Section
+
+> Gradient headline · Badge pill · Tagline · Dual CTAs · Scroll hint
+
+![hero preview](previews/hero.svg)
+
+```bash
+br brand new hero \
+  --title "BlackRoad OS" \
+  --tagline "Your AI. Your Hardware. Your Rules." \
+  --desc "The AI-native developer platform." \
+  --badge "Now in Public Beta" \
+  --cta "Get Started" --cta-url "/docs" \
+  --secondary-cta "View Docs" --secondary-url "/docs" \
+  --output hero.html
+```
+
+---
+
+### `stats` — Stats Bar
+
+> Gradient value tiles · Label rows · Brand hover state
+
+![stats preview](previews/stats.svg)
+
+```bash
+br brand new stats \
+  --title "By The Numbers" \
+  --subtitle "BlackRoad OS at scale." \
+  --stat "30K|Agents" \
+  --stat "99.9%|Uptime" \
+  --stat "1825+|Repos" \
+  --stat "17|Orgs" \
+  --output stats.html
+```
+
+---
+
+### `testimonial` — Quote Cards
+
+> Avatar initial · Name + role · Pull-quote grid
+
+![testimonial preview](previews/testimonial.svg)
+
+```bash
+br brand new testimonial \
+  --title "What Builders Say" \
+  --subtitle "Real teams. Real results." \
+  --testimonial "A|Alice Chen|Head of AI, Acme|Cut deployment time by 80%." \
+  --testimonial "B|Bob Rivera|CTO, DevCo|The brand kit saved us a week." \
+  --testimonial "C|Cleo Park|Founder, StartupX|CECE remembered my preferences." \
+  --output testimonials.html
+```
+
+---
+
+### `codeblock` — Styled Code Panel
+
+> macOS titlebar chrome · Line numbers · Language tab · Copy button
+
+![codeblock preview](previews/codeblock.svg)
+
+```bash
+br brand new codeblock \
+  --title "Get Started in Seconds" \
+  --language "bash" \
+  --code "npm install -g @blackroad/cli
+br brand init
+br brand site --config brand.json" \
+  --output install.html
+```
+
+---
+
 ## 🛠️ Commands
 
 | Command | Description |
 |---|---|
-| `br brand list` | List all templates and usage |
-| `br brand new <template> [flags]` | Generate a page |
+| `br brand init [brand.json]` | Interactive wizard — creates `brand.json` config |
+| `br brand site [--config brand.json]` | Generate full 5-page site from config |
+| `br brand new <template> [flags]` | Generate a single page |
 | `br brand audit <file.html>` | 12-point brand compliance check |
-| `br brand deploy --project x --file y.html` | Push to Cloudflare Pages |
+| `br brand deploy --project x --file y` | Push to Cloudflare Pages |
 | `br brand preview <template>` | Show template structure |
+
+### Quick Start — Full Site
+
+```bash
+# 1. Create your brand config (interactive wizard)
+br brand init
+
+# 2. Generate a full 5-page site (index, pricing, docs, about, 404)
+br brand site --config brand.json --out ./site
+
+# 3. Preview
+open ./site/index.html
+
+# 4. Deploy
+br brand deploy --project my-site --dir ./site
+```
+
+### `--config` flag
+
+All `br brand new` commands accept `--config brand.json` to pre-fill title, tagline, CTA, etc. Explicit flags override the config:
+
+```bash
+br brand new hero --config brand.json --badge "🔥 New Release"
+```
 
 ---
 

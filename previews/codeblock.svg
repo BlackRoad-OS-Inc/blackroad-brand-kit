@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="brand" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF9D00"/><stop offset="28%" stop-color="#FF0066"/>
+      <stop offset="57%" stop-color="#D600AA"/><stop offset="100%" stop-color="#0066FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="#0A0A0A"/>
+  <g stroke="#ffffff" stroke-opacity=".03" stroke-width="1">
+    <line x1="0" y1="55" x2="800" y2="55"/><line x1="0" y1="165" x2="800" y2="165"/>
+    <line x1="0" y1="275" x2="800" y2="275"/><line x1="0" y1="385" x2="800" y2="385"/>
+    <line x1="0" y1="440" x2="800" y2="440"/>
+    <line x1="55" y1="0" x2="55" y2="500"/><line x1="165" y1="0" x2="165" y2="500"/>
+    <line x1="385" y1="0" x2="385" y2="500"/><line x1="605" y1="0" x2="605" y2="500"/>
+    <line x1="715" y1="0" x2="715" y2="500"/>
+  </g>
+  <!-- nav -->
+  <rect width="800" height="52" fill="rgba(255,255,255,.03)"/>
+  <rect width="800" height="1" y="52" fill="rgba(255,255,255,.08)"/>
+  <text x="34" y="32" font-family="monospace" font-size="13" fill="white" font-weight="900">BLACKROAD OS</text>
+  <rect width="200" height="2" y="0" fill="url(#brand)" rx="1"/>
+  <!-- heading -->
+  <text x="400" y="100" font-family="monospace" font-size="26" font-weight="900" fill="url(#brand)" text-anchor="middle">Get Started in Seconds</text>
+  <!-- code window -->
+  <rect x="80" y="125" width="640" height="300" rx="14" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+  <!-- titlebar -->
+  <rect x="80" y="125" width="640" height="40" rx="14" fill="rgba(255,255,255,.04)"/>
+  <rect x="80" y="149" width="640" height="16" fill="rgba(255,255,255,.04)"/>
+  <circle cx="108" cy="145" r="6" fill="#FF5F57"/>
+  <circle cx="130" cy="145" r="6" fill="#FEBC2E"/>
+  <circle cx="152" cy="145" r="6" fill="#28C840"/>
+  <text x="686" y="150" font-family="monospace" font-size="9" fill="rgba(255,255,255,.3)" text-anchor="end" letter-spacing="1">BASH</text>
+  <!-- divider -->
+  <rect x="80" y="165" width="640" height="1" fill="rgba(255,255,255,.07)"/>
+  <!-- line numbers column -->
+  <rect x="80" y="166" width="42" height="259" fill="rgba(255,255,255,.01)"/>
+  <rect x="122" y="166" width="1" height="259" fill="rgba(255,255,255,.06)"/>
+  <text x="101" y="190" font-family="monospace" font-size="11" fill="rgba(255,255,255,.2)" text-anchor="middle">1</text>
+  <text x="101" y="210" font-family="monospace" font-size="11" fill="rgba(255,255,255,.2)" text-anchor="middle">2</text>
+  <text x="101" y="230" font-family="monospace" font-size="11" fill="rgba(255,255,255,.2)" text-anchor="middle">3</text>
+  <text x="101" y="250" font-family="monospace" font-size="11" fill="rgba(255,255,255,.2)" text-anchor="middle">4</text>
+  <text x="101" y="270" font-family="monospace" font-size="11" fill="rgba(255,255,255,.2)" text-anchor="middle">5</text>
+  <text x="101" y="290" font-family="monospace" font-size="11" fill="rgba(255,255,255,.2)" text-anchor="middle">6</text>
+  <text x="101" y="310" font-family="monospace" font-size="11" fill="rgba(255,255,255,.2)" text-anchor="middle">7</text>
+  <!-- code lines -->
+  <text x="136" y="190" font-family="monospace" font-size="12" fill="rgba(255,255,255,.35)"># Install BlackRoad CLI</text>
+  <text x="136" y="210" font-family="monospace" font-size="12" fill="rgba(255,255,255,.8)"><tspan fill="#0066FF">npm</tspan> install -g @blackroad/cli</text>
+  <text x="136" y="230" font-family="monospace" font-size="12" fill="rgba(255,255,255,.35)"># Init brand config</text>
+  <text x="136" y="250" font-family="monospace" font-size="12" fill="rgba(255,255,255,.8)"><tspan fill="#FF0066">br</tspan> brand init</text>
+  <text x="136" y="270" font-family="monospace" font-size="12" fill="rgba(255,255,255,.35)"># Generate full site</text>
+  <text x="136" y="290" font-family="monospace" font-size="12" fill="rgba(255,255,255,.8)"><tspan fill="#FF0066">br</tspan> brand site --config brand.json</text>
+  <text x="136" y="310" font-family="monospace" font-size="12" fill="rgba(255,255,255,.8)"><tspan fill="#FF0066">br</tspan> brand deploy --project my-site --dir ./site</text>
+  <!-- copy button row -->
+  <rect x="80" y="424" width="640" height="1" fill="rgba(255,255,255,.06)"/>
+  <rect x="681" y="434" width="60" height="22" rx="5" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+  <text x="711" y="449" font-family="monospace" font-size="9" fill="rgba(255,255,255,.4)" text-anchor="middle">Copy</text>
+</svg>
