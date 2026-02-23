@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build-and-deploy:
@@ -65,30 +63,19 @@ jobs:
           force_orphan: true
 
       - name: Deploy to Cloudflare Pages
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: "848cf0b18d51e0170e0d1537aec3505a"
         run: |
-          wrangler pages deploy site \
-            --project-name=blackroad-brand-kit \
-            --branch=main \
-            --commit-dirty=true
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "CLOUDFLARE_API_TOKEN not set — skipping CF Pages deploy"
+            exit 0
+          fi
+          wrangler pages deploy site --project-name=blackroad-brand-kit --branch=main --commit-dirty=true
 
-  deploy-stripe-worker:
-    runs-on: ubuntu-latest
-    name: Deploy Stripe Worker
-    needs: build-and-deploy
-    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install wrangler
-        run: npm install -g wrangler
-
-      - name: Deploy Stripe worker
+      - name: Deploy Stripe Worker
+        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: "848cf0b18d51e0170e0d1537aec3505a"
@@ -96,6 +83,10 @@ jobs:
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
         working-directory: workers/stripe
         run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "CLOUDFLARE_API_TOKEN not set — skipping Stripe worker deploy"
+            exit 0
+          fi
           if [ -n "$STRIPE_SECRET_KEY" ]; then
             echo "$STRIPE_SECRET_KEY" | wrangler secret put STRIPE_SECRET_KEY
           fi
