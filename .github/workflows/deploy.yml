@@ -17,6 +17,9 @@ jobs:
       - name: Install wrangler
         run: npm install -g wrangler
 
+      - name: Install zsh
+        run: sudo apt-get install -y zsh
+
       - name: Build site
         run: |
           chmod +x tools/br-brand.sh
@@ -54,7 +57,6 @@ jobs:
             --config brand.json \
             --output ./site/changelog/index.html
 
-          # Generate checkout page with real price ID
           zsh tools/br-brand.sh new checkout \
             --title "BlackRoad Pro" \
             --price '$49/mo' \
