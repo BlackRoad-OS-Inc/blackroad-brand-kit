@@ -1,0 +1,64 @@
+name: Register Custom Domains
+
+on:
+  workflow_dispatch:
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Register brand.blackroad.io on CF Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ACCOUNT_ID="848cf0b18d51e0170e0d1537aec3505a"
+          echo "=== brand.blackroad.io → CF Pages blackroad-brand-kit ==="
+          curl -s -X POST \
+            "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/pages/projects/blackroad-brand-kit/domains" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"brand.blackroad.io"}' | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          if d.get('success'):
+              print('✅ brand.blackroad.io registered:', d['result']['name'])
+          else:
+              errs=d.get('errors',[])
+              already=[e for e in errs if e.get('code') in [8000000,1000015]]
+              print('✅ already registered' if already else '⚠️ ' + str(errs))
+          "
+
+      - name: Wait (avoid rate limit)
+        run: sleep 10
+
+      - name: Register stripe.blackroad.io on CF Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          ACCOUNT_ID="848cf0b18d51e0170e0d1537aec3505a"
+          echo "=== stripe.blackroad.io → Worker blackroad-stripe ==="
+          curl -s -X PUT \
+            "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/workers/domains" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "environment": "production",
+              "hostname": "stripe.blackroad.io",
+              "service": "blackroad-stripe",
+              "zone_id": "d6566eba4500b460ffec6650d3b4baf6"
+            }' | python3 -c "
+          import json,sys
+          d=json.load(sys.stdin)
+          if d.get('success'):
+              print('✅ stripe.blackroad.io registered on Worker:', d.get('result',{}).get('hostname'))
+          else:
+              print('⚠️', d.get('errors',[]))
+          "
+
+      - name: Verify
+        run: |
+          sleep 5
+          echo "=== brand.blackroad.io ==="
+          curl -sI https://brand.blackroad.io/ | head -3
+          echo "=== stripe.blackroad.io/health ==="
+          curl -s https://stripe.blackroad.io/health
