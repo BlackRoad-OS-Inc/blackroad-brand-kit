@@ -1,16 +1,12 @@
-name: Deploy Brand Site
+name: Deploy Brand Kit
 
 on:
   push:
     branches: [main, master]
-    paths:
-      - 'brand.json'
-      - 'tools/br-brand.sh'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy-pages:
     runs-on: ubuntu-latest
     name: Build & Deploy to Cloudflare Pages
 
@@ -25,9 +21,8 @@ jobs:
         run: |
           chmod +x tools/br-brand.sh
 
-          # Generate brand.json if not committed
           if [ ! -f brand.json ]; then
-            cat > brand.json <<'EOF'
+            cat > brand.json <<'BJSON'
           {
             "name": "BlackRoad OS",
             "tagline": "Your AI. Your Hardware. Your Rules.",
@@ -42,14 +37,11 @@ jobs:
               {"label": "Team", "url": "/team"}
             ]
           }
-          EOF
+          BJSON
           fi
 
-          # Generate 5-page site into ./site/
-          export OUT_DIR=./site
           zsh tools/br-brand.sh site --config brand.json --out ./site
 
-          # Add team + changelog pages
           zsh tools/br-brand.sh new team \
             --title "The Team" \
             --subtitle "The agents behind BlackRoad OS." \
@@ -62,14 +54,55 @@ jobs:
             --config brand.json \
             --output ./site/changelog/index.html
 
+          # Generate checkout page with real price ID
+          zsh tools/br-brand.sh new checkout \
+            --title "BlackRoad Pro" \
+            --price '$49/mo' \
+            --price-id "price_1T3nxYChUUSEbzyhRA8XeENr" \
+            --worker "https://blackroad-stripe.848cf0b18d51e0170e0d1537aec3505a.workers.dev" \
+            --feature "All 16 brand templates" \
+            --feature "br brand deploy to Cloudflare Pages" \
+            --feature "Stripe checkout + billing portal" \
+            --feature "GitHub Actions auto-deploy" \
+            --feature "Priority support" \
+            --cta "Start Free Trial" \
+            --output ./site/checkout/index.html
+
           ls -la site/
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: "848cf0b18d51e0170e0d1537aec3505a"
         run: |
           wrangler pages deploy site \
             --project-name=blackroad-brand-kit \
             --branch=main \
             --commit-dirty=true
+
+  deploy-stripe-worker:
+    runs-on: ubuntu-latest
+    name: Deploy Stripe Worker
+    needs: deploy-pages
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install wrangler
+        run: npm install -g wrangler
+
+      - name: Deploy Stripe worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: "848cf0b18d51e0170e0d1537aec3505a"
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+        working-directory: workers/stripe
+        run: |
+          # Set Stripe secrets then deploy
+          echo "$STRIPE_SECRET_KEY" | wrangler secret put STRIPE_SECRET_KEY
+          if [ -n "$STRIPE_WEBHOOK_SECRET" ]; then
+            echo "$STRIPE_WEBHOOK_SECRET" | wrangler secret put STRIPE_WEBHOOK_SECRET
+          fi
+          wrangler deploy
