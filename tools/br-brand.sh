@@ -726,7 +726,16 @@ _cmd_deploy() {
     echo -e "${GREEN}✓ Deployed to Cloudflare Pages${NC}"
     echo -e "  https://${project}.pages.dev"
   else
+    echo ""
     echo -e "${RED}✗ Deploy failed (exit $exit_code)${NC}"
+    echo ""
+    echo -e "${YELLOW}Common fixes:${NC}"
+    echo -e "  • ${CYAN}wrangler login${NC}                  — re-authenticate (token may have expired)"
+    echo -e "  • ${CYAN}wrangler whoami${NC}                 — confirm you are logged in"
+    echo -e "  • ${CYAN}wrangler pages project create ${project}${NC}  — pre-create the Pages project"
+    echo -e "  • Cloudflare API error 8000000 = transient server error — retry in a moment"
+    echo ""
+    echo -e "  Logs: ${YELLOW}~/.wrangler/logs/${NC}"
     exit $exit_code
   fi
 }
@@ -1006,8 +1015,17 @@ except:
 # ─── INIT WIZARD ──────────────────────────────────────────────────────────
 _cmd_init() {
   local output="./brand.json"
-  [[ "$1" == "--output" ]] && output="$2"
-  [[ -n "$1" && "$1" != --* ]] && output="$1"
+  # Accept only --output <path> or a bare *.json positional arg.
+  # Silently skip anything that looks like a shell comment artifact (# ...).
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --output) output="$2"; shift 2 ;;
+      --*)      shift ;;              # ignore unknown flags
+      \#*)      shift ;;              # skip comment artifacts passed by non-interactive shells
+      *.json)   output="$1"; shift ;; # bare positional: only accept .json paths
+      *)        shift ;;
+    esac
+  done
 
   echo -e "${BOLD}${CYAN}╔══════════════════════════════════════╗${NC}"
   echo -e "${BOLD}${CYAN}║  BlackRoad Brand Kit — Init Wizard   ║${NC}"
