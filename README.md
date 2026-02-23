@@ -305,6 +305,8 @@ br brand new team \
 | `br brand new <template> [flags]` | Generate a single page |
 | `br brand audit <file.html>` | 12-point brand compliance check |
 | `br brand watch [--config brand.json]` | Auto-rebuild site on file change (requires `fswatch`) |
+| `br brand open [file.html]` | Open page in browser |
+| `br brand export [--dir ./site]` | Zip all pages for download |
 | `br brand deploy --project x --dir y` | Push to Cloudflare Pages |
 | `br brand preview <template>` | Show template structure |
 
@@ -331,6 +333,38 @@ All `br brand new` commands accept `--config brand.json` to pre-fill title, tagl
 ```bash
 br brand new hero --config brand.json --badge "🔥 New Release"
 ```
+
+### `brand.json` Full Schema
+
+```json
+{
+  "name": "BlackRoad OS",
+  "tagline": "Your AI. Your Hardware. Your Rules.",
+  "description": "The AI-native developer platform.",
+  "cta_text": "Get Started",
+  "cta_url": "/docs",
+  "footer": "© 2026 BlackRoad OS, Inc.",
+  "og_image": "https://yourdomain.com/og.png",
+  "og_url": "https://yourdomain.com",
+  "twitter": "@yourhandle",
+  "logo": "https://yourdomain.com/logo.svg",
+  "favicon": "/favicon.ico",
+  "nav": [
+    {"label": "Docs", "url": "/docs"},
+    {"label": "Pricing", "url": "/pricing"},
+    {"label": "Team", "url": "/team"}
+  ],
+  "team": [
+    {"initial": "A", "name": "Alexa", "role": "Founder", "bio": "Builder.", "github": "https://github.com/..."}
+  ],
+  "changelog": [
+    {"version": "v3.0.0", "date": "2026-02-23", "changes": ["15 templates", "watch command"], "tags": ["feature"]}
+  ],
+  "launch_date": "2026-06-01T00:00:00"
+}
+```
+
+When `team`, `changelog`, or `launch_date` are present, `br brand site` auto-generates those extra pages.
 
 ---
 
