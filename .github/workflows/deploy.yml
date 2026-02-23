@@ -161,24 +161,25 @@ jobs:
 
           ACCOUNT_ID="848cf0b18d51e0170e0d1537aec3505a"
 
-          echo "=== Registering brand.blackroad.io on CF Pages ==="
+          for DOMAIN in brand.blackroad.io chat.blackroad.io; do
+          echo "=== Registering $DOMAIN on CF Pages ==="
           curl -s -X POST \
             "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/pages/projects/blackroad-brand-kit/domains" \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"name":"brand.blackroad.io"}' | python3 -c "
+            -d "{\"name\":\"$DOMAIN\"}" | python3 -c "
           import json,sys
           d=json.load(sys.stdin)
           if d.get('success'):
-              print('✅ brand.blackroad.io registered:', d.get('result',{}).get('name'))
+              print('✅ registered:', d.get('result',{}).get('name'))
           else:
               errs = d.get('errors',[])
-              # 8000000 = already exists
               if any(e.get('code') in [8000000, 1000015] for e in errs):
-                  print('✅ brand.blackroad.io already registered')
+                  print('✅ already registered')
               else:
-                  print('⚠️ brand.blackroad.io:', errs)
+                  print('⚠️', errs)
           "
+          done
 
           echo "=== Registering stripe.blackroad.io custom domain on Worker ==="
           curl -s -X PUT \
