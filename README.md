@@ -2,10 +2,10 @@
 
 [![CI](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml)
 
-<img src="https://img.shields.io/badge/BlackRoad%20OS-Brand%20Kit-FF0066?style=for-the-badge&labelColor=0A0A0A" />
-<img src="https://img.shields.io/badge/Templates-15-FF9D00?style=for-the-badge&labelColor=0A0A0A" />
+<img src="https://img.shields.io/badge/BlackRoad%20OS-Brand%20Kit-FF1D6C?style=for-the-badge&labelColor=0A0A0A" />
+<img src="https://img.shields.io/badge/Templates-15-F5A623?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/Brand%20Audit-12%2F12-00CC88?style=for-the-badge&labelColor=0A0A0A" />
-<img src="https://img.shields.io/badge/License-Proprietary-7700FF?style=for-the-badge&labelColor=0A0A0A" />
+<img src="https://img.shields.io/badge/License-Proprietary-9C27B0?style=for-the-badge&labelColor=0A0A0A" />
 
 <br/><br/>
 
@@ -377,9 +377,9 @@ Every generated page passes a 12-point compliance check automatically:
 ```
 ✓ Brand colors defined (--sunrise-orange)
 ✓ Brand gradient (--gradient-brand)
-✓ Hot pink (#FF0066)
-✓ Cyber blue (#0066FF)
-✓ Vivid purple (#7700FF)
+✓ Hot pink (#FF1D6C)
+✓ Cyber blue (#2979FF)
+✓ Vivid purple (#9C27B0)
 ✓ Golden ratio spacing (--space-)
 ✓ Scroll progress bar
 ✓ backdrop-filter / glassmorphism
@@ -401,11 +401,11 @@ br brand audit my-page.html
 
 | Token | Value |
 |---|---|
-| `--sunrise-orange` | `#FF9D00` |
-| `--hot-pink` | `#FF0066` |
-| `--deep-magenta` | `#D600AA` |
-| `--vivid-purple` | `#7700FF` |
-| `--cyber-blue` | `#0066FF` |
+| `--sunrise-orange` | `#F5A623` |
+| `--hot-pink` | `#FF1D6C` |
+| `--deep-magenta` | `#9C27B0` |
+| `--vivid-purple` | `#9C27B0` |
+| `--cyber-blue` | `#2979FF` |
 | `--gradient-brand` | `180deg` full spectrum |
 | `--space-xs … --space-3xl` | `8 13 21 34 55 89 144px` (φ) |
 | `line-height` | `1.618` (Golden Ratio) |
@@ -472,3 +472,4 @@ br brand new checkout \
 ```
 
 → Full guide: [docs/stripe-setup.md](docs/stripe-setup.md)
+
