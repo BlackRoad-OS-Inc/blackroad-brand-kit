@@ -5,74 +5,67 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
-  deploy-pages:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Build & Deploy to Cloudflare Pages
+    name: Build & Deploy
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install wrangler
-        run: npm install -g wrangler
+      - name: Install deps
+        run: |
+          sudo apt-get install -y zsh
+          npm install -g wrangler
 
-      - name: Install zsh
-        run: sudo apt-get install -y zsh
+      - name: Write brand.json
+        run: |
+          python3 -c "
+          import json
+          brand = {
+            'name': 'BlackRoad OS',
+            'tagline': 'Your AI. Your Hardware. Your Rules.',
+            'description': 'The AI-native developer platform.',
+            'cta_text': 'Get Started',
+            'cta_url': '/docs',
+            'footer': '© 2026 BlackRoad OS, Inc.',
+            'nav': [
+              {'label': 'Docs', 'url': '/docs'},
+              {'label': 'Pricing', 'url': '/pricing'},
+              {'label': 'Agents', 'url': '/agents'},
+              {'label': 'Team', 'url': '/team'}
+            ]
+          }
+          with open('brand.json', 'w') as f:
+            json.dump(brand, f, indent=2)
+          print('brand.json written')
+          "
 
       - name: Build site
         run: |
           chmod +x tools/br-brand.sh
-
-          if [ ! -f brand.json ]; then
-            cat > brand.json <<'BJSON'
-          {
-            "name": "BlackRoad OS",
-            "tagline": "Your AI. Your Hardware. Your Rules.",
-            "description": "The AI-native developer platform.",
-            "cta_text": "Get Started",
-            "cta_url": "/docs",
-            "footer": "© 2026 BlackRoad OS, Inc.",
-            "nav": [
-              {"label": "Docs", "url": "/docs"},
-              {"label": "Pricing", "url": "/pricing"},
-              {"label": "Agents", "url": "/agents"},
-              {"label": "Team", "url": "/team"}
-            ]
-          }
-          BJSON
-          fi
-
           zsh tools/br-brand.sh site --config brand.json --out ./site
-
-          zsh tools/br-brand.sh new team \
-            --title "The Team" \
-            --subtitle "The agents behind BlackRoad OS." \
-            --config brand.json \
-            --output ./site/team/index.html
-
-          zsh tools/br-brand.sh new changelog \
-            --title "Changelog" \
-            --subtitle "What's new in BlackRoad OS." \
-            --config brand.json \
-            --output ./site/changelog/index.html
-
-          zsh tools/br-brand.sh new checkout \
-            --title "BlackRoad Pro" \
-            --price '$49/mo' \
-            --price-id "price_1T3nxYChUUSEbzyhRA8XeENr" \
-            --worker "https://blackroad-stripe.848cf0b18d51e0170e0d1537aec3505a.workers.dev" \
-            --feature "All 16 brand templates" \
-            --feature "br brand deploy to Cloudflare Pages" \
-            --feature "Stripe checkout + billing portal" \
-            --feature "GitHub Actions auto-deploy" \
-            --feature "Priority support" \
-            --cta "Start Free Trial" \
-            --output ./site/checkout/index.html
-
+          zsh tools/br-brand.sh new team --title "The Team" --subtitle "The agents behind BlackRoad OS." --config brand.json --output ./site/team/index.html
+          zsh tools/br-brand.sh new changelog --title "Changelog" --subtitle "Whats new in BlackRoad OS." --config brand.json --output ./site/changelog/index.html
+          zsh tools/br-brand.sh new checkout --title "BlackRoad Pro" --price '$49/mo' --price-id "price_1T3nxYChUUSEbzyhRA8XeENr" --worker "https://blackroad-stripe.848cf0b18d51e0170e0d1537aec3505a.workers.dev" --feature "All 16 brand templates" --feature "br brand deploy to Cloudflare Pages" --feature "Stripe checkout and billing portal" --feature "GitHub Actions auto-deploy" --feature "Priority support" --cta "Start Free Trial" --output ./site/checkout/index.html
           ls -la site/
 
-      - name: Deploy Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          force_orphan: true
+
+      - name: Deploy to Cloudflare Pages
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: "848cf0b18d51e0170e0d1537aec3505a"
@@ -85,7 +78,8 @@ jobs:
   deploy-stripe-worker:
     runs-on: ubuntu-latest
     name: Deploy Stripe Worker
-    needs: deploy-pages
+    needs: build-and-deploy
+    if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
 
     steps:
       - name: Checkout
@@ -102,8 +96,9 @@ jobs:
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
         working-directory: workers/stripe
         run: |
-          # Set Stripe secrets then deploy
-          echo "$STRIPE_SECRET_KEY" | wrangler secret put STRIPE_SECRET_KEY
+          if [ -n "$STRIPE_SECRET_KEY" ]; then
+            echo "$STRIPE_SECRET_KEY" | wrangler secret put STRIPE_SECRET_KEY
+          fi
           if [ -n "$STRIPE_WEBHOOK_SECRET" ]; then
             echo "$STRIPE_WEBHOOK_SECRET" | wrangler secret put STRIPE_WEBHOOK_SECRET
           fi
