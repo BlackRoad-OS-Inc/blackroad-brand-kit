@@ -429,3 +429,44 @@ br brand list
 © 2026 BlackRoad OS, Inc. All rights reserved. Proprietary — not open source.
 
 </div>
+
+---
+
+## 💳 Stripe Integration
+
+Full Stripe Checkout infrastructure — worker, products, and checkout template included.
+
+### Products
+| Plan | Price | Features |
+|------|-------|----------|
+| **Starter** | Free | 5 templates, community support |
+| **Pro** | $49/mo | All 16 templates, deploy, priority support |
+| **Enterprise** | $299/mo | Multi-seat, white-label, SLA 99.9% |
+
+### Setup (3 steps)
+
+```bash
+# 1. Create Stripe products
+STRIPE_SECRET_KEY=sk_live_... bash scripts/setup-stripe-products.sh
+
+# 2. Deploy Stripe worker
+cd workers/stripe
+wrangler secret put STRIPE_SECRET_KEY
+wrangler secret put STRIPE_WEBHOOK_SECRET
+wrangler deploy
+
+# 3. Generate checkout page
+source .stripe-ids.env
+br brand new checkout \
+  --title "BlackRoad Pro" \
+  --price '$49/mo' \
+  --price-id "$STRIPE_PRICE_PRO_MONTHLY" \
+  --worker "https://blackroad-stripe.<account>.workers.dev" \
+  --feature "All 16 brand templates" \
+  --feature "br brand deploy" \
+  --feature "Priority support" \
+  --cta "Start Free Trial" \
+  --output site/checkout/index.html
+```
+
+→ Full guide: [docs/stripe-setup.md](docs/stripe-setup.md)

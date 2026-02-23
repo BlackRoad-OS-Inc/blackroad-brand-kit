@@ -1,0 +1,22 @@
+name = "blackroad-stripe"
+main = "index.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+account_id = "848cf0b18d51e0170e0d1537aec3505a"
+
+[vars]
+ALLOWED_ORIGIN = "https://blackroad-brand-kit.pages.dev"
+ENVIRONMENT = "production"
+
+# Secrets — set via: wrangler secret put STRIPE_SECRET_KEY
+# STRIPE_SECRET_KEY        = "sk_live_..."   ← set with: wrangler secret put STRIPE_SECRET_KEY
+# STRIPE_WEBHOOK_SECRET    = "whsec_..."     ← set with: wrangler secret put STRIPE_WEBHOOK_SECRET
+
+[triggers]
+crons = []
+
+# Routes (update after deploying):
+# routes = [
+#   { pattern = "stripe.blackroad.io/*", zone_name = "blackroad.io" }
+# ]

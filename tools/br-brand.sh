@@ -845,6 +845,7 @@ _cmd_list() {
   echo -e "  ${GREEN}coming-soon${NC}  Live countdown + email capture (no back-end required)"
   echo -e "  ${GREEN}changelog${NC}    Release notes — version badge, date, tagged bullet lists"
   echo -e "  ${GREEN}team${NC}         Team member card grid — avatar, name, role, bio, link"
+  echo -e "  ${GREEN}checkout${NC}     Stripe checkout card — price, features, buy button (Stripe Checkout)"
   echo ""
   echo -e "${YELLOW}Commands:${NC}"
   echo ""
@@ -875,6 +876,7 @@ _cmd_list() {
   echo -e "  coming-soon : --title --tagline --launch-date \"2026-04-01T00:00:00\" --output"
   echo -e "  changelog   : --title --subtitle --entry \"v1.0|2026-01-01|Added X,Fixed Y|feature,fix\" --output"
   echo -e "  team        : --title --subtitle --member \"A|Alice|CEO|Bio here|https://github.com/...\" --output"
+  echo -e "  checkout    : --title \"Pro Plan\" --price \"\$49/mo\" --price-id \"price_xxx\" --worker URL --feature X --cta \"Buy\" --output"
   echo ""
   echo -e "  ${YELLOW}All templates accept:${NC} --config brand.json  (pre-fill from config file)"
   echo ""
@@ -900,6 +902,7 @@ _cmd_preview() {
     coming-soon) echo -e "${CYAN}coming-soon${NC}: Full-gradient page — live countdown, email capture form" ;;
     changelog)   echo -e "${CYAN}changelog${NC}:   Release log — version + date + tagged bullets per entry" ;;
     team)        echo -e "${CYAN}team${NC}:        Card grid — avatar initial, name, role, bio, GitHub link" ;;
+    checkout)    echo -e "${CYAN}checkout${NC}:   Stripe checkout page — price card, features list, buy button" ;;
     *)           echo -e "${RED}Unknown template: $1${NC}"; _cmd_list ;;
   esac
 }
@@ -918,6 +921,7 @@ _cmd_new() {
   local language="bash" code_text=""
   local launch_date=""
   local output="" config_file=""
+  local price="" price_id="" stripe_worker="https://blackroad-stripe.workers.dev"
   local -a features skills sections tiers items stats testimonials members entries
 
   # Pre-scan for --config so we can load defaults before flag parsing
@@ -988,6 +992,9 @@ print(''.join(f'<a href=\"{i[\"url\"]}\">{i[\"label\"]}</a>' for i in items))
       --launch-date)   launch_date="$2";      shift 2 ;;
       --entry)         entries+=("$2");       shift 2 ;;
       --member)        members+=("$2");       shift 2 ;;
+      --price)         price="$2";            shift 2 ;;
+      --price-id)      price_id="$2";         shift 2 ;;
+      --worker)        stripe_worker="$2";    shift 2 ;;
       --output)        output="$2";           shift 2 ;;
       --config)        shift 2 ;;  # already processed above
       *) shift ;;
@@ -1051,6 +1058,10 @@ print(''.join(f'<a href=\"{i[\"url\"]}\">{i[\"label\"]}</a>' for i in items))
       ;;
     team)
       _tpl_team "$title" "$subtitle" "$output" "${members[@]}"
+      ;;
+    checkout)
+      _tpl_checkout "$title" "$price" "$price_id" "$stripe_worker" \
+        "$(IFS=','; echo "${features[*]}")" "$cta_text" "$output"
       ;;
     *)
       echo -e "${RED}Unknown template: ${tpl}${NC}"
@@ -1721,6 +1732,125 @@ $(_html_nav "$title")
 $(_html_footer)
 $(_html_close)
 HTML
+}
+
+# ─── CHECKOUT (Stripe) ───────────────────────────────────────────────────
+# Usage: br brand new checkout --title "Pro Plan" --price "$49/month" \
+#          --price-id "price_xxx" --worker "https://blackroad-stripe.workers.dev" \
+#          --features "Unlimited templates,Deploy,Priority support" \
+#          --cta "Start Free Trial" --output ./checkout/index.html
+_tpl_checkout() {
+  local title="${1:-Pro Plan}" price="${2:-\$49/mo}" price_id="${3:-}" \
+        worker="${4:-https://blackroad-stripe.workers.dev}" \
+        features_raw="${5:-Unlimited templates,Deploy,Priority support}" \
+        cta="${6:-Get Started}" output="${7:-}"
+  [[ -z "$output" ]] && output="${OUT_DIR}/checkout.html"
+  mkdir -p "$(dirname "$output")"
+
+  # Build features list
+  local feats_html=""; IFS=',' read -rA feats <<< "$features_raw"
+  for f in "${feats[@]}"; do
+    [[ -n "$f" ]] && feats_html+='<li class="ck-feat"><span class="ck-check">✓</span>'"${f}"'</li>'
+  done
+
+  cat > "$output" <<HTML
+$(_html_head "$title")
+$(_html_nav "$title")
+<style>
+.ck-page { min-height:100vh; display:flex; align-items:center; justify-content:center;
+  padding:var(--space-3xl) var(--space-xl); }
+.ck-card { max-width:420px; width:100%; padding:var(--space-2xl) var(--space-xl);
+  border-radius:24px; background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1); text-align:center; }
+.ck-badge { display:inline-block; padding:4px 14px; border-radius:20px; font-size:.72rem;
+  font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:var(--space-lg);
+  background:var(--gradient-brand); color:var(--white); }
+.ck-title { font-size:clamp(1.6rem,4vw,2.4rem); font-weight:900; margin-bottom:var(--space-sm); }
+.ck-price { font-size:3rem; font-weight:900; background:var(--gradient-full);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  line-height:1; margin-bottom:4px; }
+.ck-period { font-size:.8rem; color:rgba(255,255,255,.4); margin-bottom:var(--space-xl); }
+.ck-features { list-style:none; padding:0; margin:0 0 var(--space-xl); text-align:left; }
+.ck-feat { display:flex; gap:var(--space-sm); align-items:flex-start; padding:6px 0;
+  font-size:.88rem; color:rgba(255,255,255,.8); border-bottom:1px solid rgba(255,255,255,.05); }
+.ck-feat:last-child { border-bottom:none; }
+.ck-check { color:var(--hot-pink); font-weight:700; flex-shrink:0; }
+.ck-btn { width:100%; padding:var(--space-md) var(--space-xl); font-size:1rem; font-weight:700;
+  border:none; border-radius:12px; cursor:pointer; background:var(--gradient-brand); color:var(--white);
+  letter-spacing:.02em; transition:opacity .2s; display:flex; align-items:center;
+  justify-content:center; gap:8px; }
+.ck-btn:hover { opacity:.88; }
+.ck-btn:disabled { opacity:.5; cursor:wait; }
+.ck-secure { font-size:.72rem; color:rgba(255,255,255,.3); margin-top:var(--space-md); }
+.ck-msg { margin-top:var(--space-lg); font-size:.85rem; min-height:1.4em; }
+.ck-msg.error { color:#ff4444; }
+.ck-msg.info { color:rgba(255,255,255,.55); }
+</style>
+<main>
+  <section class="ck-page">
+    <div class="ck-card">
+      <div class="ck-badge">BlackRoad OS</div>
+      <h1 class="ck-title">${title}</h1>
+      <div class="ck-price">${price}</div>
+      <div class="ck-period">per month · cancel anytime</div>
+      <ul class="ck-features">${feats_html}</ul>
+      <button class="ck-btn" id="ck-pay-btn" onclick="startCheckout()">
+        <span id="ck-btn-label">${cta}</span>
+      </button>
+      <p class="ck-secure">🔒 Secured by Stripe · No card stored on our servers</p>
+      <p class="ck-msg info" id="ck-msg"></p>
+    </div>
+  </section>
+</main>
+$(_html_footer)
+<script>
+const WORKER_URL = '${worker}';
+const PRICE_ID   = '${price_id}';
+
+async function startCheckout() {
+  const btn   = document.getElementById('ck-pay-btn');
+  const label = document.getElementById('ck-btn-label');
+  const msg   = document.getElementById('ck-msg');
+
+  if (!PRICE_ID) {
+    msg.className = 'ck-msg error';
+    msg.textContent = 'Price ID not configured. Set --price-id when generating this page.';
+    return;
+  }
+
+  btn.disabled = true;
+  label.textContent = 'Redirecting to Stripe…';
+  msg.className = 'ck-msg info';
+  msg.textContent = 'Creating secure checkout session…';
+
+  try {
+    const res = await fetch(WORKER_URL + '/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        price_id: PRICE_ID,
+        success_url: window.location.origin + '/success?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url:  window.location.href,
+      }),
+    });
+
+    const data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'Unknown error from checkout worker');
+    }
+  } catch (err) {
+    msg.className = 'ck-msg error';
+    msg.textContent = '✗ ' + err.message;
+    btn.disabled = false;
+    label.textContent = '${cta}';
+  }
+}
+</script>
+$(_html_close)
+HTML
+  echo -e "  ${GREEN}✓${NC} checkout   → ${output}"
 }
 
 # ─── WATCH ─────────────────────────────────────────────────────────────────
