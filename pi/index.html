@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pi Fleet — BlackRoad OS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#030308;--card:#0f0f1e;--border:rgba(255,255,255,.07);
+  --accent:#FF1D6C;--blue:#2979FF;--amber:#F5A623;--violet:#9C27B0;
+  --green:#00e676;--red:#f44336;--text:#e8e8f0;--muted:#6b6b88;
+  --font:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(3,3,8,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0 24px;height:56px;
+  display:flex;align-items:center;gap:32px}
+.nav-brand{font-weight:700;font-size:16px;
+  background:linear-gradient(135deg,var(--amber),var(--accent),var(--violet));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:14px;padding:6px 12px;border-radius:6px;transition:all .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.05)}
+
+.page{max-width:1100px;margin:0 auto;padding:80px 32px 60px}
+.page-title{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
+.page-sub{color:var(--muted);font-size:15px;margin-bottom:32px}
+
+/* Pi nodes */
+.pi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:32px}
+.pi-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.pi-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.pi-icon{font-size:28px}
+.pi-name{font-size:16px;font-weight:700}
+.pi-ip{font-size:12px;color:var(--muted);font-family:monospace}
+.pi-status{margin-left:auto;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700}
+.ps-live{background:rgba(0,230,118,.12);color:var(--green)}
+.ps-offline{background:rgba(244,67,54,.1);color:var(--red)}
+.service-list{}
+.svc{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.svc:last-child{border-bottom:none}
+.svc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-on{background:var(--green);box-shadow:0 0 5px var(--green)}
+.dot-off{background:#333}
+.svc-name{font-weight:600;width:120px}
+.svc-url{font-size:11px;color:var(--accent);font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svc-btn{margin-left:auto;padding:3px 10px;background:rgba(255,255,255,.05);border:1px solid var(--border);
+  color:var(--muted);border-radius:6px;font-size:11px;cursor:pointer;text-decoration:none;transition:.15s}
+.svc-btn:hover{background:rgba(255,29,108,.12);color:var(--accent);border-color:var(--accent)}
+
+/* Tunnel info */
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+.section-title{font-size:14px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.tunnel-badge{background:rgba(0,230,118,.1);color:var(--green);padding:3px 10px;border-radius:20px;font-size:11px;font-family:monospace}
+
+/* Model server highlight */
+.model-hero{background:linear-gradient(135deg,rgba(255,29,108,.08),rgba(156,39,176,.08));
+  border:1px solid rgba(255,29,108,.2);border-radius:14px;padding:24px;margin-bottom:20px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.model-stat{text-align:center;padding:0 16px}
+.model-stat-num{font-size:36px;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,var(--amber),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.model-stat-label{font-size:11px;color:var(--muted);margin-top:2px}
+.model-cta{margin-left:auto}
+.btn-primary{background:var(--accent);color:#fff;padding:12px 24px;border-radius:10px;
+  font-size:14px;font-weight:700;border:none;cursor:pointer;text-decoration:none;transition:.2s}
+.btn-primary:hover{opacity:.85;transform:translateY(-1px)}
+
+/* Ollama models */
+.ollama-models{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ollama-badge{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;
+  padding:6px 12px;font-size:12px;font-family:monospace;cursor:pointer;transition:.15s}
+.ollama-badge:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-brand">◈ BlackRoad OS</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/chat/">Chat</a>
+    <a href="/models/">Models</a>
+    <a href="/agents/">Agents</a>
+    <a href="/services/">Services</a>
+    <a href="/console/">Console</a>
+    <a href="/pi/" class="active">Pi Fleet</a>
+    <a href="/status/">Status</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">🫐 Raspberry Pi Fleet</div>
+  <div class="page-sub">BlackRoad OS edge nodes — real hardware, real AI, running 24/7</div>
+
+  <!-- Model server highlight -->
+  <div class="model-hero">
+    <div class="model-stat"><div class="model-stat-num" id="m-total">108</div><div class="model-stat-label">Proprietary Models</div></div>
+    <div class="model-stat"><div class="model-stat-num" id="m-live">20</div><div class="model-stat-label">Live Now</div></div>
+    <div class="model-stat"><div class="model-stat-num">12</div><div class="model-stat-label">Categories</div></div>
+    <div style="flex:1;min-width:200px">
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px">BlackRoad Model Server v2</div>
+      <div style="font-size:13px;color:var(--muted)">Vision · Audio · Speech · NLP · LLM · Prediction · Location</div>
+      <div style="font-size:12px;color:var(--accent);margin-top:4px;font-family:monospace">model-server.blackroad.io</div>
+    </div>
+    <a href="/models-explorer/" class="btn-primary model-cta">Explore 108 Models →</a>
+  </div>
+
+  <!-- Pi nodes -->
+  <div class="pi-grid">
+    <!-- aria Pi -->
+    <div class="pi-card">
+      <div class="pi-header">
+        <div class="pi-icon">🍓</div>
+        <div>
+          <div class="pi-name">aria (octavia)</div>
+          <div class="pi-ip">192.168.4.38 · Pi 4 · Hailo AI</div>
+        </div>
+        <span class="pi-status ps-live" id="aria-status">checking…</span>
+      </div>
+      <div class="service-list">
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">aria app</div><a class="svc-url" href="https://aria.blackroad.io" target="_blank">aria.blackroad.io</a><a class="svc-btn" href="https://aria.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">model-server</div><a class="svc-url" href="https://model-server.blackroad.io" target="_blank">model-server.blackroad.io</a><a class="svc-btn" href="/models-explorer/">explore</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">network</div><a class="svc-url" href="https://network.blackroad.io" target="_blank">network.blackroad.io</a><a class="svc-btn" href="https://network.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">carpool</div><a class="svc-url" href="https://carpool.blackroad.io" target="_blank">carpool.blackroad.io</a><a class="svc-btn" href="https://carpool.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">enterprise</div><a class="svc-url" href="https://enterprise.blackroad.io" target="_blank">enterprise.blackroad.io</a><a class="svc-btn" href="https://enterprise.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">task-queue</div><a class="svc-url" href="https://tasks.blackroad.io" target="_blank">tasks.blackroad.io</a><a class="svc-btn" href="https://tasks.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">create-agent</div><a class="svc-url" href="https://create-agent.blackroad.io" target="_blank">create-agent.blackroad.io</a><a class="svc-btn" href="https://create-agent.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">ollama</div><a class="svc-url" href="https://ollama.blackroad.io/api/tags" target="_blank">ollama.blackroad.io</a><a class="svc-btn" href="/chat/" >chat</a></div>
+      </div>
+      <div style="margin-top:14px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:8px">OLLAMA MODELS</div>
+        <div class="ollama-models">
+          <span class="ollama-badge" onclick="location.href='/chat/?model=lucidia:latest'">lucidia:latest</span>
+          <span class="ollama-badge" onclick="location.href='/chat/?model=qwen2.5:3b'">qwen2.5:3b</span>
+          <span class="ollama-badge" onclick="location.href='/chat/?model=llama3.2:1b'">llama3.2:1b</span>
+          <span class="ollama-badge" onclick="location.href='/chat/?model=qwen2.5:1.5b'">qwen2.5:1.5b</span>
+          <span class="ollama-badge" onclick="location.href='/chat/?model=tinyllama:latest'">tinyllama</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- lucidia Pi -->
+    <div class="pi-card">
+      <div class="pi-header">
+        <div class="pi-icon">🍓</div>
+        <div>
+          <div class="pi-name">lucidia</div>
+          <div class="pi-ip">192.168.4.64 · Pi 4 · CF Tunnel</div>
+        </div>
+        <span class="pi-status ps-live">online</span>
+      </div>
+      <div class="service-list">
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">lucidia API</div><a class="svc-url" href="https://lucidia.blackroad.io" target="_blank">lucidia.blackroad.io</a><a class="svc-btn" href="https://lucidia.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">health</div><a class="svc-url" href="https://lucidia.blackroad.io/health" target="_blank">lucidia.blackroad.io/health</a><a class="svc-btn" href="https://lucidia.blackroad.io/health" target="_blank">ping</a></div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,.03);border-radius:8px;font-size:12px;font-family:monospace;color:var(--muted)" id="lucidia-info">
+        Loading Lucidia status…
+      </div>
+    </div>
+
+    <!-- blackroad-pi -->
+    <div class="pi-card">
+      <div class="pi-header">
+        <div class="pi-icon">🍓</div>
+        <div>
+          <div class="pi-name">blackroad-pi</div>
+          <div class="pi-ip">192.168.4.99 · Pi · 8 CF connections</div>
+        </div>
+        <span class="pi-status ps-live">online</span>
+      </div>
+      <div class="service-list">
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">pi service</div><a class="svc-url" href="https://pi.blackroad.io" target="_blank">pi.blackroad.io</a><a class="svc-btn" href="https://pi.blackroad.io" target="_blank">open</a></div>
+        <div class="svc"><div class="svc-dot dot-on"></div><div class="svc-name">cloudflared</div><a class="svc-url">blackroad-pi tunnel · 8 QUIC</a><span class="svc-btn">active</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tunnel section -->
+  <div class="section">
+    <div class="section-title">🌐 Active CF Tunnels <span class="tunnel-badge">6 tunnels</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+      ${['blackroad-aria · 4 QUIC · ord','blackroad-lucidia · 4 QUIC · ord','blackroad-cecilia · 4 QUIC · ord','blackroad-octavia · 4 QUIC · ord','blackroad-shellfish · 4 QUIC · ord','blackroad-pi · 8 QUIC · ord'].map(t=>`
+        <div style="background:rgba(0,230,118,.04);border:1px solid rgba(0,230,118,.15);border-radius:8px;padding:10px 14px;font-size:12px;font-family:monospace">
+          <span style="color:var(--green)">●</span> ${t}
+        </div>`).join('')}
+    </div>
+  </div>
+</div>
+
+<script>
+async function checkAria() {
+  try {
+    const r = await fetch('https://aria.blackroad.io/', {signal: AbortSignal.timeout(6000)});
+    document.getElementById('aria-status').textContent = r.ok ? 'online' : 'degraded';
+    document.getElementById('aria-status').className = 'pi-status ' + (r.ok ? 'ps-live' : '');
+  } catch { document.getElementById('aria-status').textContent = 'offline'; }
+}
+
+async function checkLucidia() {
+  try {
+    const r = await fetch('https://lucidia.blackroad.io/', {signal: AbortSignal.timeout(6000)});
+    const d = await r.json();
+    document.getElementById('lucidia-info').textContent = JSON.stringify(d, null, 2);
+  } catch(e) { document.getElementById('lucidia-info').textContent = 'unreachable: ' + e.message; }
+}
+
+checkAria(); checkLucidia();
+</script>
+</body>
+</html>

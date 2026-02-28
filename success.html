@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payment Successful — BlackRoad OS</title>
+<style>
+:root{--black:#000;--white:#fff;--hot-pink:#FF1D6C;--amber:#F5A623;--violet:#9C27B0;--blue:#2979FF;
+--gradient-brand:linear-gradient(135deg,#F5A623 0%,#FF1D6C 38.2%,#9C27B0 61.8%,#2979FF 100%);
+--charcoal:#111;--space-md:21px;--space-lg:34px;--space-xl:55px;--space-2xl:89px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
+min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:var(--space-xl);}
+.card{max-width:560px;width:100%;padding:var(--space-2xl) var(--space-xl);border-radius:24px;
+background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);}
+.icon{font-size:4rem;margin-bottom:var(--space-lg);}
+h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;margin-bottom:var(--space-md);
+background:var(--gradient-brand);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+p{color:rgba(255,255,255,.7);line-height:1.618;margin-bottom:var(--space-lg);font-size:1.05rem;}
+.steps{list-style:none;text-align:left;margin:var(--space-lg) 0;border-top:1px solid rgba(255,255,255,.06);}
+.step{display:flex;gap:var(--space-md);align-items:flex-start;padding:var(--space-md) 0;
+border-bottom:1px solid rgba(255,255,255,.06);}
+.step-num{background:var(--gradient-brand);-webkit-background-clip:text;background-clip:text;
+-webkit-text-fill-color:transparent;font-weight:900;font-size:1.2rem;flex-shrink:0;width:24px;}
+.step-body h3{font-size:.95rem;font-weight:700;margin-bottom:4px;}
+.step-body p{color:rgba(255,255,255,.55);font-size:.88rem;margin:0;line-height:1.5;}
+.btn{display:inline-block;padding:14px 32px;background:var(--gradient-brand);color:var(--white);
+text-decoration:none;border-radius:12px;font-weight:700;font-size:.95rem;margin-top:var(--space-lg);}
+.secure{font-size:.72rem;color:rgba(255,255,255,.3);margin-top:var(--space-md);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">✅</div>
+  <h1>You're on BlackRoad OS Pro!</h1>
+  <p>Your subscription is active. Check your email for a receipt and your onboarding guide.</p>
+  <ul class="steps">
+    <li class="step">
+      <span class="step-num">1</span>
+      <div class="step-body">
+        <h3>Install the CLI</h3>
+        <p><code>npm install -g @blackroad/cli</code></p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-num">2</span>
+      <div class="step-body">
+        <h3>Initialize your brand</h3>
+        <p><code>br brand init</code> — 30-second wizard</p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-num">3</span>
+      <div class="step-body">
+        <h3>Generate your site</h3>
+        <p><code>br brand site</code> — 8 pages in seconds</p>
+      </div>
+    </li>
+    <li class="step">
+      <span class="step-num">4</span>
+      <div class="step-body">
+        <h3>Deploy</h3>
+        <p><code>br brand deploy --project my-site --dir ./site</code></p>
+      </div>
+    </li>
+  </ul>
+  <a class="btn" href="/blackroad-brand-kit/docs/">Read the Docs →</a>
+  <p class="secure">🔒 Powered by Stripe · Questions? support@blackroad.io</p>
+</div>
+</body>
+</html>

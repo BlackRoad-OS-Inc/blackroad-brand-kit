@@ -1,0 +1,15 @@
+# BlackRoad OS — CF Pages Redirects
+
+# os.blackroad.io → root (brand kit homepage)
+# staging.blackroad.io → models page  
+# These are handled by CF Pages custom domain routing
+
+# Convenience short paths
+/s /status/ 301
+/m /models/ 301
+/a /api/    301
+/c /chat/   301
+/console /console/ 301
+/pi /pi/ 301
+/models-explorer /models-explorer/ 301
+/services /services/ 301

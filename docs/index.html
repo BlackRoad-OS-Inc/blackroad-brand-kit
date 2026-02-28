@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlackRoad OS Docs — BlackRoad OS</title>
+  <meta name="description" content="Getting Started" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="BlackRoad OS" />
+  <meta property="og:title" content="BlackRoad OS" />
+  <meta property="og:description" content="The AI-native developer platform." />
+  <meta property="og:url" content="https://blackroad-os-inc.github.io/blackroad-brand-kit/" />
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BlackRoad OS" />
+  <meta name="twitter:description" content="The AI-native developer platform." />
+  <meta name="twitter:site" content="@blackroadOS" />
+  <style>
+:root {
+  --black: #000000;
+  --deep-black: #0A0A0A;
+  --charcoal: #1A1A1A;
+  --white: #FFFFFF;
+  --sunrise-orange: #F5A623;
+  --warm-orange: #F5A623;
+  --hot-pink: #FF1D6C;
+  --electric-magenta: #FF1D6C;
+  --deep-magenta: #9C27B0;
+  --vivid-purple: #9C27B0;
+  --cyber-blue: #2979FF;
+  --gradient-br: linear-gradient(135deg, var(--sunrise-orange) 0%, var(--hot-pink) 100%);
+  --gradient-os: linear-gradient(135deg, var(--vivid-purple) 0%, var(--cyber-blue) 100%);
+  --gradient-full: linear-gradient(135deg, var(--sunrise-orange) 0%, var(--hot-pink) 38.2%, var(--vivid-purple) 61.8%, var(--cyber-blue) 100%);
+  --gradient-brand: var(--gradient-full);
+  --phi: 1.618;
+  --space-xs: 8px;
+  --space-sm: 13px;
+  --space-md: 21px;
+  --space-lg: 34px;
+  --space-xl: 55px;
+  --space-2xl: 89px;
+  --space-3xl: 144px;
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace;
+  background: var(--deep-black);
+  color: var(--white);
+  overflow-x: hidden;
+  line-height: 1.618;
+  -webkit-font-smoothing: antialiased;
+}
+h1 { font-size: calc(2.5rem * 1.618); font-weight: 600; line-height: 1.2; }
+h2 { font-size: calc(2rem * 1.618); font-weight: 600; line-height: 1.2; }
+h3 { font-size: calc(1.5rem * 1.618); font-weight: 600; line-height: 1.2; }
+h4 { font-size: 1.4rem; font-weight: 600; }
+p  { font-size: 1rem; line-height: 1.618; color: rgba(255,255,255,0.8); }
+a  { color: var(--sunrise-orange); text-decoration: none; }
+a:hover { color: var(--hot-pink); }
+
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--gradient-brand); z-index: 9999; width: 0%;
+  transition: width 0.1s linear;
+}
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: var(--space-md) var(--space-xl);
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.nav-logo {
+  font-size: 1.2rem; font-weight: 700;
+  background: var(--gradient-brand);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-links { display: flex; gap: var(--space-lg); }
+.nav-links a { color: rgba(255,255,255,0.7); font-size: 0.9rem; transition: color 0.2s; }
+.nav-links a:hover { color: var(--white); }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-xl); }
+.gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-border {
+  position: relative; border-radius: var(--space-md);
+  background: var(--charcoal);
+}
+.gradient-border::before {
+  content: ""; position: absolute; inset: 0;
+  border-radius: inherit; padding: 1px;
+  background: var(--gradient-brand);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.card {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(10px);
+  border-radius: var(--space-md);
+  padding: var(--space-xl);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.3s var(--ease-spring), border-color 0.3s;
+}
+.card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); }
+.btn {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--space-xs);
+  font-weight: 600; font-size: 0.95rem;
+  cursor: pointer; transition: all 0.3s var(--ease);
+  border: none; font-family: inherit;
+}
+.btn-primary {
+  background: var(--gradient-brand);
+  color: var(--white);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245,166,35,0.3); color: var(--white); }
+.btn-outline {
+  background: transparent; color: var(--white);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.btn-outline:hover { border-color: var(--hot-pink); color: var(--hot-pink); }
+.bg-orb {
+  position: fixed; border-radius: 50%;
+  filter: blur(100px); pointer-events: none; z-index: 0; opacity: 0.12;
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 55px 55px;
+}
+main { position: relative; z-index: 1; padding-top: 80px; }
+.section { padding: var(--space-3xl) 0; }
+.section-label {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--sunrise-orange);
+  margin-bottom: var(--space-md);
+}
+.grid { display: grid; gap: var(--space-lg); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 900px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } h1 { font-size: 2rem; } }
+footer {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: var(--space-xl) 0; text-align: center;
+  color: rgba(255,255,255,0.4); font-size: 0.85rem;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.animate-in { animation: fadeIn 0.6s var(--ease-out) forwards; }
+</style>
+</head>
+<body>
+<div id="scroll-bar" class="scroll-progress"></div>
+<div class="bg-grid"></div>
+<div class="bg-orb" style="width:600px;height:600px;top:-200px;right:-200px;background:var(--vivid-purple);"></div>
+<div class="bg-orb" style="width:400px;height:400px;bottom:10%;left:-100px;background:var(--hot-pink);"></div>
+<nav><div class="nav-logo">BlackRoad OS</div><div class="nav-links"><a href="/docs">Docs</a> <a href="/">Home</a></div></nav>
+<main>
+  <section class="section" style="max-width:800px;margin:0 auto;">
+    <div class="container">
+      <div class="section-label animate-in">BlackRoad OS</div>
+      <h1 class="animate-in" style="margin-bottom:var(--space-md);">BlackRoad OS Docs</h1>
+      <p style="font-size:1.1rem;color:rgba(255,255,255,0.6);margin-bottom:var(--space-2xl);" class="animate-in">Getting Started</p>
+      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin-bottom:var(--space-2xl);" />
+      <div class="animate-in" style="margin-bottom:var(--space-2xl);">
+        <h3 style="margin-bottom:var(--space-md);color:var(--white);">Installation</h3>
+        <p style="line-height:1.8;">Install the CLI: npm install -g @blackroad/cli</p>
+      </div>
+      <div class="animate-in" style="margin-bottom:var(--space-2xl);">
+        <h3 style="margin-bottom:var(--space-md);color:var(--white);">Quick Start</h3>
+        <p style="line-height:1.8;">Run br brand init to scaffold your brand config, then br brand site to generate your site.</p>
+      </div>
+      <div class="animate-in" style="margin-bottom:var(--space-2xl);">
+        <h3 style="margin-bottom:var(--space-md);color:var(--white);">Templates</h3>
+        <p style="line-height:1.8;">Use br brand list to see all 15 available templates.</p>
+      </div>
+      <div class="animate-in" style="margin-bottom:var(--space-2xl);">
+        <h3 style="margin-bottom:var(--space-md);color:var(--white);">Deploy</h3>
+        <p style="line-height:1.8;">Run br brand deploy --project my-site --dir ./site to publish to Cloudflare Pages.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<footer><div class="container"><p>© 2026 BlackRoad OS, Inc.</p></div></footer>
+<script>
+const bar = document.getElementById("scroll-bar");
+if (bar) {
+  window.addEventListener("scroll", () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    bar.style.width = Math.min(pct, 100) + "%";
+  });
+}
+document.querySelectorAll(".animate-in").forEach((el, i) => {
+  el.style.opacity = "0";
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.style.animation = `fadeIn 0.6s ${i * 0.1}s ease-out forwards`; obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  obs.observe(el);
+});
+</script>
+</body>
+</html>
