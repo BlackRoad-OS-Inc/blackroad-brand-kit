@@ -6,8 +6,9 @@
 
 ```bash
 # Clone and setup
+git clone <REPO_URL> ~/blackroad-sandbox  # Run this if you don't have the repo yet
 cd ~/blackroad-sandbox
-git pull origin main
+git pull origin main                      # Run this to update an existing checkout
 
 # Install dependencies
 pip3 install -r requirements.txt
