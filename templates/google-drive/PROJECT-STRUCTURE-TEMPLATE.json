@@ -1,0 +1,94 @@
+{
+  "name": "TEMPLATE-PROJECT-FOLDER",
+  "folders": [
+    {
+      "name": "00-PROJECT-CHARTER",
+      "type": "folder"
+    },
+    {
+      "name": "01-ROADMAP",
+      "type": "folder"
+    },
+    {
+      "name": "02-TEAM-ROSTER",
+      "type": "folder"
+    },
+    {
+      "name": "03-MEETING-NOTES",
+      "type": "folder"
+    },
+    {
+      "name": "04-DELIVERABLES",
+      "type": "folder"
+    },
+    {
+      "name": "05-RESOURCES",
+      "type": "folder"
+    }
+  ],
+  "files": [
+    {
+      "name": "PROJECT-CHARTER.gdoc",
+      "type": "document",
+      "content": {
+        "title": "{{PROJECT_NAME}} - Project Charter",
+        "sections": [
+          {
+            "heading": "📋 Project Overview",
+            "content": "{{PROJECT_DESCRIPTION}}"
+          },
+          {
+            "heading": "🎯 Objectives",
+            "content": "{{OBJECTIVES}}"
+          },
+          {
+            "heading": "👥 Team",
+            "content": "{{TEAM_MEMBERS}}"
+          },
+          {
+            "heading": "📆 Timeline",
+            "content": "{{TIMELINE}}"
+          },
+          {
+            "heading": "💰 Budget",
+            "content": "{{BUDGET}}"
+          },
+          {
+            "heading": "🚀 Success Criteria",
+            "content": "{{SUCCESS_CRITERIA}}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ROADMAP.gsheet",
+      "type": "spreadsheet",
+      "content": {
+        "sheets": [
+          {
+            "name": "Timeline",
+            "columns": [
+              "Phase",
+              "Start Date",
+              "End Date",
+              "Status",
+              "Owner",
+              "Dependencies"
+            ],
+            "rows": []
+          },
+          {
+            "name": "Milestones",
+            "columns": [
+              "Milestone",
+              "Target Date",
+              "Status",
+              "Deliverables"
+            ],
+            "rows": []
+          }
+        ]
+      }
+    }
+  ]
+}
