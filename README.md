@@ -3,7 +3,7 @@
 [![CI](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml)
 
 <img src="https://img.shields.io/badge/BlackRoad%20OS-Brand%20Kit-FF1D6C?style=for-the-badge&labelColor=0A0A0A" />
-<img src="https://img.shields.io/badge/Templates-26-F5A623?style=for-the-badge&labelColor=0A0A0A" />
+<img src="https://img.shields.io/badge/Templates-15-F5A623?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/Brand%20Audit-12%2F12-00CC88?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/License-Proprietary-9C27B0?style=for-the-badge&labelColor=0A0A0A" />
 
