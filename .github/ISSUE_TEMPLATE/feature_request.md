@@ -6,6 +6,7 @@ labels: enhancement
 assignees: ''
 ---
 
+<!-- Canonical copy: keep in sync with templates/github/ISSUE_TEMPLATE/feature_request.md -->
 ## ✨ Feature Description
 
 A clear and concise description of what you want to happen.
