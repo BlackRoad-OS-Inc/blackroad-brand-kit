@@ -59,6 +59,7 @@
       "object": "callout",
       "callout": {
         "icon": {
+          "type": "emoji",
           "emoji": "✅"
         },
         "rich_text": [
