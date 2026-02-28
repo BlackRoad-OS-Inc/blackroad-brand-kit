@@ -7,21 +7,17 @@
 ```css
 --black: #000000
 --white: #FFFFFF
---amber: #F5A623
---orange: #F26522
+--sunrise-orange: #F5A623
 --hot-pink: #FF1D6C      /* Primary Brand Color */
---magenta: #E91E63
---electric-blue: #2979FF
---sky-blue: #448AFF
---violet: #9C27B0
---deep-purple: #5E35B1
+--vivid-purple: #9C27B0
+--cyber-blue: #2979FF
 
 /* Brand Gradient (Golden Ratio positions 38.2% & 61.8%) */
 --gradient-brand: linear-gradient(135deg, 
-  var(--amber) 0%, 
+  var(--sunrise-orange) 0%, 
   var(--hot-pink) 38.2%, 
-  var(--violet) 61.8%, 
-  var(--electric-blue) 100%)
+  var(--vivid-purple) 61.8%, 
+  var(--cyber-blue) 100%)
 ```
 
 ## Spacing System (Golden Ratio φ = 1.618)
@@ -40,7 +36,7 @@
 ## Typography
 
 ```css
-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Courier New", monospace;
 line-height: 1.618; /* Golden Ratio */
 -webkit-font-smoothing: antialiased;
 ```
@@ -83,26 +79,16 @@ nav {
 
 ```css
 .btn-primary {
-  background: var(--white);
-  color: var(--black);
+  background: var(--gradient-brand);
+  color: var(--white);
   border-radius: 8px;
   padding: var(--space-sm) var(--space-lg);
 }
 
-.btn-primary::before {
-  background: var(--gradient-brand);
-  opacity: 0;
-  transition: opacity 0.4s var(--ease);
-}
-
-.btn-primary:hover::before {
-  opacity: 1; /* Gradient shows on hover */
-}
-
 .btn-primary:hover {
-  color: var(--white);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(255, 29, 108, 0.4);
+  opacity: 0.85;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(245, 166, 35, 0.3);
 }
 ```
 
@@ -190,6 +176,6 @@ nav {
 
 ---
 
-**Last Updated:** December 28, 2024  
+**Last Updated:** February 28, 2026  
 **Source:** Official BlackRoad Design Templates  
 **Status:** 🔒 LOCKED - DO NOT MODIFY

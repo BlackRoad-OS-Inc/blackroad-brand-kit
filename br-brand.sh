@@ -29,16 +29,16 @@ BRAND_CSS='
   --deep-black: #0A0A0A;
   --charcoal: #1A1A1A;
   --white: #FFFFFF;
-  --sunrise-orange: #FF9D00;
-  --warm-orange: #FF6B00;
-  --hot-pink: #FF0066;
-  --electric-magenta: #FF006B;
-  --deep-magenta: #D600AA;
-  --vivid-purple: #7700FF;
-  --cyber-blue: #0066FF;
-  --gradient-br: linear-gradient(180deg, var(--sunrise-orange) 0%, var(--warm-orange) 25%, var(--hot-pink) 75%, var(--electric-magenta) 100%);
-  --gradient-os: linear-gradient(180deg, var(--electric-magenta) 0%, var(--deep-magenta) 25%, var(--vivid-purple) 75%, var(--cyber-blue) 100%);
-  --gradient-full: linear-gradient(180deg, var(--sunrise-orange) 0%, var(--warm-orange) 14%, var(--hot-pink) 28%, var(--electric-magenta) 42%, var(--deep-magenta) 57%, var(--vivid-purple) 71%, var(--cyber-blue) 100%);
+  --sunrise-orange: #F5A623;
+  --warm-orange: #F5A623;
+  --hot-pink: #FF1D6C;
+  --electric-magenta: #FF1D6C;
+  --deep-magenta: #9C27B0;
+  --vivid-purple: #9C27B0;
+  --cyber-blue: #2979FF;
+  --gradient-br: linear-gradient(135deg, var(--sunrise-orange) 0%, var(--hot-pink) 100%);
+  --gradient-os: linear-gradient(135deg, var(--vivid-purple) 0%, var(--cyber-blue) 100%);
+  --gradient-full: linear-gradient(135deg, var(--sunrise-orange) 0%, var(--hot-pink) 38.2%, var(--vivid-purple) 61.8%, var(--cyber-blue) 100%);
   --gradient-brand: var(--gradient-full);
   --phi: 1.618;
   --space-xs: 8px;
@@ -130,7 +130,7 @@ nav {
   background: var(--gradient-brand);
   color: var(--white);
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,157,0,0.3); color: var(--white); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(245,166,35,0.3); color: var(--white); }
 .btn-outline {
   background: transparent; color: var(--white);
   border: 1px solid rgba(255,255,255,0.3);
@@ -662,7 +662,7 @@ EOF
       IFS=',' read -rA tag_list <<< "$tags"
       for tag in "${tag_list[@]}"; do
         tag="${tag## }"; tag="${tag%% }"
-        echo "        <span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,157,0,0.4);color:var(--sunrise-orange);\">${tag}</span>"
+        echo "        <span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(245,166,35,0.4);color:var(--sunrise-orange);\">${tag}</span>"
       done
       echo "      </div>"
     fi
@@ -797,9 +797,9 @@ _cmd_audit() {
 
   _check "Brand colors defined (--sunrise-orange)"  "sunrise-orange"
   _check "Brand gradient (--gradient-brand)"        "gradient-brand"
-  _check "Hot pink (#FF0066)"                       "FF0066\|hot-pink"
-  _check "Cyber blue (#0066FF)"                     "0066FF\|cyber-blue"
-  _check "Vivid purple (#7700FF)"                   "7700FF\|vivid-purple"
+  _check "Hot pink (#FF1D6C)"                       "FF1D6C\|hot-pink"
+  _check "Cyber blue (#2979FF)"                     "2979FF\|cyber-blue"
+  _check "Vivid purple (#9C27B0)"                   "9C27B0\|vivid-purple"
   _check "Golden ratio spacing (--space-)"          "\-\-space-"
   _check "Scroll progress bar"                      "scroll-progress\|scroll-bar"
   _check "backdrop-filter / glassmorphism"          "backdrop-filter"
@@ -1225,19 +1225,19 @@ $(_html_nav "$title")
   content: '';
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,0,102,.15) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(119,0,255,.1) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 30% at 80% 60%, rgba(0,102,255,.1) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,29,108,.15) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(156,39,176,.1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 30% at 80% 60%, rgba(41,121,255,.1) 0%, transparent 60%);
   pointer-events: none;
 }
 .badge {
   display: inline-block;
   padding: var(--space-xs) var(--space-md);
-  border: 1px solid rgba(255,0,102,.4);
+  border: 1px solid rgba(255,29,108,.4);
   border-radius: 100px;
   font-size: .75rem; letter-spacing: .1em; text-transform: uppercase;
   color: var(--hot-pink); margin-bottom: var(--space-lg);
-  background: rgba(255,0,102,.05);
+  background: rgba(255,29,108,.05);
 }
 .hero-title {
   font-size: clamp(2.5rem, 8vw, 6rem);
@@ -1323,7 +1323,7 @@ $(_html_nav "$title")
   border-radius: 16px; background: rgba(255,255,255,.03);
   transition: border-color .2s;
 }
-.stat-tile:hover { border-color: rgba(255,0,102,.35); }
+.stat-tile:hover { border-color: rgba(255,29,108,.35); }
 .stat-value { font-size: clamp(2rem,5vw,3.5rem); font-weight: 900;
   background: var(--gradient-full); -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; margin-bottom: var(--space-sm); }
@@ -1378,7 +1378,7 @@ $(_html_nav "$title")
 .tc { flex: 1 1 280px; max-width: 380px; text-align: left;
   padding: var(--space-xl); border: 1px solid rgba(255,255,255,.08);
   border-radius: 20px; background: rgba(255,255,255,.03); transition: border-color .25s; }
-.tc:hover { border-color: rgba(255,0,102,.3); }
+.tc:hover { border-color: rgba(255,29,108,.3); }
 .tc-quote { font-size: .95rem; color: rgba(255,255,255,.8); line-height: var(--phi);
   margin-bottom: var(--space-lg); font-style: italic; }
 .tc-quote::before { content: '\\201C'; color: var(--hot-pink); font-size: 1.5rem; line-height: 0; vertical-align: -.2em; }
@@ -1456,10 +1456,10 @@ $(_html_nav "$title")
 .cb-code { padding: var(--space-lg); font-size: .85rem; line-height: 1.7;
   color: rgba(255,255,255,.85); white-space: pre; overflow-x: auto; flex: 1; }
 /* keyword coloring via CSS classes (manual) */
-.kw  { color: #7700FF; }
-.str { color: #FF9D00; }
+.kw  { color: #9C27B0; }
+.str { color: #F5A623; }
 .cm  { color: rgba(255,255,255,.3); font-style: italic; }
-.fn  { color: #0066FF; }
+.fn  { color: #2979FF; }
 .cb-copy-row { display: flex; justify-content: flex-end;
   padding: var(--space-sm) var(--space-lg); background: rgba(255,255,255,.02);
   border-top: 1px solid rgba(255,255,255,.06); }
@@ -1511,8 +1511,8 @@ $(_html_nav "$title")
 .cs-section::before {
   content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255,0,102,.18) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 50% at 10% 90%, rgba(119,0,255,.12) 0%, transparent 60%);
+    radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255,29,108,.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 10% 90%, rgba(156,39,176,.12) 0%, transparent 60%);
   pointer-events: none;
 }
 .cs-label { font-size: .7rem; letter-spacing: .25em; text-transform: uppercase;
@@ -1535,7 +1535,7 @@ $(_html_nav "$title")
   border: 1px solid rgba(255,255,255,.15); border-radius: 8px; color: white;
   font-family: inherit; font-size: .9rem; min-width: 260px; outline: none;
   transition: border-color .2s; }
-.cs-input:focus { border-color: rgba(255,0,102,.5); }
+.cs-input:focus { border-color: rgba(255,29,108,.5); }
 .cs-input::placeholder { color: rgba(255,255,255,.3); }
 .cs-btn { padding: var(--space-sm) var(--space-lg); background: var(--gradient-full);
   border: none; border-radius: 8px; color: white; font-family: inherit;
@@ -1602,9 +1602,9 @@ _tpl_changelog() {
     IFS=',' read -rA tag_arr <<< "$tags"
     for tag in "${tag_arr[@]}"; do
       local tag_color="rgba(255,255,255,.15)"
-      [[ "$tag" == "feature" ]]     && tag_color="rgba(0,102,255,.3)"
-      [[ "$tag" == "fix" ]]         && tag_color="rgba(255,0,102,.3)"
-      [[ "$tag" == "improvement" ]] && tag_color="rgba(119,0,255,.3)"
+      [[ "$tag" == "feature" ]]     && tag_color="rgba(41,121,255,.3)"
+      [[ "$tag" == "fix" ]]         && tag_color="rgba(255,29,108,.3)"
+      [[ "$tag" == "improvement" ]] && tag_color="rgba(156,39,176,.3)"
       [[ "$tag" == "breaking" ]]    && tag_color="rgba(255,100,0,.4)"
       tag_html+="<span class=\"cl-tag\" style=\"background:${tag_color}\">${tag}</span>"
     done
@@ -1710,7 +1710,7 @@ $(_html_nav "$title")
 .tm-card { flex: 1 1 220px; max-width: 280px; padding: var(--space-xl);
   border: 1px solid rgba(255,255,255,.08); border-radius: 20px;
   background: rgba(255,255,255,.03); transition: border-color .25s; text-align: center; }
-.tm-card:hover { border-color: rgba(255,0,102,.3); }
+.tm-card:hover { border-color: rgba(255,29,108,.3); }
 .tm-avatar { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto var(--space-md);
   display: flex; align-items: center; justify-content: center;
   font-size: 1.6rem; font-weight: 900; background: var(--gradient-full); }
