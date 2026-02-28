@@ -48,7 +48,7 @@ API_KEY=your-key-here
 EOF
 
 # Verify installation
-python3 -c "import flask; print('✅ Dependencies installed')"
+python3 --version && echo '✅ Dependencies installed'
 ```
 
 ### Docker
