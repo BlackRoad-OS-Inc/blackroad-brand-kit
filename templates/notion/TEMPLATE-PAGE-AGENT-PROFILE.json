@@ -1,5 +1,4 @@
 {
-  "object": "page",
   "parent": {
     "type": "database_id",
     "database_id": "{{AGENTS_DB_ID}}"
