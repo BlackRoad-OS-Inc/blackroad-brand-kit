@@ -122,9 +122,13 @@ cmd_status() {
 
     # Check local services
     info "Local services:"
-    pgrep -f "python3.*blackroad" | while read pid; do
-        echo "  PID $pid: $(ps -p $pid -o command=)"
-    done
+    if pids=$(pgrep -f "python3.*blackroad"); then
+        while IFS= read -r pid; do
+            echo "  PID $pid: $(ps -p "$pid" -o command=)"
+        done <<< "$pids"
+    else
+        echo "  No matching python3 blackroad processes found"
+    fi
 
     # Check Railway
     if command_exists "railway"; then
