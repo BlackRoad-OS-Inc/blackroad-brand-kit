@@ -1,7 +1,7 @@
 {
-  "object": "page",
   "parent": {
-    "type": "workspace"
+    "type": "workspace",
+    "workspace": true
   },
   "icon": {
     "type": "emoji",
