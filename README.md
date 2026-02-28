@@ -3,7 +3,7 @@
 [![CI](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml)
 
 <img src="https://img.shields.io/badge/BlackRoad%20OS-Brand%20Kit-FF1D6C?style=for-the-badge&labelColor=0A0A0A" />
-<img src="https://img.shields.io/badge/Templates-15-F5A623?style=for-the-badge&labelColor=0A0A0A" />
+<img src="https://img.shields.io/badge/Templates-26-F5A623?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/Brand%20Audit-12%2F12-00CC88?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/License-Proprietary-9C27B0?style=for-the-badge&labelColor=0A0A0A" />
 
@@ -11,7 +11,7 @@
 
 # BlackRoad OS — Brand Kit
 
-**Official design system, HTML templates, and CLI generator for all BlackRoad OS projects.**
+**Official design system, HTML templates, cross-platform brand templates, and CLI generator for all BlackRoad OS projects.**
 
 *Every page this kit produces scores 12/12 on brand compliance.*
 
@@ -472,4 +472,63 @@ br brand new checkout \
 ```
 
 → Full guide: [docs/stripe-setup.md](docs/stripe-setup.md)
+
+---
+
+## 📋 Cross-Platform Brand Templates
+
+Canonical templates sourced from [`blackroad-operator`](https://github.com/BlackRoad-OS-Inc/blackroad-operator) — the brand standard for **all** BlackRoad OS orgs, repos, and platforms.
+
+### Markdown / Dev Templates
+
+| Template | File | Purpose |
+|----------|------|---------|
+| **README** | [`templates/README-TEMPLATE.md`](templates/README-TEMPLATE.md) | Standard README for any BlackRoad OS repo |
+| **Deployment Guide** | [`templates/DEPLOYMENT-GUIDE-TEMPLATE.md`](templates/DEPLOYMENT-GUIDE-TEMPLATE.md) | Copy-paste deployment docs for any platform |
+| **Script** | [`templates/SCRIPT-TEMPLATE.sh`](templates/SCRIPT-TEMPLATE.sh) | Bash script with menu mode, logging, colors |
+| **Emoji Reference** | [`templates/EMOJI-REFERENCE.md`](templates/EMOJI-REFERENCE.md) | 127 canonical emojis used across all docs |
+
+### GitHub Templates
+
+| Template | File | Purpose |
+|----------|------|---------|
+| **Bug Report** | [`templates/github/ISSUE_TEMPLATE/bug_report.md`](templates/github/ISSUE_TEMPLATE/bug_report.md) | Standard bug report issue template |
+| **Feature Request** | [`templates/github/ISSUE_TEMPLATE/feature_request.md`](templates/github/ISSUE_TEMPLATE/feature_request.md) | Standard feature request issue template |
+| **Pull Request** | [`templates/github/PULL_REQUEST_TEMPLATE.md`](templates/github/PULL_REQUEST_TEMPLATE.md) | Standard PR template with checklist |
+
+> These templates are also installed in `.github/` for this repo.
+
+### Notion Templates
+
+| Template | File | Purpose |
+|----------|------|---------|
+| **Project Dashboard** | [`templates/notion/TEMPLATE-DASHBOARD-PROJECT.json`](templates/notion/TEMPLATE-DASHBOARD-PROJECT.json) | Notion project dashboard page |
+| **Tasks Database** | [`templates/notion/TEMPLATE-DATABASE-TASKS.json`](templates/notion/TEMPLATE-DATABASE-TASKS.json) | Notion task tracking database |
+| **Agent Profile** | [`templates/notion/TEMPLATE-PAGE-AGENT-PROFILE.json`](templates/notion/TEMPLATE-PAGE-AGENT-PROFILE.json) | Notion agent documentation page |
+
+### Google Drive Templates
+
+| Template | File | Purpose |
+|----------|------|---------|
+| **Project Structure** | [`templates/google-drive/PROJECT-STRUCTURE-TEMPLATE.json`](templates/google-drive/PROJECT-STRUCTURE-TEMPLATE.json) | Google Drive project folder layout |
+| **Meeting Notes** | [`templates/google-drive/TEMPLATE-DOC-MEETING-NOTES.json`](templates/google-drive/TEMPLATE-DOC-MEETING-NOTES.json) | Meeting notes document template |
+| **Technical Spec** | [`templates/google-drive/TEMPLATE-DOC-TECHNICAL-SPEC.json`](templates/google-drive/TEMPLATE-DOC-TECHNICAL-SPEC.json) | Technical specification template |
+| **User Guide** | [`templates/google-drive/TEMPLATE-DOC-USER-GUIDE.json`](templates/google-drive/TEMPLATE-DOC-USER-GUIDE.json) | User guide document template |
+
+### Using These Templates
+
+```bash
+# Copy README template for a new repo
+cp templates/README-TEMPLATE.md ../my-new-repo/README.md
+
+# Copy GitHub templates for a new repo
+cp -r templates/github/ISSUE_TEMPLATE ../my-new-repo/.github/ISSUE_TEMPLATE
+cp templates/github/PULL_REQUEST_TEMPLATE.md ../my-new-repo/.github/
+
+# Use script template for a new CLI tool
+cp templates/SCRIPT-TEMPLATE.sh ../my-new-repo/my-tool.sh
+chmod +x ../my-new-repo/my-tool.sh
+```
+
+> All templates follow the **copy-paste-and-learn** philosophy from the operator repo: zero cognitive load, self-documenting, machine-teachable, and error-proof.
 

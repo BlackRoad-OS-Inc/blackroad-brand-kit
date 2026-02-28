@@ -1,0 +1,25 @@
+{
+  "title": "{{MEETING_TITLE}} - {{DATE}}",
+  "sections": [
+    {
+      "heading": "📅 Meeting Info",
+      "content": "Date: {{DATE}}\nTime: {{TIME}}\nAttendees: {{ATTENDEES}}"
+    },
+    {
+      "heading": "🎯 Agenda",
+      "content": "{{AGENDA}}"
+    },
+    {
+      "heading": "📝 Discussion",
+      "content": "{{DISCUSSION}}"
+    },
+    {
+      "heading": "✅ Action Items",
+      "content": "{{ACTION_ITEMS}}"
+    },
+    {
+      "heading": "🔜 Next Steps",
+      "content": "{{NEXT_STEPS}}"
+    }
+  ]
+}
