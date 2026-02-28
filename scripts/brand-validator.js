@@ -46,7 +46,10 @@ function scanDirectory(dir) {
     if (entry.isDirectory() && !['node_modules', '.git', 'dist', '.next'].includes(entry.name)) {
       allIssues.push(...scanDirectory(fullPath));
     } else if (entry.isFile() && SCAN_EXTENSIONS.includes(path.extname(entry.name))) {
-      allIssues.push(...scanFile(fullPath));
+      // Skip this validator script itself (it contains forbidden color strings by definition)
+      if (path.resolve(fullPath) !== path.resolve(__filename)) {
+        allIssues.push(...scanFile(fullPath));
+      }
     }
   }
   return allIssues;
