@@ -62,7 +62,9 @@
       "date": {}
     },
     "Tags": {
-      "multi_select": {}
+      "multi_select": {
+        "options": []
+      }
     },
     "Estimate": {
       "number": {
