@@ -68,17 +68,17 @@ check_prerequisites() {
     log "Checking prerequisites..."
 
     local missing=0
+    local cmd
+    # List of external commands this script depends on.
+    # Add any additional required tools here as the script evolves.
+    local required_commands=("python3" "git" "pip3" "curl" "pytest" "railway")
 
-    if ! command_exists "python3"; then
-        error "python3 not found"
-        missing=1
-    fi
-
-    if ! command_exists "git"; then
-        error "git not found"
-        missing=1
-    fi
-
+    for cmd in "${required_commands[@]}"; do
+        if ! command_exists "$cmd"; then
+            error "$cmd not found"
+            missing=1
+        fi
+    done
     if [ $missing -eq 1 ]; then
         error "Missing required dependencies"
         exit 1
