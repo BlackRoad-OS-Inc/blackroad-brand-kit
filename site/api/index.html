@@ -10,7 +10,7 @@
       --amber:#F5A623; --pink:#FF1D6C; --blue:#2979FF; --violet:#9C27B0;
       --grad:linear-gradient(135deg,#F5A623 0%,#FF1D6C 38.2%,#9C27B0 61.8%,#2979FF 100%);
       --surface:#080808; --card:#0e0e0e; --border:#1e1e1e; --text:#e8e8e8; --muted:#666;
-      --green:#22c55e;
+      --green:#F5A623;
     }
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:var(--surface);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -30,7 +30,7 @@
     .endpoint-item:hover{background:#ffffff08}
     .endpoint-item.active{background:#FF1D6C11;border-right:2px solid var(--pink)}
     .method-badge{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;letter-spacing:.5px;min-width:34px;text-align:center}
-    .method-get{background:#22c55e22;color:#22c55e}
+    .method-get{background:#F5A62322;color:#F5A623}
     .method-post{background:#2979FF22;color:#2979FF}
     .method-put{background:#F5A62322;color:#F5A623}
     .method-delete{background:#FF1D6C22;color:#FF1D6C}
@@ -64,12 +64,12 @@
     /* Response */
     .res-meta{display:flex;align-items:center;gap:16px;padding:10px 16px;background:#0a0a0a;border-bottom:1px solid var(--border);font-size:12px;flex-shrink:0}
     .status-code{font-weight:700;padding:2px 8px;border-radius:4px}
-    .status-2xx{background:#22c55e22;color:#22c55e}
+    .status-2xx{background:#F5A62322;color:#F5A623}
     .status-4xx,.status-5xx{background:#FF1D6C22;color:#FF1D6C}
     .res-time{color:var(--muted)}
     .res-size{color:var(--muted)}
     .pre-response{font-family:'SF Mono','Fira Code',monospace;font-size:12px;white-space:pre;color:#e8e8e8;line-height:1.6}
-    .key{color:#9C27B0}.string{color:#22c55e}.number{color:#F5A623}.bool{color:#2979FF}.null{color:#FF1D6C}
+    .key{color:#9C27B0}.string{color:#F5A623}.number{color:#F5A623}.bool{color:#2979FF}.null{color:#FF1D6C}
 
     .empty-response{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:8px}
     .empty-response .icon{font-size:40px;opacity:.3}
@@ -90,7 +90,7 @@
     <a href="/chat/">Chat</a>
     <a href="/status/">Status</a>
   </div>
-</nav>
+<a href="/agent-hq/" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-decoration:none;">Agent HQ</a> </nav>
 
 <div class="workspace">
   <!-- Sidebar -->

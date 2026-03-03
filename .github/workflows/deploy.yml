@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pages: write
 
 jobs:
   build-and-deploy:
@@ -31,15 +32,19 @@ jobs:
             'tagline': 'Your AI. Your Hardware. Your Rules.',
             'description': 'The AI-native developer platform.',
             'cta_text': 'Get Started',
-            'cta_url': '/blackroad-brand-kit/docs/',
+            'cta_url': '/docs/',
             'footer': '© 2026 BlackRoad OS, Inc.',
-            'og_url': 'https://blackroad-os-inc.github.io/blackroad-brand-kit/',
+            'og_url': 'https://brand.blackroad.io/',
             'twitter': '@blackroadOS',
             'nav': [
-              {'label': 'Docs',    'url': '/blackroad-brand-kit/docs/'},
-              {'label': 'Pricing', 'url': '/blackroad-brand-kit/pricing/'},
-              {'label': 'Agents',  'url': '/blackroad-brand-kit/agents.html'},
-              {'label': 'About',   'url': '/blackroad-brand-kit/about/'}
+              {'label': 'Docs',      'url': '/docs/'},
+              {'label': 'Pricing',   'url': '/pricing/'},
+              {'label': 'Agents',    'url': '/agents.html'},
+              {'label': 'Models',    'url': '/models/'},
+              {'label': 'Agent HQ',  'url': '/agent-hq/'},
+              {'label': 'Templates', 'url': '/templates/'},
+              {'label': 'Status',    'url': '/status/'},
+              {'label': 'About',     'url': '/about/'}
             ]
           }
           with open('brand.json', 'w') as f:
@@ -82,12 +87,12 @@ jobs:
           else
             cat > site/success.html << 'HTMLEOF'
           <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Payment Successful — BlackRoad OS</title>
-          <meta http-equiv="refresh" content="3;url=/blackroad-brand-kit/docs/"></head>
+          <meta http-equiv="refresh" content="3;url=/docs/"></head>
           <body style="background:#000;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;">
           <div><div style="font-size:4rem;margin-bottom:1rem">✅</div>
           <h1 style="background:linear-gradient(135deg,#F5A623,#FF1D6C,#9C27B0,#2979FF);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-size:2rem;font-weight:900;">Payment Successful!</h1>
           <p style="color:rgba(255,255,255,.7);margin-top:1rem;">Redirecting to docs in 3 seconds…</p>
-          <a href="/blackroad-brand-kit/docs/" style="display:inline-block;margin-top:2rem;padding:12px 28px;background:linear-gradient(135deg,#F5A623,#FF1D6C);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Go to Docs →</a></div>
+          <a href="/docs/" style="display:inline-block;margin-top:2rem;padding:12px 28px;background:linear-gradient(135deg,#F5A623,#FF1D6C);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Go to Docs →</a></div>
           </body></html>
           HTMLEOF
           fi
@@ -100,10 +105,17 @@ jobs:
           <div><div style="font-size:4rem;margin-bottom:1rem">↩️</div>
           <h1 style="color:#fff;font-size:2rem;font-weight:900;margin-bottom:1rem;">No worries — nothing was charged.</h1>
           <p style="color:rgba(255,255,255,.65)">Come back whenever you're ready.</p>
-          <a href="/blackroad-brand-kit/pricing/pro/" style="display:inline-block;margin-top:2rem;padding:12px 28px;background:linear-gradient(135deg,#F5A623,#FF1D6C);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Try Again →</a></div>
+          <a href="/pricing/pro/" style="display:inline-block;margin-top:2rem;padding:12px 28px;background:linear-gradient(135deg,#F5A623,#FF1D6C);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Try Again →</a></div>
           </body></html>
           HTMLEOF
           fi
+          # Ensure all pre-built site pages are preserved alongside generated pages
+          echo "--- Preserving pre-built pages ---"
+          for dir in agents api chat console models models-explorer pi services status agent-hq templates; do
+            if [ -d "site/$dir" ]; then
+              echo "  ✓ site/$dir/ exists"
+            fi
+          done
           echo "--- Site structure ---"
           find site -name "*.html" | sort
 

@@ -9,7 +9,7 @@
 :root{
   --bg:#030308;--card:#0f0f1e;--border:rgba(255,255,255,.07);
   --accent:#FF1D6C;--blue:#2979FF;--amber:#F5A623;--violet:#9C27B0;
-  --green:#00e676;--red:#f44336;--text:#e8e8f0;--muted:#6b6b88;
+  --green:#F5A623;--red:#FF1D6C;--text:#e8e8f0;--muted:#6b6b88;
   --font:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
@@ -68,17 +68,17 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
 .model-icon{font-size:28px;margin-bottom:10px}
 .model-name{font-size:14px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px;font-family:'SF Mono',monospace}
 .model-cat{font-size:11px;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px}
-.cat-vision{background:rgba(41,121,255,.12);color:#6fa8ff}
-.cat-vision-hailo{background:rgba(156,39,176,.12);color:#ce93d8}
+.cat-vision{background:rgba(41,121,255,.12);color:#2979FF}
+.cat-vision-hailo{background:rgba(156,39,176,.12);color:#9C27B0}
 .cat-audio{background:rgba(245,166,35,.12);color:var(--amber)}
 .cat-speech{background:rgba(0,230,118,.1);color:var(--green)}
-.cat-nlp{background:rgba(255,29,108,.1);color:#ff6b98}
-.cat-nlp-locale{background:rgba(255,29,108,.07);color:#ff6b98}
-.cat-people{background:rgba(41,121,255,.1);color:#6fa8ff}
-.cat-prediction{background:rgba(156,39,176,.1);color:#ce93d8}
-.cat-location{background:rgba(0,230,118,.07);color:#69f0ae}
+.cat-nlp{background:rgba(255,29,108,.1);color:#FF1D6C}
+.cat-nlp-locale{background:rgba(255,29,108,.07);color:#FF1D6C}
+.cat-people{background:rgba(41,121,255,.1);color:#2979FF}
+.cat-prediction{background:rgba(156,39,176,.1);color:#9C27B0}
+.cat-location{background:rgba(0,230,118,.07);color:#F5A623}
 .cat-network{background:rgba(245,166,35,.07);color:var(--amber)}
-.cat-llm{background:linear-gradient(135deg,rgba(255,29,108,.15),rgba(156,39,176,.15));color:#ff6b98}
+.cat-llm{background:linear-gradient(135deg,rgba(255,29,108,.15),rgba(156,39,176,.15));color:#FF1D6C}
 .cat-core{background:rgba(255,255,255,.07);color:var(--muted)}
 .model-desc{font-size:12px;color:var(--muted);line-height:1.5}
 .model-actions{display:flex;gap:6px;margin-top:12px}
@@ -113,7 +113,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
     <a href="/models-explorer/" class="active">Explorer</a>
     <a href="/status/">Status</a>
   </div>
-</nav>
+<a href="/agent-hq/" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-decoration:none;">Agent HQ</a> </nav>
 
 <div class="hero">
   <h1>BlackRoad <span>Model Explorer</span></h1>

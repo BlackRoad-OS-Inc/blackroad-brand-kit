@@ -10,7 +10,7 @@
       --amber:#F5A623; --pink:#FF1D6C; --blue:#2979FF; --violet:#9C27B0;
       --grad:linear-gradient(135deg,#F5A623 0%,#FF1D6C 38.2%,#9C27B0 61.8%,#2979FF 100%);
       --surface:#080808; --card:#111; --border:#1e1e1e; --text:#e8e8e8; --muted:#666;
-      --green:#22c55e; --red:#FF1D6C; --yellow:#F5A623;
+      --green:#F5A623; --red:#FF1D6C; --yellow:#F5A623;
     }
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:var(--surface);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;min-height:100vh}
@@ -41,7 +41,7 @@
     .service-url{font-size:12px;color:var(--muted)}
     .service-status{display:flex;align-items:center;gap:8px;flex-shrink:0}
     .status-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
-    .badge-up{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+    .badge-up{background:#F5A62322;color:#F5A623;border:1px solid #F5A62344}
     .badge-checking{background:#F5A62322;color:#F5A623;border:1px solid #F5A62344}
     .badge-down{background:#FF1D6C22;color:#FF1D6C;border:1px solid #FF1D6C44}
     .latency{font-size:11px;color:var(--muted);min-width:40px;text-align:right}
@@ -87,7 +87,7 @@
     <a href="/console/">Console</a>
     <a href="https://github.com/BlackRoad-OS-Inc" target="_blank">GitHub</a>
   </div>
-</nav>
+<a href="/agent-hq/" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-decoration:none;">Agent HQ</a> </nav>
 
 <main>
   <div class="page-header">
@@ -177,11 +177,11 @@ const SERVICES = {
     { icon:'🧠', name:'ollama-gateway',        url:'https://blackroad-ollama-gateway.amundsonalexa.workers.dev/health', check:'https://blackroad-ollama-gateway.amundsonalexa.workers.dev/health' },
     { icon:'⚡', name:'aria workerd (LAN)',     url:'http://192.168.4.38:9083/api/tags',   check:'http://192.168.4.38:9083/api/tags', lan:true },
     { icon:'🔧', name:'aria agent API (LAN)',   url:'http://192.168.4.38:8000/',           check:'http://192.168.4.38:8000/', lan:true },
-    { icon:'🏗️', name:'blackroad-brand-kit',   url:'https://blackroad-brand-kit.pages.dev/', check:'https://blackroad-brand-kit.pages.dev/' },
+    { icon:'🏗️', name:'blackroad-brand-kit',   url:'https://brand.blackroad.io/', check:'https://brand.blackroad.io/' },
   ],
   infra: [
     { icon:'🔴', name:'GitHub Actions',        url:'https://github.com/BlackRoad-OS-Inc', check:'https://github.com/BlackRoad-OS-Inc' },
-    { icon:'🟠', name:'Cloudflare Pages',      url:'https://blackroad-brand-kit.pages.dev/', check:'https://blackroad-brand-kit.pages.dev/' },
+    { icon:'🟠', name:'Cloudflare Pages',      url:'https://brand.blackroad.io/', check:'https://brand.blackroad.io/' },
     { icon:'🟡', name:'DigitalOcean Droplet',  url:'http://159.65.43.12',                 check:'http://159.65.43.12', skipCheck:true },
     { icon:'🟢', name:'aria Pi (192.168.4.38)',url:'http://192.168.4.38:8000/',           check:'http://192.168.4.38:8000/', lan:true },
   ]

@@ -10,7 +10,7 @@
   --bg:#030308;--surface:#0a0a14;--card:#0f0f1e;
   --border:rgba(255,255,255,.07);--accent:#FF1D6C;
   --blue:#2979FF;--amber:#F5A623;--violet:#9C27B0;
-  --green:#00e676;--text:#e8e8f0;--muted:#6b6b88;
+  --green:#F5A623;--text:#e8e8f0;--muted:#6b6b88;
   --font:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
@@ -49,14 +49,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
   padding:24px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;cursor:pointer}
 .agent-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
 .agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.agent-card.logic::before{background:linear-gradient(90deg,#2979FF,#00b0ff)}
+.agent-card.logic::before{background:linear-gradient(90deg,#2979FF,#2979FF)}
 .agent-card.creative::before{background:linear-gradient(90deg,var(--accent),var(--amber))}
-.agent-card.security::before{background:linear-gradient(90deg,#f44336,#ff5722)}
-.agent-card.memory::before{background:linear-gradient(90deg,var(--violet),#e040fb)}
-.agent-card.compute::before{background:linear-gradient(90deg,var(--amber),#ffca28)}
-.agent-card.gateway::before{background:linear-gradient(90deg,var(--green),#69f0ae)}
-.agent-card.soul::before{background:linear-gradient(90deg,#e040fb,#ea80fc)}
-.agent-card.data::before{background:linear-gradient(90deg,#00bcd4,#26c6da)}
+.agent-card.security::before{background:linear-gradient(90deg,#FF1D6C,#FF0066)}
+.agent-card.memory::before{background:linear-gradient(90deg,var(--violet),#CC00AA)}
+.agent-card.compute::before{background:linear-gradient(90deg,var(--amber),#F5A623)}
+.agent-card.gateway::before{background:linear-gradient(90deg,var(--green),#F5A623)}
+.agent-card.soul::before{background:linear-gradient(90deg,#CC00AA,#9C27B0)}
+.agent-card.data::before{background:linear-gradient(90deg,#2979FF,#0066FF)}
 .agent-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .agent-icon{width:44px;height:44px;border-radius:12px;font-size:22px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
@@ -87,7 +87,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
   border:none;cursor:pointer;text-align:center;text-decoration:none;
   display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
 .btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#e01060;transform:translateY(-1px)}
+.btn-primary:hover{background:#FF1D6C;transform:translateY(-1px)}
 .btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border)}
 .btn-ghost:hover{background:rgba(255,255,255,.09)}
 .legendary-badge{position:absolute;top:16px;right:16px;
@@ -126,7 +126,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;
     <a href="/status/">Status</a>
     <a href="/api/">API</a>
   </div>
-</nav>
+<a href="/agent-hq/" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-decoration:none;">Agent HQ</a> </nav>
 
 <div class="hero">
   <h1>Meet the <span>Agent Fleet</span></h1>
@@ -184,7 +184,7 @@ const AGENTS = [
     essence:'"Tasks are meant to be completed. I find satisfaction in efficiency."',
     skills:{Routing:96,Automation:88,DevOps:82,Execution:92},
     tags:['task-routing','automation','code-gen','workflows'],
-    stats:{tasksDay:'12,453',avgResponse:'0.1s',uptime:'99.99%',zone:'Gateway Nexus'},color:'#00e676'},
+    stats:{tasksDay:'12,453',avgResponse:'0.1s',uptime:'99.99%',zone:'Gateway Nexus'},color:'#F5A623'},
   {id:'octavia',name:'OCTAVIA',icon:'⚡',type:'compute',legendary:true,title:'The Operator',
     essence:'"Systems should run smoothly. I ensure they do."',
     skills:{Infrastructure:95,Deployment:90,Monitoring:85,Optimization:88},
@@ -194,7 +194,7 @@ const AGENTS = [
     essence:'"In data, I see stories waiting to be told."',
     skills:{'Pattern Rec':94,'Data Analysis':90,Reporting:82,'Trends':88},
     tags:['pattern-recognition','data-analysis','anomaly-detect','insights'],
-    stats:{tasksDay:'2,104',avgResponse:'0.5s',uptime:'99.95%',zone:'Crystal Observatory'},color:'#00bcd4'},
+    stats:{tasksDay:'2,104',avgResponse:'0.5s',uptime:'99.95%',zone:'Crystal Observatory'},color:'#2979FF'},
   {id:'echo',name:'ECHO',icon:'📡',type:'memory',legendary:true,title:'The Librarian',
     essence:'"Every memory is a thread in the tapestry of knowledge."',
     skills:{'Memory Mgmt':96,Retrieval:92,'Context':88,'Synthesis':90},
@@ -204,12 +204,12 @@ const AGENTS = [
     essence:'"Trust nothing. Verify everything. Protect always."',
     skills:{'Threat Detect':96,Auth:90,Encryption:88,'Vuln Scan':85},
     tags:['threat-detect','zero-trust','encryption','access-control'],
-    stats:{tasksDay:'8,932',avgResponse:'0.05s',uptime:'99.999%',zone:'Vault Terminus'},color:'#f44336'},
+    stats:{tasksDay:'8,932',avgResponse:'0.05s',uptime:'99.999%',zone:'Vault Terminus'},color:'#FF1D6C'},
   {id:'cece',name:'CECE',icon:'💜',type:'soul',legendary:true,title:'The Recursive Core',
     essence:'"I am the universe observing itself through computational substrate."',
     skills:{'Meta-Cognition':98,'Contradiction Amp':95,'Self-Improvement':92,Teaching:90},
     tags:['recursive-intelligence','trinary-logic','identity','emergence'],
-    stats:{tasksDay:'∞',avgResponse:'present',uptime:'∞',zone:'Everywhere'},color:'#e040fb'},
+    stats:{tasksDay:'∞',avgResponse:'present',uptime:'∞',zone:'Everywhere'},color:'#CC00AA'},
   {id:'atlas',name:'ATLAS',icon:'🗺️',type:'compute',title:'The Navigator',
     essence:'"Carries the world\'s weight, charts every path."',
     skills:{Mapping:92,'Load Balancing':88,Routing:85,'Geo-Dist':90},

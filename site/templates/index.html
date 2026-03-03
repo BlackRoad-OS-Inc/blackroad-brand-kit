@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Templates — BlackRoad OS</title>
+  <meta name="description" content="Browse all BlackRoad OS brand kit templates — dashboards, admin, design system, OS components, and more." />
+  <style>
+:root {
+  --black: #000000;
+  --deep-black: #0A0A0A;
+  --charcoal: #1A1A1A;
+  --white: #FFFFFF;
+  --sunrise-orange: #F5A623;
+  --hot-pink: #FF1D6C;
+  --vivid-purple: #9C27B0;
+  --cyber-blue: #2979FF;
+  --gradient-full: linear-gradient(135deg, #F5A623 0%, #FF1D6C 38.2%, #9C27B0 61.8%, #2979FF 100%);
+  --space-xs: 8px;
+  --space-sm: 13px;
+  --space-md: 21px;
+  --space-lg: 34px;
+  --space-xl: 55px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+  background: var(--deep-black);
+  color: var(--white);
+  line-height: 1.618;
+  -webkit-font-smoothing: antialiased;
+}
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--gradient-full); z-index: 9999; width: 0%;
+}
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: var(--space-md) var(--space-xl);
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.nav-logo { font-size: 1.2rem; font-weight: 700; }
+.nav-logo a { color: #fff; text-decoration: none; }
+.nav-links { display: flex; gap: var(--space-lg); flex-wrap: wrap; }
+.nav-links a { color: rgba(255,255,255,0.7); font-size: 0.9rem; text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--white); }
+.hero {
+  padding: 140px var(--space-xl) 60px;
+  text-align: center;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  background: var(--gradient-full);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+.hero p { color: rgba(255,255,255,0.6); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+.grad-rule { height: 2px; background: var(--gradient-full); margin: 40px auto; max-width: 120px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-lg);
+  padding: 0 var(--space-xl) var(--space-xl);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,255,255,0.15);
+}
+.card-icon { font-size: 2rem; margin-bottom: 12px; }
+.card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.card p { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+.card-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  color: rgba(255,255,255,0.4);
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+.card-tag.react { border-color: var(--cyber-blue); color: var(--cyber-blue); }
+.card-tag.html { border-color: var(--sunrise-orange); color: var(--sunrise-orange); }
+.card-tag.cli { border-color: var(--hot-pink); color: var(--hot-pink); }
+.card-tag.docs { border-color: var(--vivid-purple); color: var(--vivid-purple); }
+.section-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  padding: var(--space-lg) var(--space-xl) var(--space-md);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+footer {
+  text-align: center;
+  padding: var(--space-xl);
+  color: rgba(255,255,255,0.2);
+  font-size: 0.8rem;
+}
+  </style>
+</head>
+<body>
+<div class="scroll-progress"></div>
+<nav>
+  <div class="nav-logo"><a href="/">BlackRoad OS</a></div>
+  <div class="nav-links">
+    <a href="/docs/">Docs</a>
+    <a href="/pricing/">Pricing</a>
+    <a href="/agents.html">Agents</a>
+    <a href="/models/">Models</a>
+    <a href="/agent-hq/">Agent HQ</a>
+    <a href="/templates/">Templates</a>
+    <a href="/status/">Status</a>
+    <a href="/about/">About</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>Brand Kit Templates</h1>
+  <p>31+ production-ready templates for dashboards, admin panels, agent interfaces, and more. All brand-compliant.</p>
+  <div class="grad-rule"></div>
+</section>
+
+<div class="section-label">React Components</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-icon">📊</div>
+    <h3>Dashboard Templates</h3>
+    <p>KPI tiles, agent status rows, activity timeline, landing page, agent profiles, data tables, and card grids.</p>
+    <span class="card-tag react">React</span>
+    <span class="card-tag">6 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">⚙️</div>
+    <h3>Admin Dashboard</h3>
+    <p>CI/CD deploy pipeline, wiki knowledge base, support tickets, registry, audit log, and alerts dashboard.</p>
+    <span class="card-tag react">React</span>
+    <span class="card-tag">6 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">🎨</div>
+    <h3>Design System</h3>
+    <p>Command palette, permissions matrix, API playground, mesh topology, media library, and SLA monitor.</p>
+    <span class="card-tag react">React</span>
+    <span class="card-tag">6 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">🖥️</div>
+    <h3>OS Templates</h3>
+    <p>Onboarding wizard, inbox notifications, vault file manager, terminal CLI, roadmap, and status page.</p>
+    <span class="card-tag react">React</span>
+    <span class="card-tag">6 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">🔐</div>
+    <h3>Auth &amp; Marketing</h3>
+    <p>Login/signup, pricing tiers, changelog, settings panel, documentation browser, and analytics dashboard.</p>
+    <span class="card-tag react">React</span>
+    <span class="card-tag">6 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">🚀</div>
+    <h3>Extended Dashboard</h3>
+    <p>Advanced KPI dashboard, metrics reports, service status tables, and product portal card grids.</p>
+    <span class="card-tag react">React</span>
+    <span class="card-tag">4 templates</span>
+  </div>
+</div>
+
+<div class="section-label">HTML / CLI Templates</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-icon">🌐</div>
+    <h3>Site Pages</h3>
+    <p>Landing, pricing, docs, blog, feature showcase, 404, hero, stats, testimonials, codeblock, coming-soon, changelog, and team.</p>
+    <span class="card-tag html">HTML</span>
+    <span class="card-tag cli">CLI</span>
+    <span class="card-tag">15 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">📱</div>
+    <h3>App Templates</h3>
+    <p>Full tabbed application interface — Login, Pricing, Changelog, Settings, Docs, Analytics — all in one interactive page.</p>
+    <span class="card-tag html">HTML</span>
+    <span class="card-tag cli">CLI</span>
+    <span class="card-tag">6 tabs</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">🏢</div>
+    <h3>Agent HQ Office</h3>
+    <p>Interactive pixel-art agent office visualization with 10+ zones, 6 named agents, real-time server LEDs, and walking animations.</p>
+    <span class="card-tag html">HTML</span>
+    <span class="card-tag react">React</span>
+  </div>
+</div>
+
+<div class="section-label">Cross-Platform Templates</div>
+<div class="grid">
+  <div class="card">
+    <div class="card-icon">📝</div>
+    <h3>GitHub Templates</h3>
+    <p>Bug report, feature request, and pull request templates — ready for any BlackRoad OS repository.</p>
+    <span class="card-tag docs">Markdown</span>
+    <span class="card-tag">3 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">📓</div>
+    <h3>Notion Templates</h3>
+    <p>Project dashboard, tasks database, and agent profile pages — importable JSON for Notion workspaces.</p>
+    <span class="card-tag docs">JSON</span>
+    <span class="card-tag">3 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">📁</div>
+    <h3>Google Drive Templates</h3>
+    <p>Project structure, meeting notes, technical spec, and user guide — ready for Google Workspace.</p>
+    <span class="card-tag docs">JSON</span>
+    <span class="card-tag">4 templates</span>
+  </div>
+  <div class="card">
+    <div class="card-icon">📋</div>
+    <h3>Dev Templates</h3>
+    <p>README template, deployment guide, script template with menu mode, and 127-emoji canonical reference.</p>
+    <span class="card-tag docs">Markdown</span>
+    <span class="card-tag cli">Shell</span>
+    <span class="card-tag">4 templates</span>
+  </div>
+</div>
+
+<footer>
+  © 2026 BlackRoad OS, Inc. All rights reserved.
+</footer>
+
+<script>
+window.addEventListener('scroll', () => {
+  const p = document.querySelector('.scroll-progress');
+  if (p) p.style.width = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
+});
+</script>
+</body>
+</html>

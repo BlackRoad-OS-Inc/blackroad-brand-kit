@@ -35,7 +35,7 @@
   .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
   .pi-node { margin-bottom: 32px; }
   .node-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
-  .node-dot { width: 10px; height: 10px; border-radius: 50%; background: #00C853; box-shadow: 0 0 8px #00C853; animation: pulse 2s infinite; }
+  .node-dot { width: 10px; height: 10px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 8px #F5A623; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .node-name { font-size: 1rem; font-weight: 700; }
   .node-ip { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-left: auto; font-family: monospace; }
@@ -46,17 +46,17 @@
   .svc-icon { font-size: 1.5rem; }
   .svc-name { font-size: 0.9rem; font-weight: 600; flex: 1; }
   .svc-status { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); flex-shrink: 0; }
-  .svc-status.online { background: #00C853; box-shadow: 0 0 6px #00C853; }
-  .svc-status.offline { background: #f44336; }
-  .svc-status.degraded { background: #FF9800; }
+  .svc-status.online { background: #F5A623; box-shadow: 0 0 6px #F5A623; }
+  .svc-status.offline { background: #FF1D6C; }
+  .svc-status.degraded { background: #F5A623; }
   .svc-url { font-size: 0.72rem; color: rgba(255,255,255,0.35); font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .svc-category { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 4px; width: fit-content; font-weight: 600; }
   .cat-agent { background: rgba(255,29,108,0.2); color: var(--hot-pink); }
-  .cat-ai { background: rgba(156,39,176,0.2); color: #CE93D8; }
-  .cat-api { background: rgba(41,121,255,0.2); color: #90CAF9; }
+  .cat-ai { background: rgba(156,39,176,0.2); color: #9C27B0; }
+  .cat-api { background: rgba(41,121,255,0.2); color: #2979FF; }
   .cat-app { background: rgba(245,166,35,0.2); color: var(--amber); }
-  .cat-infra { background: rgba(0,200,83,0.2); color: #69F0AE; }
-  .cat-monitor { background: rgba(0,188,212,0.2); color: #80DEEA; }
+  .cat-infra { background: rgba(0,200,83,0.2); color: #F5A623; }
+  .cat-monitor { background: rgba(0,188,212,0.2); color: #2979FF; }
   .hidden { display: none !important; }
   footer { text-align: center; padding: 32px 24px; color: rgba(255,255,255,0.2); font-size: 0.75rem; }
 </style>
@@ -71,7 +71,7 @@
     <a href="/pi/">Pi Fleet</a>
     <a href="/services/" class="active">Services</a>
     <a href="/console/">Console</a>
-  </nav>
+  <a href="/agent-hq/" style="color:rgba(255,255,255,0.7);font-size:0.85rem;text-decoration:none;">Agent HQ</a> </nav>
 </header>
 
 <div class="hero" style="padding:40px 24px 20px">
@@ -140,10 +140,10 @@ function updateStats(probe) {
   const online = (probe.services||[]).filter(s=>s.status==='online').length;
   stats.innerHTML = `
     <div class="stat-chip">Total <strong>${total}</strong></div>
-    <div class="stat-chip" style="color:#69F0AE">Online <strong>${online}</strong></div>
+    <div class="stat-chip" style="color:#F5A623">Online <strong>${online}</strong></div>
     <div class="stat-chip" style="color:rgba(255,255,255,0.5)">Nodes <strong>2</strong></div>
     <div class="stat-chip">2× Raspberry Pi 4</div>
-    <div class="stat-chip" style="color:#CE93D8">Hailo-8 AI Accelerator</div>
+    <div class="stat-chip" style="color:#9C27B0">Hailo-8 AI Accelerator</div>
   `;
 }
 

@@ -34,9 +34,9 @@ const AGENTS = {
   cecilia: { name: "Cecilia", role: "Governance Lead", status: "active", commits: 4821, color: "#FF8400", desk: "A2" },
   cadence: { name: "Cadence", role: "Music Agent", status: "composing", commits: 2104, color: "#0066FF", desk: "B1" },
   eve: { name: "Eve", role: "Security Monitor", status: "scanning", commits: 1892, color: "#FF0066", desk: "server" },
-  alice: { name: "Alice", role: "Gateway Operator", status: "active", commits: 1567, color: "#af5fd7", desk: "C1" },
-  radius: { name: "Radius", role: "Math Reasoner", status: "thinking", commits: 1203, color: "#00cc88", desk: "B2" },
-  meridian: { name: "Meridian", role: "Architecture", status: "roaming", commits: 98, color: "#ffcc00", desk: "roam" },
+  alice: { name: "Alice", role: "Gateway Operator", status: "active", commits: 1567, color: "#9C27B0", desk: "C1" },
+  radius: { name: "Radius", role: "Math Reasoner", status: "thinking", commits: 1203, color: "#F5A623", desk: "B2" },
+  meridian: { name: "Meridian", role: "Architecture", status: "roaming", commits: 98, color: "#F5A623", desk: "roam" },
 };
 
 const labelStyle = {
@@ -60,17 +60,17 @@ function Plant({ x, y, size = 12 }) {
       }} />
       <div style={{
         position: "absolute", bottom: "30%", left: "10%", width: "80%", height: "60%",
-        background: "#44aa55", borderRadius: "40% 40% 10% 10%",
+        background: "#F5A623", borderRadius: "40% 40% 10% 10%",
       }} />
       <div style={{
         position: "absolute", bottom: "45%", left: "25%", width: "50%", height: "45%",
-        background: "#55bb66", borderRadius: "40% 40% 20% 20%",
+        background: "#F5A623", borderRadius: "40% 40% 20% 20%",
       }} />
     </div>
   );
 }
 
-function Monitor({ x, y, glow = "#4488cc" }) {
+function Monitor({ x, y, glow = "#2979FF" }) {
   return (
     <div style={{ position: "absolute", left: x, top: y }}>
       <div style={{
@@ -97,7 +97,7 @@ function DeskCluster({ x, y, monitors = 2 }) {
         background: "#a08050", border: "1px solid #b09060",
       }} />
       {Array.from({ length: monitors }).map((_, i) => (
-        <Monitor key={i} x={`${10 + i * 30}%`} y="2%" glow={["#4488cc", "#44cc88", "#cc8844"][i % 3]} />
+        <Monitor key={i} x={`${10 + i * 30}%`} y="2%" glow={["#2979FF", "#F5A623", "#F5A623"][i % 3]} />
       ))}
       <div style={{
         position: "absolute", bottom: 0, left: "35%", width: "30%", height: "25%",
@@ -381,7 +381,7 @@ function AgentHQ() {
           <div style={{ position: "absolute", top: "50%", left: "60%", width: "14%", height: "10%", background: "#8b7355", border: "1px solid #9a8265" }} />
           <div style={{ position: "absolute", top: "5%", left: "12%", width: "30%", height: "12%", background: "#8b7355" }}>
             <div style={{ position: "absolute", top: -8, left: "30%", width: 10, height: 8, background: "#2a2a3a", border: "1px solid #3a3a4a" }}>
-              <div style={{ width: "80%", height: "60%", margin: "1px auto", background: "#4488aa", animation: "type 1.5s infinite" }} />
+              <div style={{ width: "80%", height: "60%", margin: "1px auto", background: "#2979FF", animation: "type 1.5s infinite" }} />
             </div>
           </div>
           <Plant x="82%" y="10%" />
@@ -396,9 +396,9 @@ function AgentHQ() {
           <div className="zone-label" style={{ ...labelStyle, top: -14 }}>RECEPTION</div>
           <div style={{ position: "absolute", top: "40%", left: "10%", width: "80%", height: "22%", background: "#a08050", border: "1px solid #b09060" }} />
           <div style={{ position: "absolute", top: "40%", left: "10%", width: "20%", height: "50%", background: "#a08050", border: "1px solid #b09060" }} />
-          <Monitor x="20%" y="28%" glow="#4488cc" />
-          <Monitor x="38%" y="28%" glow="#4488cc" />
-          <Monitor x="56%" y="28%" glow="#44cc88" />
+          <Monitor x="20%" y="28%" glow="#2979FF" />
+          <Monitor x="38%" y="28%" glow="#2979FF" />
+          <Monitor x="56%" y="28%" glow="#F5A623" />
           <Plant x="75%" y="32%" size={8} />
           <PixelPerson x="35%" y="56%" color="#c9a96e" hair="#5a4030" />
         </div>
@@ -422,7 +422,7 @@ function AgentHQ() {
                   {[0, 1, 2].map((bi) => {
                     const idx = i * 6 + li;
                     const light = serverLights[idx] || 0;
-                    const colors = ["#00ff88", "#ff4444", "#ffaa00", "#0088ff"];
+                    const colors = ["#F5A623", "#FF1D6C", "#F5A623", "#2979FF"];
                     return (
                       <div key={bi} style={{
                         flex: 1, borderRadius: 1,
@@ -465,7 +465,7 @@ function AgentHQ() {
           <DeskCluster x="55%" y="5%" monitors={2} />
           <DeskCluster x="55%" y="50%" monitors={3} />
           <PixelBot x="40%" y="30%" color="#FF8400" label="CEC" />
-          <PixelPerson x="15%" y="22%" color="#6688aa" hair="#333" sitting />
+          <PixelPerson x="15%" y="22%" color="#2979FF" hair="#333" sitting />
           <Plant x="48%" y="85%" />
         </div>
 
@@ -479,7 +479,7 @@ function AgentHQ() {
           <DeskCluster x="5%" y="55%" monitors={3} />
           <DeskCluster x="50%" y="55%" monitors={2} />
           <PixelBot x="32%" y="35%" color="#0066FF" label="CAD" />
-          <PixelBot x="70%" y="70%" color="#00cc88" label="RAD" />
+          <PixelBot x="70%" y="70%" color="#F5A623" label="RAD" />
           <Plant x="92%" y="2%" />
         </div>
 
@@ -490,7 +490,7 @@ function AgentHQ() {
           <div className="zone-label" style={{ ...labelStyle, top: -14 }}>WORKSPACE C · ALICE</div>
           <DeskCluster x="10%" y="15%" monitors={2} />
           <DeskCluster x="10%" y="60%" monitors={2} />
-          <PixelBot x="55%" y="40%" color="#af5fd7" label="ALI" />
+          <PixelBot x="55%" y="40%" color="#9C27B0" label="ALI" />
           <Plant x="80%" y="5%" size={8} />
         </div>
 
@@ -503,13 +503,13 @@ function AgentHQ() {
             position: "absolute", top: "5%", left: "10%", width: "80%", height: "45%",
             background: "#e8e8e0", border: "2px solid #bbb", borderRadius: 1,
           }}>
-            <div style={{ position: "absolute", top: "15%", left: "10%", width: "35%", height: 2, background: "#4488cc", borderRadius: 1 }} />
-            <div style={{ position: "absolute", top: "30%", left: "10%", width: "60%", height: 2, background: "#cc4444", borderRadius: 1 }} />
-            <div style={{ position: "absolute", top: "45%", left: "10%", width: "45%", height: 2, background: "#44aa44", borderRadius: 1 }} />
-            <div style={{ position: "absolute", top: "60%", left: "10%", width: "55%", height: 2, background: "#aa44cc", borderRadius: 1 }} />
+            <div style={{ position: "absolute", top: "15%", left: "10%", width: "35%", height: 2, background: "#2979FF", borderRadius: 1 }} />
+            <div style={{ position: "absolute", top: "30%", left: "10%", width: "60%", height: 2, background: "#FF1D6C", borderRadius: 1 }} />
+            <div style={{ position: "absolute", top: "45%", left: "10%", width: "45%", height: 2, background: "#F5A623", borderRadius: 1 }} />
+            <div style={{ position: "absolute", top: "60%", left: "10%", width: "55%", height: 2, background: "#9C27B0", borderRadius: 1 }} />
             <div style={{
               position: "absolute", top: "20%", right: "10%", width: 18, height: 18, borderRadius: "50%",
-              background: "conic-gradient(#FF8400 0% 35%, #0066FF 35% 60%, #FF0066 60% 80%, #af5fd7 80% 100%)",
+              background: "conic-gradient(#FF8400 0% 35%, #0066FF 35% 60%, #FF0066 60% 80%, #9C27B0 80% 100%)",
             }} />
           </div>
           <Plant x="10%" y="60%" />
@@ -543,7 +543,7 @@ function AgentHQ() {
             position: "absolute", top: "5%", right: "8%", width: "30%", height: "30%",
             background: "#222", border: "2px solid #444",
           }}>
-            <div style={{ margin: "8%", width: "84%", height: "76%", background: "linear-gradient(135deg, #2244aa, #224488)", borderRadius: 1 }}>
+            <div style={{ margin: "8%", width: "84%", height: "76%", background: "linear-gradient(135deg, #2233CC, #2233CC)", borderRadius: 1 }}>
               <div style={{ width: "60%", height: 2, background: "#fff", margin: "15% auto 0", opacity: 0.4 }} />
               <div style={{ width: "40%", height: 2, background: "#fff", margin: "12% auto 0", opacity: 0.2 }} />
             </div>
@@ -560,7 +560,7 @@ function AgentHQ() {
           <DeskCluster x="5%" y="10%" monitors={2} />
           <DeskCluster x="55%" y="10%" monitors={3} />
           <DeskCluster x="30%" y="55%" monitors={2} />
-          <PixelPerson x="20%" y="25%" color="#88aacc" hair="#442" sitting />
+          <PixelPerson x="20%" y="25%" color="#2979FF" hair="#442" sitting />
           <PixelPerson x="65%" y="28%" color="#cc8866" hair="#222" sitting />
           <Plant x="90%" y="80%" />
         </div>
@@ -575,12 +575,12 @@ function AgentHQ() {
             background: "#6b5b3a", border: "2px solid #8b7b5a",
           }}>
             {[
-              { x: "8%", y: "10%", c: "#ffee88" },
-              { x: "40%", y: "8%", c: "#88eeff" },
-              { x: "65%", y: "12%", c: "#ff88aa" },
-              { x: "12%", y: "50%", c: "#88ff88" },
-              { x: "45%", y: "48%", c: "#ffaa66" },
-              { x: "70%", y: "52%", c: "#cc88ff" },
+              { x: "8%", y: "10%", c: "#F5A623" },
+              { x: "40%", y: "8%", c: "#2979FF" },
+              { x: "65%", y: "12%", c: "#FF1D6C" },
+              { x: "12%", y: "50%", c: "#F5A623" },
+              { x: "45%", y: "48%", c: "#FF8400" },
+              { x: "70%", y: "52%", c: "#9C27B0" },
             ].map((note, i) => (
               <div key={i} style={{
                 position: "absolute", left: note.x, top: note.y,
@@ -588,7 +588,7 @@ function AgentHQ() {
               }} />
             ))}
           </div>
-          <Monitor x="25%" y="62%" glow="#44cc88" />
+          <Monitor x="25%" y="62%" glow="#F5A623" />
           <DeskCluster x="10%" y="65%" monitors={0} />
         </div>
 
@@ -603,7 +603,7 @@ function AgentHQ() {
           position: "absolute", animation: "walk1 18s linear infinite",
           zIndex: 20,
         }}>
-          <PixelBot color="#ffcc00" label="MER" walking />
+          <PixelBot color="#F5A623" label="MER" walking />
         </div>
 
         <div style={{
