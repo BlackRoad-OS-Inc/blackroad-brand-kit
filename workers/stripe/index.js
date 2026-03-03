@@ -15,12 +15,15 @@
  *   GET  /health             — health check
  */
 
-const CORS_HEADERS = (origin) => ({
-  'Access-Control-Allow-Origin': origin || '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400',
-});
+const CORS_HEADERS = (origin) => {
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400',
+  };
+  if (origin) headers['Access-Control-Allow-Origin'] = origin;
+  return headers;
+};
 
 async function stripeRequest(env, method, path, body = null) {
   const url = `https://api.stripe.com/v1${path}`;
@@ -68,6 +71,9 @@ async function handleCheckout(request, env) {
 
   if (!price_id) {
     return Response.json({ error: 'price_id is required' }, { status: 400 });
+  }
+  if (!/^price_[A-Za-z0-9]{14,}$/.test(price_id)) {
+    return Response.json({ error: 'invalid price_id format' }, { status: 400 });
   }
 
   const origin = request.headers.get('Origin') || env.ALLOWED_ORIGIN || 'https://blackroad-brand-kit.pages.dev';
@@ -137,6 +143,29 @@ async function handlePrices(env) {
   return Response.json({ prices: formatted });
 }
 
+// ── Webhook forwarding ───────────────────────────────────────────────────────
+// Set WEBHOOK_FORWARD_URL in worker env to route events to your backend.
+// Optionally set WEBHOOK_FORWARD_SECRET for a shared-secret header.
+async function forwardWebhookEvent(env, event) {
+  if (!env.WEBHOOK_FORWARD_URL) return;
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (env.WEBHOOK_FORWARD_SECRET) {
+      headers['Authorization'] = `Bearer ${env.WEBHOOK_FORWARD_SECRET}`;
+    }
+    const res = await fetch(env.WEBHOOK_FORWARD_URL, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ type: event.type, data: event.data }),
+    });
+    if (!res.ok) {
+      console.error(JSON.stringify({ error: 'webhook_forward_failed', status: res.status, event: event.type }));
+    }
+  } catch (err) {
+    console.error(JSON.stringify({ error: 'webhook_forward_error', message: err.message, event: event.type }));
+  }
+}
+
 // ── POST /webhook ────────────────────────────────────────────────────────────
 async function handleWebhook(request, env) {
   const signature = request.headers.get('stripe-signature');
@@ -158,39 +187,68 @@ async function handleWebhook(request, env) {
     return new Response('Invalid JSON', { status: 400 });
   }
 
-  // Handle events — extend this for your business logic
+  // Handle events — extend via WEBHOOK_FORWARD_URL env var for business logic
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object;
-      // TODO: provision access, send welcome email, update DB
-      console.log(`✓ Checkout completed: ${session.id} | customer: ${session.customer}`);
+      console.log(JSON.stringify({
+        event: 'checkout.session.completed',
+        session_id: session.id,
+        customer: session.customer,
+        subscription: session.subscription,
+        payment_status: session.payment_status,
+      }));
+      await forwardWebhookEvent(env, event);
       break;
     }
     case 'customer.subscription.created':
     case 'customer.subscription.updated': {
       const sub = event.data.object;
-      console.log(`✓ Subscription ${event.type}: ${sub.id} | status: ${sub.status}`);
+      console.log(JSON.stringify({
+        event: event.type,
+        subscription_id: sub.id,
+        customer: sub.customer,
+        status: sub.status,
+      }));
+      await forwardWebhookEvent(env, event);
       break;
     }
     case 'customer.subscription.deleted': {
       const sub = event.data.object;
-      // TODO: revoke access
-      console.log(`✓ Subscription cancelled: ${sub.id}`);
+      console.log(JSON.stringify({
+        event: 'customer.subscription.deleted',
+        subscription_id: sub.id,
+        customer: sub.customer,
+        status: sub.status,
+      }));
+      await forwardWebhookEvent(env, event);
       break;
     }
     case 'invoice.payment_failed': {
       const invoice = event.data.object;
-      // TODO: send dunning email
-      console.log(`✗ Payment failed: ${invoice.id} | customer: ${invoice.customer}`);
+      console.log(JSON.stringify({
+        event: 'invoice.payment_failed',
+        invoice_id: invoice.id,
+        customer: invoice.customer,
+        subscription: invoice.subscription,
+        attempt_count: invoice.attempt_count,
+      }));
+      await forwardWebhookEvent(env, event);
       break;
     }
     case 'invoice.payment_succeeded': {
       const invoice = event.data.object;
-      console.log(`✓ Payment succeeded: ${invoice.id}`);
+      console.log(JSON.stringify({
+        event: 'invoice.payment_succeeded',
+        invoice_id: invoice.id,
+        customer: invoice.customer,
+        amount_paid: invoice.amount_paid,
+      }));
+      await forwardWebhookEvent(env, event);
       break;
     }
     default:
-      console.log(`Unhandled event: ${event.type}`);
+      console.log(JSON.stringify({ event: event.type, unhandled: true }));
   }
 
   return Response.json({ received: true });
@@ -245,8 +303,12 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const origin = request.headers.get('Origin') || env.ALLOWED_ORIGIN || '*';
-    const cors = CORS_HEADERS(origin);
+    const requestOrigin = request.headers.get('Origin');
+    const allowedOrigin = env.ALLOWED_ORIGIN || 'https://blackroad-brand-kit.pages.dev';
+    // Only echo back the CORS origin if it exactly matches the configured allowed origin;
+    // non-browser requests (no Origin header) pass through without a CORS header.
+    const corsOrigin = (requestOrigin && requestOrigin === allowedOrigin) ? requestOrigin : null;
+    const cors = CORS_HEADERS(corsOrigin);
 
     // Preflight
     if (request.method === 'OPTIONS') {
