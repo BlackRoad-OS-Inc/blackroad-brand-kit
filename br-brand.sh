@@ -1574,8 +1574,13 @@ _tpl_coming_soon() {
   [[ -z "$launch_date" ]] && launch_date=$(date -v+30d +%Y-%m-%dT00:00:00 2>/dev/null || date --date="+30 days" +%Y-%m-%dT00:00:00 2>/dev/null || echo "2026-04-01T00:00:00")
   local title_e; title_e=$(_html_escape "$title")
   local tagline_e; tagline_e=$(_html_escape "$tagline")
-  # launch_date is only used in JS new Date() — ensure it is safe ISO format
-  local launch_date_safe="${launch_date//[^0-9T:+-]/}"
+  # Validate launch_date as ISO 8601 before embedding in JS; fall back to a safe default.
+  local launch_date_safe
+  if [[ "$launch_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$ ]]; then
+    launch_date_safe="$launch_date"
+  else
+    launch_date_safe="2026-04-01T00:00:00"
+  fi
 
   cat > "$output" <<HTML
 $(_html_head "$title")

@@ -16,7 +16,7 @@ ENVIRONMENT = "production"
 # STRIPE_SECRET_KEY        = "sk_live_..."   ← set with: wrangler secret put STRIPE_SECRET_KEY
 # STRIPE_WEBHOOK_SECRET    = "whsec_..."     ← set with: wrangler secret put STRIPE_WEBHOOK_SECRET
 # WEBHOOK_FORWARD_URL      = "https://..."   ← optional: POST all events to your backend
-# WEBHOOK_FORWARD_SECRET   = "..."           ← optional: X-Webhook-Secret header value
+# WEBHOOK_FORWARD_SECRET   = "..."           ← optional: Authorization Bearer token for forwarded requests
 
 [triggers]
 crons = []

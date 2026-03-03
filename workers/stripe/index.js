@@ -72,7 +72,7 @@ async function handleCheckout(request, env) {
   if (!price_id) {
     return Response.json({ error: 'price_id is required' }, { status: 400 });
   }
-  if (!/^price_[A-Za-z0-9]+$/.test(price_id)) {
+  if (!/^price_[A-Za-z0-9]{14,}$/.test(price_id)) {
     return Response.json({ error: 'invalid price_id format' }, { status: 400 });
   }
 
@@ -151,7 +151,7 @@ async function forwardWebhookEvent(env, event) {
   try {
     const headers = { 'Content-Type': 'application/json' };
     if (env.WEBHOOK_FORWARD_SECRET) {
-      headers['X-Webhook-Secret'] = env.WEBHOOK_FORWARD_SECRET;
+      headers['Authorization'] = `Bearer ${env.WEBHOOK_FORWARD_SECRET}`;
     }
     const res = await fetch(env.WEBHOOK_FORWARD_URL, {
       method: 'POST',
@@ -305,8 +305,9 @@ export default {
     const url = new URL(request.url);
     const requestOrigin = request.headers.get('Origin');
     const allowedOrigin = env.ALLOWED_ORIGIN || 'https://blackroad-brand-kit.pages.dev';
-    // Only reflect the origin in CORS headers if it matches the allowed origin
-    const corsOrigin = requestOrigin === allowedOrigin ? requestOrigin : allowedOrigin;
+    // Only echo back the CORS origin if it exactly matches the configured allowed origin;
+    // non-browser requests (no Origin header) pass through without a CORS header.
+    const corsOrigin = (requestOrigin && requestOrigin === allowedOrigin) ? requestOrigin : null;
     const cors = CORS_HEADERS(corsOrigin);
 
     // Preflight
