@@ -29,16 +29,16 @@ BRAND_CSS='
   --deep-black: #0A0A0A;
   --charcoal: #1A1A1A;
   --white: #FFFFFF;
-  --sunrise-orange: #FF9D00;
-  --warm-orange: #FF6B00;
-  --hot-pink: #FF0066;
-  --electric-magenta: #FF006B;
-  --deep-magenta: #D600AA;
-  --vivid-purple: #7700FF;
-  --cyber-blue: #0066FF;
-  --gradient-br: linear-gradient(180deg, var(--sunrise-orange) 0%, var(--warm-orange) 25%, var(--hot-pink) 75%, var(--electric-magenta) 100%);
-  --gradient-os: linear-gradient(180deg, var(--electric-magenta) 0%, var(--deep-magenta) 25%, var(--vivid-purple) 75%, var(--cyber-blue) 100%);
-  --gradient-full: linear-gradient(180deg, var(--sunrise-orange) 0%, var(--warm-orange) 14%, var(--hot-pink) 28%, var(--electric-magenta) 42%, var(--deep-magenta) 57%, var(--vivid-purple) 71%, var(--cyber-blue) 100%);
+  --sunrise-orange: #F5A623;
+  --warm-orange: #F5A623;
+  --hot-pink: #FF1D6C;
+  --electric-magenta: #FF1D6C;
+  --deep-magenta: #9C27B0;
+  --vivid-purple: #9C27B0;
+  --cyber-blue: #2979FF;
+  --gradient-br: linear-gradient(135deg, var(--sunrise-orange) 0%, var(--hot-pink) 100%);
+  --gradient-os: linear-gradient(135deg, var(--vivid-purple) 0%, var(--cyber-blue) 100%);
+  --gradient-full: linear-gradient(135deg, var(--sunrise-orange) 0%, var(--hot-pink) 38.2%, var(--vivid-purple) 61.8%, var(--cyber-blue) 100%);
   --gradient-brand: var(--gradient-full);
   --phi: 1.618;
   --space-xs: 8px;
@@ -662,7 +662,7 @@ EOF
       IFS=',' read -rA tag_list <<< "$tags"
       for tag in "${tag_list[@]}"; do
         tag="${tag## }"; tag="${tag%% }"
-        echo "        <span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,157,0,0.4);color:var(--sunrise-orange);\">${tag}</span>"
+        echo "        <span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(245,166,35,0.4);color:var(--sunrise-orange);\">${tag}</span>"
       done
       echo "      </div>"
     fi
@@ -797,9 +797,9 @@ _cmd_audit() {
 
   _check "Brand colors defined (--sunrise-orange)"  "sunrise-orange"
   _check "Brand gradient (--gradient-brand)"        "gradient-brand"
-  _check "Hot pink (#FF0066)"                       "FF0066\|hot-pink"
-  _check "Cyber blue (#0066FF)"                     "0066FF\|cyber-blue"
-  _check "Vivid purple (#7700FF)"                   "7700FF\|vivid-purple"
+  _check "Hot pink (#FF1D6C)"                       "FF1D6C\|hot-pink"
+  _check "Cyber blue (#2979FF)"                     "2979FF\|cyber-blue"
+  _check "Vivid purple (#9C27B0)"                   "9C27B0\|vivid-purple"
   _check "Golden ratio spacing (--space-)"          "\-\-space-"
   _check "Scroll progress bar"                      "scroll-progress\|scroll-bar"
   _check "backdrop-filter / glassmorphism"          "backdrop-filter"
@@ -1455,10 +1455,10 @@ $(_html_nav "$title")
 .cb-code { padding: var(--space-lg); font-size: .85rem; line-height: 1.7;
   color: rgba(255,255,255,.85); white-space: pre; overflow-x: auto; flex: 1; }
 /* keyword coloring via CSS classes (manual) */
-.kw  { color: #7700FF; }
-.str { color: #FF9D00; }
+.kw  { color: #9C27B0; }
+.str { color: #F5A623; }
 .cm  { color: rgba(255,255,255,.3); font-style: italic; }
-.fn  { color: #0066FF; }
+.fn  { color: #2979FF; }
 .cb-copy-row { display: flex; justify-content: flex-end;
   padding: var(--space-sm) var(--space-lg); background: rgba(255,255,255,.02);
   border-top: 1px solid rgba(255,255,255,.06); }
