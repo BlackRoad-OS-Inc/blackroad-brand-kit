@@ -1,0 +1,29 @@
+{
+  "title": "{{PROJECT_NAME}} - User Guide",
+  "sections": [
+    {
+      "heading": "👋 Welcome",
+      "content": "{{WELCOME}}"
+    },
+    {
+      "heading": "🚀 Getting Started",
+      "content": "{{GETTING_STARTED}}"
+    },
+    {
+      "heading": "📖 Features",
+      "content": "{{FEATURES}}"
+    },
+    {
+      "heading": "🎯 How-To Guides",
+      "content": "{{HOW_TO}}"
+    },
+    {
+      "heading": "⚠️ Troubleshooting",
+      "content": "{{TROUBLESHOOTING}}"
+    },
+    {
+      "heading": "❓ FAQ",
+      "content": "{{FAQ}}"
+    }
+  ]
+}

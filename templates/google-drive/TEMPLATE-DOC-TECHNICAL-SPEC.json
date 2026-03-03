@@ -1,0 +1,33 @@
+{
+  "title": "{{PROJECT_NAME}} - Technical Specification",
+  "sections": [
+    {
+      "heading": "🎯 Overview",
+      "content": "{{OVERVIEW}}"
+    },
+    {
+      "heading": "🏗️ Architecture",
+      "content": "{{ARCHITECTURE}}"
+    },
+    {
+      "heading": "📊 Data Models",
+      "content": "{{DATA_MODELS}}"
+    },
+    {
+      "heading": "🔌 API Endpoints",
+      "content": "{{API_ENDPOINTS}}"
+    },
+    {
+      "heading": "🔐 Security",
+      "content": "{{SECURITY}}"
+    },
+    {
+      "heading": "📈 Performance",
+      "content": "{{PERFORMANCE}}"
+    },
+    {
+      "heading": "🧪 Testing Strategy",
+      "content": "{{TESTING}}"
+    }
+  ]
+}
