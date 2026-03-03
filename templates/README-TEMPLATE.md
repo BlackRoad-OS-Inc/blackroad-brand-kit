@@ -5,10 +5,12 @@
 ## Quick Start (Copy-Paste Ready)
 
 ```bash
-# Clone and setup
-git clone <REPO_URL> ~/blackroad-sandbox  # Run this if you don't have the repo yet
+# Clone the repo (first time)
+git clone <REPO_URL> ~/blackroad-sandbox
 cd ~/blackroad-sandbox
-git pull origin main                      # Run this to update an existing checkout
+
+# Or update an existing checkout
+cd ~/blackroad-sandbox && git pull origin main
 
 # Install dependencies
 pip3 install -r requirements.txt
@@ -294,8 +296,8 @@ pip3 install -r requirements.txt --force-reinstall
 # Verify Python version
 python3 --version  # Should be 3.11+
 
-# Check imports
-python3 -c "import flask; print('✅ Flask OK')"
+# Check imports (replace with your project's main package)
+python3 -c "import your_package; print('✅ Import OK')"
 ```
 
 ### Environment Variables Not Loaded

@@ -20,10 +20,12 @@
   },
   "children": [
     {
-      "object": "heading_1",
+      "object": "block",
+      "type": "heading_1",
       "heading_1": {
         "rich_text": [
           {
+            "type": "text",
             "text": {
               "content": "📊 Project Dashboard"
             }
@@ -32,10 +34,12 @@
       }
     },
     {
-      "object": "paragraph",
+      "object": "block",
+      "type": "paragraph",
       "paragraph": {
         "rich_text": [
           {
+            "type": "text",
             "text": {
               "content": "{{PROJECT_DESCRIPTION}}"
             }
@@ -44,10 +48,12 @@
       }
     },
     {
-      "object": "heading_2",
+      "object": "block",
+      "type": "heading_2",
       "heading_2": {
         "rich_text": [
           {
+            "type": "text",
             "text": {
               "content": "📈 Status"
             }
@@ -56,7 +62,8 @@
       }
     },
     {
-      "object": "callout",
+      "object": "block",
+      "type": "callout",
       "callout": {
         "icon": {
           "type": "emoji",
@@ -64,6 +71,7 @@
         },
         "rich_text": [
           {
+            "type": "text",
             "text": {
               "content": "Status: {{STATUS}}\nPhase: {{PHASE}}\nProgress: {{PROGRESS}}%"
             }

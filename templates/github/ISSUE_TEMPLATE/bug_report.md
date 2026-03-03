@@ -6,6 +6,8 @@ labels: bug
 assignees: ''
 ---
 
+<!-- Canonical source: edit here and copy to .github/ISSUE_TEMPLATE/bug_report.md -->
+
 ## 🐛 Bug Description
 
 A clear and concise description of what the bug is.

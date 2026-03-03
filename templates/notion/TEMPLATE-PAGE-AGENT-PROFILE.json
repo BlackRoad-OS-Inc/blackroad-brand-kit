@@ -5,7 +5,7 @@
   },
   "icon": {
     "type": "emoji",
-    "emoji": "🤖"
+    "emoji": "\ud83e\udd16"
   },
   "properties": {
     "Name": {
@@ -23,7 +23,9 @@
       }
     },
     "Personality": {
-      "multi_select": []
+      "multi_select": {
+        "options": []
+      }
     },
     "Capabilities": {
       "rich_text": [
@@ -42,89 +44,103 @@
   },
   "children": [
     {
-      "object": "heading_1",
+      "object": "block",
       "heading_1": {
         "rich_text": [
           {
             "text": {
-              "content": "🤖 Agent Profile"
-            }
+              "content": "\ud83e\udd16 Agent Profile"
+            },
+            "type": "text"
           }
         ]
-      }
+      },
+      "type": "heading_1"
     },
     {
-      "object": "heading_2",
+      "object": "block",
       "heading_2": {
         "rich_text": [
           {
             "text": {
-              "content": "📋 Description"
-            }
+              "content": "\ud83d\udccb Description"
+            },
+            "type": "text"
           }
         ]
-      }
+      },
+      "type": "heading_2"
     },
     {
-      "object": "paragraph",
+      "object": "block",
       "paragraph": {
         "rich_text": [
           {
             "text": {
               "content": "{{DESCRIPTION}}"
-            }
+            },
+            "type": "text"
           }
         ]
-      }
+      },
+      "type": "paragraph"
     },
     {
-      "object": "heading_2",
+      "object": "block",
       "heading_2": {
         "rich_text": [
           {
             "text": {
-              "content": "🎯 Purpose"
-            }
+              "content": "\ud83c\udfaf Purpose"
+            },
+            "type": "text"
           }
         ]
-      }
+      },
+      "type": "heading_2"
     },
     {
-      "object": "paragraph",
+      "object": "block",
       "paragraph": {
         "rich_text": [
           {
             "text": {
               "content": "{{PURPOSE}}"
-            }
+            },
+            "type": "text"
           }
         ]
-      }
+      },
+      "type": "paragraph"
     },
     {
-      "object": "heading_2",
+      "object": "block",
       "heading_2": {
         "rich_text": [
           {
             "text": {
-              "content": "🔧 Configuration"
-            }
+              "content": "\ud83d\udd27 Configuration"
+            },
+            "type": "text"
           }
         ]
-      }
+      },
+      "type": "heading_2"
     },
     {
-      "object": "code",
+      "object": "block",
       "code": {
         "language": "yaml",
         "rich_text": [
           {
             "text": {
               "content": "{{CONFIG_YAML}}"
-            }
+            },
+            "type": "text"
           }
         ]
-      }
+      },
+      "type": "code"
     }
   ]
 }

@@ -5,32 +5,32 @@
 ## Brand Colors
 
 ```css
---black: #000000
---white: #FFFFFF
---sunrise-orange: #F5A623
---hot-pink: #FF1D6C      /* Primary Brand Color */
---vivid-purple: #9C27B0
---cyber-blue: #2979FF
+--black: #000000;
+--white: #FFFFFF;
+--sunrise-orange: #F5A623;
+--hot-pink: #FF1D6C;      /* Primary Brand Color */
+--vivid-purple: #9C27B0;
+--cyber-blue: #2979FF;
 
 /* Brand Gradient (Golden Ratio positions 38.2% & 61.8%) */
---gradient-brand: linear-gradient(135deg, 
-  var(--sunrise-orange) 0%, 
-  var(--hot-pink) 38.2%, 
-  var(--vivid-purple) 61.8%, 
-  var(--cyber-blue) 100%)
+--gradient-brand: linear-gradient(135deg,
+  var(--sunrise-orange) 0%,
+  var(--hot-pink) 38.2%,
+  var(--vivid-purple) 61.8%,
+  var(--cyber-blue) 100%);
 ```
 
 ## Spacing System (Golden Ratio φ = 1.618)
 
 ```css
---phi: 1.618
---space-xs: 8px      /* Base */
---space-sm: 13px     /* 8 × φ */
---space-md: 21px     /* 13 × φ */
---space-lg: 34px     /* 21 × φ */
---space-xl: 55px     /* 34 × φ */
---space-2xl: 89px    /* 55 × φ */
---space-3xl: 144px   /* 89 × φ */
+--phi: 1.618;
+--space-xs: 8px;      /* Base */
+--space-sm: 13px;     /* 8 × φ */
+--space-md: 21px;     /* 13 × φ */
+--space-lg: 34px;     /* 21 × φ */
+--space-xl: 55px;     /* 34 × φ */
+--space-2xl: 89px;    /* 55 × φ */
+--space-3xl: 144px;   /* 89 × φ */
 ```
 
 ## Typography
@@ -48,6 +48,8 @@ line-height: 1.618; /* Golden Ratio */
 --ease-out: cubic-bezier(0, 0, 0.2, 1);
 --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 ```
+
+> **Note:** The accent colors above are the primary brand tokens used in CSS variables. The gradient spectrum (`#FF8400 → #FF4400 → #FF0066 → #CC00AA → #8800FF → #0066FF → #2233CC`) is used for animation shapes, fills, and accent borders only.
 
 ## Logo Animation
 

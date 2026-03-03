@@ -41,7 +41,9 @@ Three approved variations:
 
 ### 02 — Color Palette
 
-**Accent Colors** — shapes, fills, dots, borders only. **Never on text.**
+**Gradient Accent Colors** — shapes, fills, dots, animated borders only. **Never on text.**
+
+> The primary brand tokens used in CSS variables are: `--sunrise-orange: #F5A623`, `--hot-pink: #FF1D6C`, `--vivid-purple: #9C27B0`, `--cyber-blue: #2979FF` (see Section 10 — Design System Tokens).
 
 | Swatch | Hex | Name |
 |--------|-----|------|
@@ -84,7 +86,7 @@ Three approved variations:
 
 - No colored text
 - No gray hex values for text — use opacity instead
-- No gradient text effects
+- Gradient text is reserved for hero headlines only (`.gradient-text` class)
 - Dim text via `opacity: 0.5` or `opacity: 0.25`, never gray hex
 
 ### 05 — Gradient System
