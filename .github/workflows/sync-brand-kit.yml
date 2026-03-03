@@ -1,0 +1,80 @@
+name: Sync Brand Kit
+# Reusable workflow — add this to any repo to pull the latest brand kit.
+#
+# Usage in target repo (.github/workflows/sync-brand-kit.yml):
+#
+#   name: Sync Brand Kit
+#   on:
+#     schedule:
+#       - cron: '0 6 * * 1'   # Weekly on Monday
+#     workflow_dispatch:
+#   jobs:
+#     sync:
+#       uses: BlackRoad-OS-Inc/blackroad-brand-kit/.github/workflows/sync-brand-kit.yml@main
+#       secrets: inherit
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    name: Pull latest brand kit
+
+    steps:
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+
+      - name: Checkout brand kit source
+        uses: actions/checkout@v4
+        with:
+          repository: BlackRoad-OS-Inc/blackroad-brand-kit
+          path: _brand-kit-source
+          sparse-checkout: |
+            css/brand.css
+            docs-brand-system.md
+            scripts/brand-validator.js
+            br-brand.sh
+
+      - name: Copy brand kit assets
+        run: |
+          mkdir -p brand-kit/css brand-kit/scripts
+
+          cp _brand-kit-source/css/brand.css              brand-kit/css/brand.css
+          cp _brand-kit-source/docs-brand-system.md       brand-kit/docs-brand-system.md
+          cp _brand-kit-source/scripts/brand-validator.js brand-kit/scripts/brand-validator.js
+          cp _brand-kit-source/br-brand.sh                brand-kit/br-brand.sh
+          chmod +x brand-kit/br-brand.sh
+
+          cat > brand-kit/README.md << 'EOF'
+          # BlackRoad OS — Brand Kit
+
+          Official design system distributed from
+          [`blackroad-brand-kit`](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit).
+
+          | File | Purpose |
+          |------|---------|
+          | `css/brand.css` | Design tokens (colors, spacing, typography) |
+          | `docs-brand-system.md` | Brand rules and guidelines |
+          | `scripts/brand-validator.js` | Color compliance scanner |
+          | `br-brand.sh` | CLI template generator (15 templates) |
+
+          **Do not modify** — synced automatically from source.
+          EOF
+
+          rm -rf _brand-kit-source
+
+      - name: Commit and push if changed
+        run: |
+          git add brand-kit/
+          if git diff --cached --quiet; then
+            echo "Brand kit already up to date."
+            exit 0
+          fi
+          git config user.name "brand-kit-bot"
+          git config user.email "brand-kit-bot@blackroad.ai"
+          git commit -m "chore: sync brand kit from blackroad-brand-kit"
+          git push

@@ -1,0 +1,205 @@
+name: Distribute Brand Kit
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'css/brand.css'
+      - 'docs-brand-system.md'
+      - 'scripts/brand-validator.js'
+      - 'br-brand.sh'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (no commits pushed)'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    name: Distribute to all repos
+
+    env:
+      ORG: BlackRoad-OS-Inc
+
+    steps:
+      - name: Checkout brand kit
+        uses: actions/checkout@v4
+
+      - name: Distribute brand kit to all org repos
+        env:
+          GH_TOKEN: ${{ secrets.BRAND_KIT_PAT }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::error::BRAND_KIT_PAT secret not configured. Create a PAT with 'repo' scope and add it as a repository secret."
+            exit 1
+          fi
+
+          # All target repos (everything except blackroad-brand-kit)
+          REPOS=(
+            blackroad-cli
+            blackroad-os-inc.github.io
+            blackroad-web
+            blackroad-gateway
+            blackroad-infra
+            .github
+            blackroad-chat
+            blackroad-workerd-edge
+            blackroad-sf
+            blackroad-hardware
+            demo-repository
+            blackroad-agents
+            blackroad-docs
+            blackroad-operator
+            blackroad
+            blackroad-api
+            blackroad-math
+            blackroad-sdk
+            blackroad-core
+            blackroad-design
+          )
+
+          # Files to distribute (source -> dest in brand-kit/)
+          FILES=(
+            "css/brand.css:brand-kit/css/brand.css"
+            "docs-brand-system.md:brand-kit/docs-brand-system.md"
+            "scripts/brand-validator.js:brand-kit/scripts/brand-validator.js"
+            "br-brand.sh:brand-kit/br-brand.sh"
+          )
+
+          # Brand kit README (generated inline)
+          BRAND_README=$(cat << 'READMEEOF'
+          # BlackRoad OS — Brand Kit
+
+          Official design system, CLI generator, and compliance tools distributed from
+          [`blackroad-brand-kit`](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit).
+
+          ## Contents
+
+          | File | Purpose |
+          |------|---------|
+          | `css/brand.css` | Official design tokens — colors, spacing, typography, animations |
+          | `docs-brand-system.md` | Brand rules and usage guidelines |
+          | `scripts/brand-validator.js` | Color compliance scanner |
+          | `br-brand.sh` | CLI template generator (15 templates) |
+
+          ## Quick Start
+
+          ```bash
+          # Validate brand compliance
+          node brand-kit/scripts/brand-validator.js --dir=src/
+
+          # Generate a branded page
+          zsh brand-kit/br-brand.sh new landing \
+            --title "My Page" --tagline "Built with BlackRoad OS" --output index.html
+          ```
+
+          ## Design Tokens
+
+          | Token | Value |
+          |-------|-------|
+          | `--sunrise-orange` | `#F5A623` |
+          | `--hot-pink` | `#FF1D6C` |
+          | `--vivid-purple` | `#9C27B0` |
+          | `--cyber-blue` | `#2979FF` |
+          | `--gradient-brand` | 135deg full spectrum |
+
+          ---
+          **Source:** [blackroad-brand-kit](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit)
+          **Do not modify** — updates distributed automatically.
+          READMEEOF
+
+          SUCCESS=0
+          FAILED=0
+          SKIPPED=0
+          DRY_RUN="${{ inputs.dry_run || 'false' }}"
+
+          echo "═══════════════════════════════════════════════════════"
+          echo "  BlackRoad OS — Brand Kit Distribution"
+          echo "  Targets: ${#REPOS[@]} repos"
+          echo "  Dry run: $DRY_RUN"
+          echo "═══════════════════════════════════════════════════════"
+
+          WORK_DIR=$(mktemp -d)
+
+          for REPO in "${REPOS[@]}"; do
+            echo ""
+            echo "─── $REPO ───"
+
+            REPO_DIR="${WORK_DIR}/${REPO}"
+
+            # Clone target repo
+            if ! git clone --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${ORG}/${REPO}.git" "$REPO_DIR" 2>/dev/null; then
+              echo "  SKIP: Could not clone"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
+            # Create brand-kit directory structure
+            mkdir -p "${REPO_DIR}/brand-kit/css"
+            mkdir -p "${REPO_DIR}/brand-kit/scripts"
+
+            # Copy files
+            cp css/brand.css              "${REPO_DIR}/brand-kit/css/brand.css"
+            cp docs-brand-system.md       "${REPO_DIR}/brand-kit/docs-brand-system.md"
+            cp scripts/brand-validator.js "${REPO_DIR}/brand-kit/scripts/brand-validator.js"
+            cp br-brand.sh                "${REPO_DIR}/brand-kit/br-brand.sh"
+            chmod +x "${REPO_DIR}/brand-kit/br-brand.sh"
+            echo "$BRAND_README" > "${REPO_DIR}/brand-kit/README.md"
+
+            # Check for changes
+            cd "$REPO_DIR"
+            git add -A
+            if git diff --cached --quiet; then
+              echo "  SKIP: Already up to date"
+              SKIPPED=$((SKIPPED + 1))
+              cd "$GITHUB_WORKSPACE"
+              continue
+            fi
+
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "  DRY RUN: Changes detected — would push"
+              git diff --cached --stat
+              SUCCESS=$((SUCCESS + 1))
+              cd "$GITHUB_WORKSPACE"
+              continue
+            fi
+
+            # Commit and push
+            DEFAULT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+            git commit -m "chore: update brand kit from blackroad-brand-kit
+
+          Automated distribution of official BlackRoad OS brand assets.
+          Source: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+
+            if git push origin "$DEFAULT_BRANCH"; then
+              echo "  ✓ Pushed to $REPO ($DEFAULT_BRANCH)"
+              SUCCESS=$((SUCCESS + 1))
+            else
+              echo "  ✗ Failed to push to $REPO"
+              FAILED=$((FAILED + 1))
+            fi
+
+            cd "$GITHUB_WORKSPACE"
+          done
+
+          echo ""
+          echo "═══════════════════════════════════════════════════════"
+          echo "  Distribution Complete"
+          echo "  ✓ Success: $SUCCESS"
+          echo "  ✗ Failed:  $FAILED"
+          echo "  ○ Skipped: $SKIPPED"
+          echo "═══════════════════════════════════════════════════════"
+
+          rm -rf "$WORK_DIR"
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::warning::$FAILED repos failed to update"
+          fi
