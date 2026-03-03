@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent HQ — BlackRoad OS</title>
+<meta name="description" content="Interactive office view of BlackRoad OS agents at work — Cecilia, Cadence, Eve, Alice, Radius, and Meridian.">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a1a2e;overflow-x:hidden}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes walk1{0%{left:12%;top:48%}25%{left:35%;top:42%}50%{left:55%;top:55%}75%{left:40%;top:60%}100%{left:12%;top:48%}}
+@keyframes walk2{0%{left:70%;top:30%}25%{left:50%;top:35%}50%{left:30%;top:28%}75%{left:55%;top:25%}100%{left:70%;top:30%}}
+@keyframes bounce{0%,100%{transform:translateY(0) scaleY(1)}25%{transform:translateY(-4px) scaleY(0.95)}50%{transform:translateY(0) scaleY(1.02)}75%{transform:translateY(-2px) scaleY(0.98)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 4px 1px currentColor}50%{box-shadow:0 0 8px 3px currentColor}}
+@keyframes type{0%,100%{opacity:0.3}50%{opacity:0.8}}
+@keyframes scan{0%{left:0}100%{left:100%}}
+.zone:hover{filter:brightness(1.2);cursor:pointer}
+.zone:hover .zone-label{opacity:1!important}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const GRAD = "linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF)";
+
+const AGENTS = {
+  cecilia: { name: "Cecilia", role: "Governance Lead", status: "active", commits: 4821, color: "#FF8400", desk: "A2" },
+  cadence: { name: "Cadence", role: "Music Agent", status: "composing", commits: 2104, color: "#0066FF", desk: "B1" },
+  eve: { name: "Eve", role: "Security Monitor", status: "scanning", commits: 1892, color: "#FF0066", desk: "server" },
+  alice: { name: "Alice", role: "Gateway Operator", status: "active", commits: 1567, color: "#af5fd7", desk: "C1" },
+  radius: { name: "Radius", role: "Math Reasoner", status: "thinking", commits: 1203, color: "#00cc88", desk: "B2" },
+  meridian: { name: "Meridian", role: "Architecture", status: "roaming", commits: 98, color: "#ffcc00", desk: "roam" },
+};
+
+const labelStyle = {
+  position: "absolute", left: 0,
+  fontFamily: "'Press Start 2P'", fontSize: "0.3rem",
+  color: "#fff", opacity: 0, letterSpacing: "0.1em",
+  transition: "opacity 0.2s", pointerEvents: "none",
+  textShadow: "0 0 8px rgba(255,132,0,0.4)",
+};
+
+function Plant({ x, y, size = 12 }) {
+  return (
+    <div style={{
+      position: "absolute", left: x, top: y, width: size, height: size * 1.4,
+      animation: "float 4s ease-in-out infinite",
+      animationDelay: `${Math.random() * 3}s`,
+    }}>
+      <div style={{
+        position: "absolute", bottom: 0, left: "15%", width: "70%", height: "35%",
+        background: "#a0654a", borderRadius: "0 0 2px 2px",
+      }} />
+      <div style={{
+        position: "absolute", bottom: "30%", left: "10%", width: "80%", height: "60%",
+        background: "#44aa55", borderRadius: "40% 40% 10% 10%",
+      }} />
+      <div style={{
+        position: "absolute", bottom: "45%", left: "25%", width: "50%", height: "45%",
+        background: "#55bb66", borderRadius: "40% 40% 20% 20%",
+      }} />
+    </div>
+  );
+}
+
+function Monitor({ x, y, glow = "#4488cc" }) {
+  return (
+    <div style={{ position: "absolute", left: x, top: y }}>
+      <div style={{
+        width: 14, height: 10, background: "#2a2a3a",
+        border: "1px solid #3a3a4a", position: "relative",
+      }}>
+        <div style={{
+          position: "absolute", inset: 1,
+          background: glow, opacity: 0.3,
+          animation: "type 2s infinite",
+          animationDelay: `${Math.random() * 2}s`,
+        }} />
+      </div>
+      <div style={{ width: 4, height: 3, background: "#3a3a4a", margin: "0 auto" }} />
+    </div>
+  );
+}
+
+function DeskCluster({ x, y, monitors = 2 }) {
+  return (
+    <div style={{ position: "absolute", left: x, top: y, width: "40%", height: "40%" }}>
+      <div style={{
+        position: "absolute", top: "20%", left: 0, width: "100%", height: "50%",
+        background: "#a08050", border: "1px solid #b09060",
+      }} />
+      {Array.from({ length: monitors }).map((_, i) => (
+        <Monitor key={i} x={`${10 + i * 30}%`} y="2%" glow={["#4488cc", "#44cc88", "#cc8844"][i % 3]} />
+      ))}
+      <div style={{
+        position: "absolute", bottom: 0, left: "35%", width: "30%", height: "25%",
+        background: "#3a3a52", border: "1px solid #4a4a62", borderRadius: 1,
+      }} />
+    </div>
+  );
+}
+
+function PixelBot({ x, y, color, label, walking }) {
+  return (
+    <div style={{
+      position: "absolute", left: x, top: y,
+      animation: walking ? "bounce 0.6s steps(4) infinite" : "float 3s ease-in-out infinite",
+      zIndex: 10,
+    }}>
+      <div style={{ width: 16, height: 18, position: "relative" }}>
+        <div style={{
+          width: 12, height: 10, background: "#e8e8e8",
+          border: `1px solid ${color}`, margin: "0 auto",
+          position: "relative", borderRadius: 1,
+          boxShadow: `0 0 6px ${color}40`,
+        }}>
+          <div style={{ position: "absolute", top: 3, left: 2, width: 3, height: 3, background: color, borderRadius: 1 }} />
+          <div style={{ position: "absolute", top: 3, right: 2, width: 3, height: 3, background: color, borderRadius: 1 }} />
+          <div style={{ position: "absolute", top: -4, left: "50%", width: 1, height: 4, background: color, transform: "translateX(-50%)" }} />
+          <div style={{ position: "absolute", top: -6, left: "50%", width: 3, height: 3, background: color, borderRadius: "50%", transform: "translateX(-50%)", animation: "blink 1.5s infinite" }} />
+        </div>
+        <div style={{
+          width: 10, height: 8, background: "#d0d0d0",
+          border: `1px solid ${color}`, margin: "0 auto",
+          borderRadius: "0 0 2px 2px",
+        }} />
+      </div>
+      <div style={{
+        fontSize: "0.3rem", fontWeight: 700, color, textAlign: "center",
+        fontFamily: "'Press Start 2P'", marginTop: 1, textShadow: `0 0 4px ${color}60`,
+      }}>
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function PixelPerson({ x, y, color, hair, sitting }) {
+  return (
+    <div style={{
+      position: "absolute", left: x, top: y, zIndex: 5,
+      animation: sitting ? undefined : "float 4s ease-in-out infinite",
+    }}>
+      <div style={{
+        width: 8, height: 7, background: "#f0d0a0", margin: "0 auto",
+        borderRadius: "2px 2px 0 0", position: "relative",
+      }}>
+        <div style={{ position: "absolute", top: -2, left: 0, right: 0, height: 3, background: hair, borderRadius: "2px 2px 0 0" }} />
+      </div>
+      <div style={{
+        width: 10, height: sitting ? 6 : 8, background: color,
+        margin: "0 auto", borderRadius: "0 0 1px 1px",
+      }} />
+    </div>
+  );
+}
+
+function InfoPanel({ id, onClose, serverLights, time }) {
+  const zoneInfo = {
+    cecilia: { title: "Cecilia", sub: "Governance Lead · Workspace A", stats: [
+      { l: "Memory Commits", v: "4,821" }, { l: "Policy Evals", v: "12,400" },
+      { l: "Uptime", v: "99.99%" }, { l: "Status", v: "ACTIVE" },
+    ], desc: "Primary governance agent. Handles policy evaluation, ledger management, and system-wide coordination. Currently processing memory journal updates." },
+    cadence: { title: "Cadence + Radius", sub: "Music & Math · Workspace B", stats: [
+      { l: "Compositions", v: "89" }, { l: "Proofs Verified", v: "42" },
+      { l: "Cadence Status", v: "COMPOSING" }, { l: "Radius Status", v: "THINKING" },
+    ], desc: "Cadence is mid-composition — BPM 108, key of C minor. Radius is working through a spiral operator proof, cross-referencing with the Z-framework equilibrium state." },
+    eve: { title: "Eve · Server Room", sub: "Security Monitor · Infrastructure", stats: [
+      { l: "Racks Online", v: "4/4" }, { l: "Threats Detected", v: "0" },
+      { l: "Scan Frequency", v: "3s" }, { l: "Alert Level", v: "NORMAL" },
+    ], desc: "Eve monitors all server infrastructure. 24 status lights across 4 racks reporting nominal. Last anomaly flagged 47 minutes ago — auto-resolved within SLA." },
+    alice: { title: "Alice", sub: "Gateway Operator · Workspace C", stats: [
+      { l: "Gateway Health", v: "100%" }, { l: "Active Connections", v: "2,400" },
+      { l: "Throughput", v: "8.1K/s" }, { l: "Status", v: "ACTIVE" },
+    ], desc: "Alice manages the API gateway. All 7 endpoints responding within SLA. WebSocket connections stable. No certificate warnings." },
+    lounge: { title: "Agent Lounge", sub: "Rest & Recharge Zone", stats: [
+      { l: "Occupancy", v: "Quiet" }, { l: "Coffee Level", v: "FULL" },
+      { l: "Vibe", v: "COZY" }, { l: "Plants", v: "3" },
+    ], desc: "Where agents go when they need to decompress. Two armchairs, one couch, and plants that somehow never die. The coffee is always fresh." },
+    reception: { title: "Reception", sub: "Front Desk · Human Interface", stats: [
+      { l: "Visitors Today", v: "0" }, { l: "Monitors", v: "3" },
+      { l: "Staffed", v: "YES" }, { l: "Plant Health", v: "THRIVING" },
+    ], desc: "The human-facing interface of Agent HQ. Three monitors track system overview, governance status, and agent activity in real-time." },
+    meeting: { title: "Meeting Room", sub: "Collaboration Space", stats: [
+      { l: "Capacity", v: "6 seats" }, { l: "Screen", v: "ACTIVE" },
+      { l: "Next Meeting", v: "None" }, { l: "Whiteboard", v: "FULL" },
+    ], desc: "Round table for agent-human collaboration. The presentation screen currently shows a status overview. Used for sprint reviews and architecture sessions." },
+    workshop: { title: "Workshop", sub: "Deep Work Zone", stats: [
+      { l: "Workstations", v: "3 clusters" }, { l: "Humans", v: "2" },
+      { l: "Focus Mode", v: "ON" }, { l: "Noise Level", v: "SILENT" },
+    ], desc: "Where humans and agents do deep work together. Three desk clusters, two engineers currently working. Focus mode engaged — no interruptions." },
+    ideas: { title: "Ideas Board", sub: "Brainstorm Zone", stats: [
+      { l: "Active Ideas", v: "6" }, { l: "Whiteboard", v: "IN USE" },
+      { l: "Charts", v: "1 pie" }, { l: "Plants", v: "2" },
+    ], desc: "The whiteboard tracks active initiatives across all portals. Sticky notes color-coded by priority. The pie chart shows resource allocation across the six core portals." },
+    board: { title: "Task Board", sub: "Sprint Tracking", stats: [
+      { l: "Sticky Notes", v: "6" }, { l: "Categories", v: "4" },
+      { l: "Sprint", v: "Week 9" }, { l: "Velocity", v: "UP" },
+    ], desc: "Physical kanban board with color-coded sticky notes. Yellow = backlog, blue = in progress, pink = blocked, green = done, orange = review, purple = research." },
+  };
+
+  const info = zoneInfo[id] || zoneInfo.lounge;
+
+  return (
+    <div style={{
+      position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
+      width: "100%", maxWidth: 600, zIndex: 50,
+      background: "rgba(0,0,0,0.92)", border: "1px solid rgba(255,255,255,0.12)",
+      backdropFilter: "blur(12px)", padding: "20px 24px",
+      fontFamily: "'JetBrains Mono', monospace", color: "#fff",
+    }}>
+      <div style={{ height: 2, background: GRAD, position: "absolute", top: 0, left: 0, right: 0 }} />
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div>
+          <div style={{ fontFamily: "'Space Grotesk'", fontSize: "1.1rem", fontWeight: 700 }}>{info.title}</div>
+          <div style={{ fontSize: "0.44rem", opacity: 0.3, marginTop: 2 }}>{info.sub}</div>
+        </div>
+        <button onClick={onClose} style={{
+          fontFamily: "'JetBrains Mono'", fontSize: "0.44rem", fontWeight: 700,
+          background: "transparent", color: "#fff", border: "1px solid rgba(255,255,255,0.15)",
+          padding: "3px 8px", cursor: "pointer", opacity: 0.4,
+        }}>
+          ESC
+        </button>
+      </div>
+
+      <div style={{ height: 1, background: GRAD, width: 60, margin: "12px 0", opacity: 0.5 }} />
+
+      <div style={{ display: "flex", gap: 0, marginBottom: 14 }}>
+        {info.stats.map((s, i, arr) => (
+          <div key={i} style={{
+            paddingRight: 16, marginRight: 16,
+            borderRight: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.08)" : "none",
+          }}>
+            <div style={{ fontSize: "0.72rem", fontWeight: 700, lineHeight: 1 }}>{s.v}</div>
+            <div style={{ fontSize: "0.36rem", opacity: 0.25, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 3 }}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ fontSize: "0.5rem", opacity: 0.4, lineHeight: 1.8 }}>{info.desc}</div>
+    </div>
+  );
+}
+
+function AgentHQ() {
+  const [selected, setSelected] = useState(null);
+  const [time, setTime] = useState(0);
+  const [serverLights, setServerLights] = useState([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime((t) => t + 1), 600);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setServerLights(Array.from({ length: 24 }, () => Math.random()));
+    }, 400);
+    return () => clearInterval(interval);
+  }, []);
+
+  const close = () => setSelected(null);
+
+  return (
+    <div style={{
+      background: "#1a1a2e", minHeight: "100vh", fontFamily: "'JetBrains Mono', monospace",
+      overflow: "hidden", position: "relative", imageRendering: "auto",
+    }}>
+      <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+      {/* Header */}
+      <div style={{ height: 3, background: GRAD }} />
+      <div style={{
+        padding: "12px 20px", display: "flex", justifyContent: "space-between", alignItems: "center",
+        borderBottom: "1px solid rgba(255,255,255,0.08)", background: "rgba(0,0,0,0.4)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, fontSize: "0.8rem", color: "#fff" }}>BlackRoad</span>
+          <span style={{ fontSize: "0.48rem", opacity: 0.3, color: "#fff" }}>·</span>
+          <span style={{ fontFamily: "'Press Start 2P'", fontSize: "0.4rem", color: "#FF8400" }}>AGENT HQ</span>
+        </div>
+        <div style={{ display: "flex", gap: 16 }}>
+          {Object.values(AGENTS).map((a) => (
+            <div key={a.name} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: a.color, animation: "blink 2s ease-in-out infinite", animationDelay: `${Math.random() * 2}s` }} />
+              <span style={{ fontSize: "0.38rem", color: "#fff", opacity: 0.4 }}>{a.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Scene */}
+      <div style={{
+        position: "relative", width: "100%", maxWidth: 960, margin: "20px auto",
+        aspectRatio: "16/10", overflow: "hidden", borderRadius: 4,
+        border: "1px solid rgba(255,255,255,0.06)",
+      }}>
+        {/* Sky/window background */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(180deg, #2a2a4a 0%, #1a1a2e 40%, #252540 100%)",
+        }} />
+
+        {/* City skyline through windows */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "18%", overflow: "hidden" }}>
+          {[15, 25, 38, 50, 58, 70, 80].map((x, i) => (
+            <div key={i} style={{
+              position: "absolute", bottom: 0, left: `${x}%`,
+              width: [30, 22, 18, 35, 20, 28, 24][i],
+              height: [50, 70, 45, 80, 55, 65, 40][i],
+              background: `rgba(${20 + i * 8}, ${20 + i * 5}, ${40 + i * 8}, 0.6)`,
+              border: "1px solid rgba(255,255,255,0.03)",
+            }}>
+              {Array.from({ length: Math.floor([50, 70, 45, 80, 55, 65, 40][i] / 12) }).map((_, wi) => (
+                <div key={wi} style={{
+                  position: "absolute", left: "20%", right: "20%", top: 4 + wi * 12, height: 5,
+                  display: "flex", gap: 2,
+                }}>
+                  {[0, 1, 2].map((wj) => (
+                    <div key={wj} style={{
+                      flex: 1, background: Math.random() > 0.4 ? "rgba(255,200,100,0.15)" : "rgba(100,150,255,0.06)",
+                    }} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Window frames */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "18%", display: "flex" }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} style={{
+              flex: 1, borderRight: "3px solid #3a3a50", borderBottom: "3px solid #3a3a50",
+              background: "transparent",
+            }} />
+          ))}
+        </div>
+
+        {/* Floor */}
+        <div style={{
+          position: "absolute", top: "18%", left: 0, right: 0, bottom: 0,
+          background: "linear-gradient(160deg, #c4a670 0%, #b89860 50%, #a88c55 100%)",
+        }}>
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={`h${i}`} style={{
+              position: "absolute", left: 0, right: 0, top: `${i * 9}%`,
+              height: 1, background: "rgba(0,0,0,0.06)",
+            }} />
+          ))}
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={`v${i}`} style={{
+              position: "absolute", top: 0, bottom: 0, left: `${i * 7}%`,
+              width: 1, background: "rgba(0,0,0,0.04)",
+            }} />
+          ))}
+        </div>
+
+        {/* ═══ ZONES ═══ */}
+
+        {/* Lounge Area (top-left) */}
+        <div className="zone" onClick={() => setSelected("lounge")} style={{
+          position: "absolute", top: "19%", left: "2%", width: "22%", height: "22%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>LOUNGE</div>
+          <div style={{ position: "absolute", top: "15%", left: "10%", width: "80%", height: "70%", background: "rgba(80,60,40,0.3)", border: "1px solid rgba(100,80,50,0.2)", borderRadius: 2 }} />
+          <div style={{ position: "absolute", top: "20%", left: "50%", width: "40%", height: "18%", background: "#3a3a4a", border: "1px solid #4a4a5a", borderRadius: 2 }}>
+            <div style={{ position: "absolute", top: -4, left: 2, right: 2, height: 4, background: "#2e2e3e", borderRadius: "2px 2px 0 0" }} />
+          </div>
+          <div style={{ position: "absolute", top: "45%", left: "15%", width: "18%", height: "18%", background: "#3a3a4a", border: "1px solid #4a4a5a", borderRadius: 2 }} />
+          <div style={{ position: "absolute", top: "45%", left: "38%", width: "18%", height: "18%", background: "#3a3a4a", border: "1px solid #4a4a5a", borderRadius: 2 }} />
+          <div style={{ position: "absolute", top: "50%", left: "60%", width: "14%", height: "10%", background: "#8b7355", border: "1px solid #9a8265" }} />
+          <div style={{ position: "absolute", top: "5%", left: "12%", width: "30%", height: "12%", background: "#8b7355" }}>
+            <div style={{ position: "absolute", top: -8, left: "30%", width: 10, height: 8, background: "#2a2a3a", border: "1px solid #3a3a4a" }}>
+              <div style={{ width: "80%", height: "60%", margin: "1px auto", background: "#4488aa", animation: "type 1.5s infinite" }} />
+            </div>
+          </div>
+          <Plant x="82%" y="10%" />
+          <Plant x="5%" y="25%" />
+          <div style={{ position: "absolute", top: "2%", left: "48%", width: 10, height: 10, borderRadius: "50%", background: "#ddd", border: "1px solid #999" }} />
+        </div>
+
+        {/* Reception Desk (top-center) */}
+        <div className="zone" onClick={() => setSelected("reception")} style={{
+          position: "absolute", top: "19%", left: "28%", width: "25%", height: "16%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>RECEPTION</div>
+          <div style={{ position: "absolute", top: "40%", left: "10%", width: "80%", height: "22%", background: "#a08050", border: "1px solid #b09060" }} />
+          <div style={{ position: "absolute", top: "40%", left: "10%", width: "20%", height: "50%", background: "#a08050", border: "1px solid #b09060" }} />
+          <Monitor x="20%" y="28%" glow="#4488cc" />
+          <Monitor x="38%" y="28%" glow="#4488cc" />
+          <Monitor x="56%" y="28%" glow="#44cc88" />
+          <Plant x="75%" y="32%" size={8} />
+          <PixelPerson x="35%" y="56%" color="#c9a96e" hair="#5a4030" />
+        </div>
+
+        {/* Server Room (top-right) */}
+        <div className="zone" onClick={() => setSelected("eve")} style={{
+          position: "absolute", top: "18%", left: "68%", width: "30%", height: "30%",
+          background: "rgba(20,15,30,0.4)", borderLeft: "2px solid rgba(255,255,255,0.05)",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>SERVER ROOM · EVE</div>
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} style={{
+              position: "absolute", top: "8%", left: `${60 + i * 10}%`, width: "8%", height: "60%",
+              background: "#1a1a2a", border: "1px solid #2a2a3a",
+            }}>
+              {Array.from({ length: 6 }).map((_, li) => (
+                <div key={li} style={{
+                  position: "absolute", left: "20%", right: "20%", top: `${8 + li * 15}%`, height: 3,
+                  display: "flex", gap: 1,
+                }}>
+                  {[0, 1, 2].map((bi) => {
+                    const idx = i * 6 + li;
+                    const light = serverLights[idx] || 0;
+                    const colors = ["#00ff88", "#ff4444", "#ffaa00", "#0088ff"];
+                    return (
+                      <div key={bi} style={{
+                        flex: 1, borderRadius: 1,
+                        background: light > (0.3 + bi * 0.2) ? colors[(i + li + bi) % 4] : "#111",
+                        boxShadow: light > (0.3 + bi * 0.2) ? `0 0 3px ${colors[(i + li + bi) % 4]}` : "none",
+                        transition: "all 0.2s",
+                      }} />
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          ))}
+          <div style={{ position: "absolute", top: "18%", left: "8%", width: "45%", height: "12%", background: "#2a2535" }}>
+            <Monitor x="10%" y="-70%" glow="#FF0066" />
+            <Monitor x="45%" y="-70%" glow="#FF0066" />
+          </div>
+          <PixelBot x="25%" y="40%" color="#FF0066" label="EVE" />
+          <div style={{
+            position: "absolute", bottom: "15%", left: "5%", width: "90%", height: 1,
+            background: "rgba(255,0,102,0.15)", overflow: "hidden",
+          }}>
+            <div style={{
+              position: "absolute", top: -2, width: 4, height: 5,
+              background: "rgba(255,0,102,0.6)",
+              boxShadow: "0 0 8px #FF0066",
+              animation: "scan 3s linear infinite",
+            }} />
+          </div>
+          <Plant x="5%" y="8%" size={10} />
+        </div>
+
+        {/* Main Workspace (center) */}
+        <div className="zone" onClick={() => setSelected("cecilia")} style={{
+          position: "absolute", top: "38%", left: "3%", width: "30%", height: "30%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>WORKSPACE A · CECILIA</div>
+          <DeskCluster x="5%" y="5%" monitors={3} />
+          <DeskCluster x="5%" y="50%" monitors={2} />
+          <DeskCluster x="55%" y="5%" monitors={2} />
+          <DeskCluster x="55%" y="50%" monitors={3} />
+          <PixelBot x="40%" y="30%" color="#FF8400" label="CEC" />
+          <PixelPerson x="15%" y="22%" color="#6688aa" hair="#333" sitting />
+          <Plant x="48%" y="85%" />
+        </div>
+
+        {/* Workspace B (center) */}
+        <div className="zone" onClick={() => setSelected("cadence")} style={{
+          position: "absolute", top: "36%", left: "34%", width: "28%", height: "28%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>WORKSPACE B · CADENCE + RADIUS</div>
+          <DeskCluster x="5%" y="10%" monitors={2} />
+          <DeskCluster x="50%" y="10%" monitors={2} />
+          <DeskCluster x="5%" y="55%" monitors={3} />
+          <DeskCluster x="50%" y="55%" monitors={2} />
+          <PixelBot x="32%" y="35%" color="#0066FF" label="CAD" />
+          <PixelBot x="70%" y="70%" color="#00cc88" label="RAD" />
+          <Plant x="92%" y="2%" />
+        </div>
+
+        {/* Workspace C (right) */}
+        <div className="zone" onClick={() => setSelected("alice")} style={{
+          position: "absolute", top: "50%", left: "63%", width: "18%", height: "22%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>WORKSPACE C · ALICE</div>
+          <DeskCluster x="10%" y="15%" monitors={2} />
+          <DeskCluster x="10%" y="60%" monitors={2} />
+          <PixelBot x="55%" y="40%" color="#af5fd7" label="ALI" />
+          <Plant x="80%" y="5%" size={8} />
+        </div>
+
+        {/* Whiteboard / Ideas area */}
+        <div className="zone" onClick={() => setSelected("ideas")} style={{
+          position: "absolute", top: "50%", left: "82%", width: "16%", height: "24%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>IDEAS</div>
+          <div style={{
+            position: "absolute", top: "5%", left: "10%", width: "80%", height: "45%",
+            background: "#e8e8e0", border: "2px solid #bbb", borderRadius: 1,
+          }}>
+            <div style={{ position: "absolute", top: "15%", left: "10%", width: "35%", height: 2, background: "#4488cc", borderRadius: 1 }} />
+            <div style={{ position: "absolute", top: "30%", left: "10%", width: "60%", height: 2, background: "#cc4444", borderRadius: 1 }} />
+            <div style={{ position: "absolute", top: "45%", left: "10%", width: "45%", height: 2, background: "#44aa44", borderRadius: 1 }} />
+            <div style={{ position: "absolute", top: "60%", left: "10%", width: "55%", height: 2, background: "#aa44cc", borderRadius: 1 }} />
+            <div style={{
+              position: "absolute", top: "20%", right: "10%", width: 18, height: 18, borderRadius: "50%",
+              background: "conic-gradient(#FF8400 0% 35%, #0066FF 35% 60%, #FF0066 60% 80%, #af5fd7 80% 100%)",
+            }} />
+          </div>
+          <Plant x="10%" y="60%" />
+          <Plant x="75%" y="65%" size={8} />
+        </div>
+
+        {/* Meeting Room (bottom-right) */}
+        <div className="zone" onClick={() => setSelected("meeting")} style={{
+          position: "absolute", top: "72%", left: "64%", width: "34%", height: "26%",
+          background: "rgba(40,35,30,0.2)", borderTop: "2px solid rgba(255,255,255,0.04)",
+          borderLeft: "2px solid rgba(255,255,255,0.04)",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>MEETING ROOM</div>
+          <div style={{
+            position: "absolute", top: "30%", left: "35%", width: "30%", aspectRatio: "1.5",
+            background: "#9a7e55", borderRadius: "50%", border: "1px solid #a88d65",
+          }} />
+          {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+            const r = 22;
+            const cx = 50 + Math.cos((angle * Math.PI) / 180) * r;
+            const cy = 42 + Math.sin((angle * Math.PI) / 180) * (r * 0.6);
+            return (
+              <div key={i} style={{
+                position: "absolute", left: `${cx}%`, top: `${cy}%`,
+                width: 8, height: 8, background: "#4a4a5a", borderRadius: 1,
+                border: "1px solid #5a5a6a", transform: "translate(-50%, -50%)",
+              }} />
+            );
+          })}
+          <div style={{
+            position: "absolute", top: "5%", right: "8%", width: "30%", height: "30%",
+            background: "#222", border: "2px solid #444",
+          }}>
+            <div style={{ margin: "8%", width: "84%", height: "76%", background: "linear-gradient(135deg, #2244aa, #224488)", borderRadius: 1 }}>
+              <div style={{ width: "60%", height: 2, background: "#fff", margin: "15% auto 0", opacity: 0.4 }} />
+              <div style={{ width: "40%", height: 2, background: "#fff", margin: "12% auto 0", opacity: 0.2 }} />
+            </div>
+          </div>
+          <Plant x="5%" y="8%" />
+          <Plant x="88%" y="65%" size={8} />
+        </div>
+
+        {/* Bottom workspace / overflow */}
+        <div className="zone" onClick={() => setSelected("workshop")} style={{
+          position: "absolute", top: "70%", left: "3%", width: "30%", height: "28%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>WORKSHOP</div>
+          <DeskCluster x="5%" y="10%" monitors={2} />
+          <DeskCluster x="55%" y="10%" monitors={3} />
+          <DeskCluster x="30%" y="55%" monitors={2} />
+          <PixelPerson x="20%" y="25%" color="#88aacc" hair="#442" sitting />
+          <PixelPerson x="65%" y="28%" color="#cc8866" hair="#222" sitting />
+          <Plant x="90%" y="80%" />
+        </div>
+
+        {/* Board / sticky notes area (bottom-center-left) */}
+        <div className="zone" onClick={() => setSelected("board")} style={{
+          position: "absolute", top: "72%", left: "34%", width: "14%", height: "26%",
+        }}>
+          <div className="zone-label" style={{ ...labelStyle, top: -14 }}>BOARD</div>
+          <div style={{
+            position: "absolute", top: "5%", left: "15%", width: "70%", height: "50%",
+            background: "#6b5b3a", border: "2px solid #8b7b5a",
+          }}>
+            {[
+              { x: "8%", y: "10%", c: "#ffee88" },
+              { x: "40%", y: "8%", c: "#88eeff" },
+              { x: "65%", y: "12%", c: "#ff88aa" },
+              { x: "12%", y: "50%", c: "#88ff88" },
+              { x: "45%", y: "48%", c: "#ffaa66" },
+              { x: "70%", y: "52%", c: "#cc88ff" },
+            ].map((note, i) => (
+              <div key={i} style={{
+                position: "absolute", left: note.x, top: note.y,
+                width: 8, height: 8, background: note.c, opacity: 0.7,
+              }} />
+            ))}
+          </div>
+          <Monitor x="25%" y="62%" glow="#44cc88" />
+          <DeskCluster x="10%" y="65%" monitors={0} />
+        </div>
+
+        {/* Hallway separator strip */}
+        <div style={{
+          position: "absolute", top: "48%", left: "33%", width: "1px", height: "50%",
+          background: "rgba(255,255,255,0.03)",
+        }} />
+
+        {/* ═══ ROAMING AGENTS ═══ */}
+        <div style={{
+          position: "absolute", animation: "walk1 18s linear infinite",
+          zIndex: 20,
+        }}>
+          <PixelBot color="#ffcc00" label="MER" walking />
+        </div>
+
+        <div style={{
+          position: "absolute", animation: "walk2 22s linear infinite",
+          zIndex: 20,
+        }}>
+          <PixelBot color="#FF8400" label="..." walking />
+        </div>
+
+        {/* Ambient particles */}
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} style={{
+            position: "absolute",
+            left: `${20 + i * 12}%`, top: `${30 + (i % 3) * 15}%`,
+            width: 2, height: 2, background: "rgba(255,255,255,0.06)",
+            animation: `float ${2 + i * 0.5}s ease-in-out infinite`,
+            animationDelay: `${i * 0.4}s`,
+          }} />
+        ))}
+      </div>
+
+      {/* ═══ INFO PANEL ═══ */}
+      {selected && (
+        <InfoPanel id={selected} onClose={close} serverLights={serverLights} time={time} />
+      )}
+
+      {/* Bottom status bar */}
+      <div style={{
+        maxWidth: 960, margin: "0 auto", padding: "12px 20px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        fontSize: "0.4rem", color: "#fff",
+      }}>
+        <div style={{ display: "flex", gap: 16 }}>
+          <span style={{ opacity: 0.2 }}>Agent HQ v0.4.0</span>
+          <span style={{ opacity: 0.15 }}>·</span>
+          <span style={{ opacity: 0.2 }}>{Object.keys(AGENTS).length} agents online</span>
+        </div>
+        <div style={{ display: "flex", gap: 16 }}>
+          <span style={{ opacity: 0.15 }}>Click any zone to inspect</span>
+          <span style={{ opacity: 0.2 }}>BlackRoad OS</span>
+        </div>
+      </div>
+      <div style={{ height: 3, background: GRAD }} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<AgentHQ />);
+</script>
+</body>
+</html>
