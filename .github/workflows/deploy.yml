@@ -17,9 +17,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
       - name: Install deps
         run: |
           sudo apt-get install -y zsh
+          npm ci
           npm install -g wrangler
 
       - name: Write brand.json
@@ -106,6 +113,12 @@ jobs:
           fi
           echo "--- Site structure ---"
           find site -name "*.html" | sort
+
+      - name: Build React brand template
+        run: |
+          npx vite build
+          cp -r dist/* site/brand/ 2>/dev/null || mkdir -p site/brand && cp -r dist/* site/brand/
+          echo "--- React brand template built ---"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
