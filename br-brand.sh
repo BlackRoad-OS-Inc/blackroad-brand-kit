@@ -190,16 +190,30 @@ document.querySelectorAll(".animate-in").forEach((el, i) => {
 '
 
 # ─── HELPERS ──────────────────────────────────────────────────────────────
+# Escape special HTML characters to prevent injection in generated pages.
+_html_escape() {
+  local str="$1"
+  str="${str//&/&amp;}"
+  str="${str//</&lt;}"
+  str="${str//>/&gt;}"
+  str="${str//\"/&quot;}"
+  str="${str//\'/&#39;}"
+  printf '%s' "$str"
+}
+
 _html_head() {
   local title="$1" desc="$2"
+  # Escape user-provided strings before embedding in HTML
+  local title_e; title_e=$(_html_escape "$title")
+  local desc_e;  desc_e=$(_html_escape "$desc")
   # Pull OG/social meta from env (exported by _cmd_site/_cmd_new --config)
-  local og_title="${BR_BRAND_OG_TITLE:-${title}}"
-  local og_desc="${BR_BRAND_OG_DESC:-${desc}}"
+  local og_title_e; og_title_e=$(_html_escape "${BR_BRAND_OG_TITLE:-${title}}")
+  local og_desc_e;  og_desc_e=$(_html_escape "${BR_BRAND_OG_DESC:-${desc}}")
   local og_image="${BR_BRAND_OG_IMAGE:-}"
   local og_url="${BR_BRAND_OG_URL:-}"
   local og_type="${BR_BRAND_OG_TYPE:-website}"
   local tw_handle="${BR_BRAND_TWITTER:-}"
-  local site_name="${BR_BRAND_SITE_NAME:-BlackRoad OS}"
+  local site_name_e; site_name_e=$(_html_escape "${BR_BRAND_SITE_NAME:-BlackRoad OS}")
   local favicon="${BR_BRAND_FAVICON:-}"
 
   local og_image_tag="" og_url_tag="" tw_handle_tag="" favicon_tag=""
@@ -214,17 +228,17 @@ _html_head() {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title} — ${site_name}</title>
-  <meta name="description" content="${desc}" />
+  <title>${title_e} — ${site_name_e}</title>
+  <meta name="description" content="${desc_e}" />
   <!-- Open Graph -->
   <meta property="og:type" content="${og_type}" />
-  <meta property="og:site_name" content="${site_name}" />
-  <meta property="og:title" content="${og_title}" />
-  <meta property="og:description" content="${og_desc}" />
+  <meta property="og:site_name" content="${site_name_e}" />
+  <meta property="og:title" content="${og_title_e}" />
+  <meta property="og:description" content="${og_desc_e}" />
 ${og_image_tag}${og_url_tag}  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="${og_title}" />
-  <meta name="twitter:description" content="${og_desc}" />
+  <meta name="twitter:title" content="${og_title_e}" />
+  <meta name="twitter:description" content="${og_desc_e}" />
 ${og_image_tag}${tw_handle_tag}${favicon_tag}  <style>${BRAND_CSS}</style>
 </head>
 <body>
@@ -237,11 +251,12 @@ EOF
 
 _html_nav() {
   local logo_text="${1:-BlackRoad OS}" nav_links="${2:-${BR_BRAND_NAV:-}}"
+  local logo_text_e; logo_text_e=$(_html_escape "$logo_text")
   local logo_html
   if [[ -n "${BR_BRAND_LOGO:-}" ]]; then
-    logo_html="<img src=\"${BR_BRAND_LOGO}\" alt=\"${logo_text}\" style=\"height:28px;width:auto;object-fit:contain;\" />"
+    logo_html="<img src=\"${BR_BRAND_LOGO}\" alt=\"${logo_text_e}\" style=\"height:28px;width:auto;object-fit:contain;\" />"
   else
-    logo_html="${logo_text}"
+    logo_html="${logo_text_e}"
   fi
   echo "<nav><div class=\"nav-logo\">${logo_html}</div><div class=\"nav-links\">${nav_links}</div></nav>"
 }
@@ -263,6 +278,10 @@ EOF
 # ─── TEMPLATE: LANDING ────────────────────────────────────────────────────
 _tpl_landing() {
   local title="$1" tagline="$2" desc="$3" cta_text="${4:-Get Started}" cta_url="${5:-#}" output="$6"
+  local title_e; title_e=$(_html_escape "$title")
+  local tagline_e; tagline_e=$(_html_escape "$tagline")
+  local desc_e; desc_e=$(_html_escape "$desc")
+  local cta_text_e; cta_text_e=$(_html_escape "$cta_text")
 
   # Parse feature items from remaining args (format: "Icon|Title|Desc")
   shift 6
@@ -278,10 +297,10 @@ _tpl_landing() {
   <section class="section" style="min-height:80vh;display:flex;align-items:center;text-align:center;">
     <div class="container">
       <div class="section-label animate-in">BlackRoad OS</div>
-      <h1 class="gradient-text animate-in" style="margin-bottom:var(--space-lg);">${title}</h1>
-      <p style="font-size:1.3rem;max-width:640px;margin:0 auto var(--space-xl);" class="animate-in">${tagline}</p>
+      <h1 class="gradient-text animate-in" style="margin-bottom:var(--space-lg);">${title_e}</h1>
+      <p style="font-size:1.3rem;max-width:640px;margin:0 auto var(--space-xl);" class="animate-in">${tagline_e}</p>
       <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;" class="animate-in">
-        <a href="${cta_url}" class="btn btn-primary">${cta_text}</a>
+        <a href="${cta_url}" class="btn btn-primary">${cta_text_e}</a>
         <a href="#features" class="btn btn-outline">Learn More</a>
       </div>
     </div>
@@ -290,7 +309,7 @@ _tpl_landing() {
   <!-- Description -->
   <section class="section" id="about">
     <div class="container" style="max-width:800px;text-align:center;">
-      <p style="font-size:1.1rem;line-height:1.8;" class="animate-in">${desc}</p>
+      <p style="font-size:1.1rem;line-height:1.8;" class="animate-in">${desc_e}</p>
     </div>
   </section>
 EOF
@@ -309,11 +328,13 @@ EOF
         local rest="${feat#*|}"
         local ftitle="${rest%%|*}"
         local fdesc="${rest#*|}"
+        local ftitle_e; ftitle_e=$(_html_escape "$ftitle")
+        local fdesc_e; fdesc_e=$(_html_escape "$fdesc")
         cat <<EOF
         <div class="card animate-in">
           <div style="font-size:2rem;margin-bottom:var(--space-md);">${icon}</div>
-          <h4 style="margin-bottom:var(--space-sm);">${ftitle}</h4>
-          <p style="font-size:0.9rem;">${fdesc}</p>
+          <h4 style="margin-bottom:var(--space-sm);">${ftitle_e}</h4>
+          <p style="font-size:0.9rem;">${fdesc_e}</p>
         </div>
 EOF
       done
@@ -328,7 +349,7 @@ EOF
     <div class="container">
       <div class="gradient-border" style="display:inline-block;padding:var(--space-2xl) var(--space-3xl);border-radius:var(--space-lg);">
         <h2 style="margin-bottom:var(--space-lg);" class="animate-in">Ready to build?</h2>
-        <a href="${cta_url}" class="btn btn-primary animate-in">${cta_text} →</a>
+        <a href="${cta_url}" class="btn btn-primary animate-in">${cta_text_e} →</a>
       </div>
     </div>
   </section>
@@ -344,6 +365,10 @@ _tpl_agent() {
   local name="$1" type="$2" tagline="$3" bio="$4" emoji="${5:-🤖}" output="$6"
   shift 6
   local skills=("$@")  # format: "SkillName|pct"
+  local name_e; name_e=$(_html_escape "$name")
+  local type_e; type_e=$(_html_escape "$type")
+  local tagline_e; tagline_e=$(_html_escape "$tagline")
+  local bio_e; bio_e=$(_html_escape "$bio")
 
   {
     _html_head "$name — Agent" "$bio"
@@ -354,9 +379,9 @@ _tpl_agent() {
   <section class="section" style="text-align:center;">
     <div class="container" style="max-width:700px;">
       <div style="font-size:5rem;margin-bottom:var(--space-lg);animation:float 4s ease-in-out infinite;">${emoji}</div>
-      <div class="section-label animate-in">${type}</div>
-      <h1 class="gradient-text animate-in">${name}</h1>
-      <p style="font-size:1.2rem;margin-top:var(--space-lg);" class="animate-in">${tagline}</p>
+      <div class="section-label animate-in">${type_e}</div>
+      <h1 class="gradient-text animate-in">${name_e}</h1>
+      <p style="font-size:1.2rem;margin-top:var(--space-lg);" class="animate-in">${tagline_e}</p>
     </div>
   </section>
 
@@ -365,7 +390,7 @@ _tpl_agent() {
     <div class="container" style="max-width:800px;">
       <div class="card animate-in">
         <div class="section-label">About</div>
-        <p style="font-size:1rem;line-height:1.8;margin-top:var(--space-md);">${bio}</p>
+        <p style="font-size:1rem;line-height:1.8;margin-top:var(--space-md);">${bio_e}</p>
       </div>
     </div>
   </section>
@@ -382,10 +407,11 @@ EOF
       for skill in "${skills[@]}"; do
         local sname="${skill%%|*}"
         local spct="${skill#*|}"
+        local sname_e; sname_e=$(_html_escape "$sname")
         cat <<EOF
         <div class="animate-in">
           <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-xs);">
-            <span style="font-size:0.9rem;font-weight:600;">${sname}</span>
+            <span style="font-size:0.9rem;font-weight:600;">${sname_e}</span>
             <span style="font-size:0.85rem;color:rgba(255,255,255,0.5);">${spct}%</span>
           </div>
           <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;">
@@ -410,6 +436,9 @@ _tpl_docs() {
   local title="$1" subtitle="$2" author="${3:-BlackRoad OS}" output="$4"
   shift 4
   local sections=("$@")  # format: "Section Title|content text"
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
+  local author_e; author_e=$(_html_escape "$author")
 
   {
     _html_head "$title" "$subtitle"
@@ -419,19 +448,21 @@ _tpl_docs() {
 <main>
   <section class="section" style="max-width:800px;margin:0 auto;">
     <div class="container">
-      <div class="section-label animate-in">${author}</div>
-      <h1 class="animate-in" style="margin-bottom:var(--space-md);">${title}</h1>
-      <p style="font-size:1.1rem;color:rgba(255,255,255,0.6);margin-bottom:var(--space-2xl);" class="animate-in">${subtitle}</p>
+      <div class="section-label animate-in">${author_e}</div>
+      <h1 class="animate-in" style="margin-bottom:var(--space-md);">${title_e}</h1>
+      <p style="font-size:1.1rem;color:rgba(255,255,255,0.6);margin-bottom:var(--space-2xl);" class="animate-in">${subtitle_e}</p>
       <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin-bottom:var(--space-2xl);" />
 EOF
 
     for sec in "${sections[@]}"; do
       local stitle="${sec%%|*}"
       local scontent="${sec#*|}"
+      local stitle_e; stitle_e=$(_html_escape "$stitle")
+      local scontent_e; scontent_e=$(_html_escape "$scontent")
       cat <<EOF
       <div class="animate-in" style="margin-bottom:var(--space-2xl);">
-        <h3 style="margin-bottom:var(--space-md);color:var(--white);">${stitle}</h3>
-        <p style="line-height:1.8;">${scontent}</p>
+        <h3 style="margin-bottom:var(--space-md);color:var(--white);">${stitle_e}</h3>
+        <p style="line-height:1.8;">${scontent_e}</p>
       </div>
 EOF
     done
@@ -449,16 +480,19 @@ EOF
 # ─── TEMPLATE: CARD (snippet only) ────────────────────────────────────────
 _tpl_card() {
   local title="$1" desc="$2" icon="${3:-✦}" badge="${4:-}" link="${5:-#}" output="$6"
+  local title_e; title_e=$(_html_escape "$title")
+  local desc_e; desc_e=$(_html_escape "$desc")
+  local badge_e; badge_e=$(_html_escape "$badge")
 
   cat <<EOF > "$output"
 <!-- BlackRoad OS Brand Card — copy into any page -->
 <div class="card animate-in">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:var(--space-md);">
     <span style="font-size:2rem;">${icon}</span>
-    $([ -n "$badge" ] && echo "<span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:var(--gradient-brand);color:var(--white);\">${badge}</span>")
+    $([ -n "$badge" ] && echo "<span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:var(--gradient-brand);color:var(--white);\">${badge_e}</span>")
   </div>
-  <h4 style="margin-bottom:var(--space-sm);">${title}</h4>
-  <p style="font-size:0.9rem;margin-bottom:var(--space-lg);">${desc}</p>
+  <h4 style="margin-bottom:var(--space-sm);">${title_e}</h4>
+  <p style="font-size:0.9rem;margin-bottom:var(--space-lg);">${desc_e}</p>
   <a href="${link}" class="btn btn-outline" style="font-size:0.85rem;">Learn More →</a>
 </div>
 <!-- End Card -->
@@ -472,6 +506,8 @@ _tpl_pricing() {
   local title="$1" subtitle="$2" output="$3"
   shift 3
   local tiers=("$@")
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
 
   {
     _html_head "$title" "$subtitle"
@@ -482,8 +518,8 @@ _tpl_pricing() {
   <section class="section" style="text-align:center;">
     <div class="container">
       <div class="section-label animate-in">Pricing</div>
-      <h1 class="gradient-text animate-in">${title}</h1>
-      <p style="font-size:1.1rem;max-width:560px;margin:var(--space-lg) auto 0;" class="animate-in">${subtitle}</p>
+      <h1 class="gradient-text animate-in">${title_e}</h1>
+      <p style="font-size:1.1rem;max-width:560px;margin:var(--space-lg) auto 0;" class="animate-in">${subtitle_e}</p>
     </div>
   </section>
 
@@ -497,6 +533,11 @@ EOF
       local tperiod="${r2%%|*}"; local r3="${r2#*|}"; local tdesc="${r3%%|*}"; local r4="${r3#*|}"
       local tfeats="${r4%%|*}"; local r5="${r4#*|}"; local tcta="${r5%%|*}"; local r6="${r5#*|}"
       local tcta_url="${r6%%|*}"; local thighlight="${r6#*|}"
+      local tname_e; tname_e=$(_html_escape "$tname")
+      local tprice_e; tprice_e=$(_html_escape "$tprice")
+      local tperiod_e; tperiod_e=$(_html_escape "$tperiod")
+      local tdesc_e; tdesc_e=$(_html_escape "$tdesc")
+      local tcta_e; tcta_e=$(_html_escape "$tcta")
 
       local wrapper_open="" wrapper_close=""
       if [[ "$thighlight" == "true" ]]; then
@@ -507,22 +548,23 @@ EOF
       echo "        ${wrapper_open}"
       cat <<EOF
         <div class="card animate-in" style="text-align:center;$([ "$thighlight" = "true" ] && echo "background:rgba(255,255,255,0.07);")">
-          <div class="section-label" style="text-align:center;">${tname}</div>
+          <div class="section-label" style="text-align:center;">${tname_e}</div>
           <div style="margin:var(--space-lg) 0;">
-            <span style="font-size:3.5rem;font-weight:700;background:var(--gradient-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${tprice}</span>
-            <span style="color:rgba(255,255,255,0.5);font-size:0.9rem;"> / ${tperiod}</span>
+            <span style="font-size:3.5rem;font-weight:700;background:var(--gradient-brand);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${tprice_e}</span>
+            <span style="color:rgba(255,255,255,0.5);font-size:0.9rem;"> / ${tperiod_e}</span>
           </div>
-          <p style="font-size:0.9rem;margin-bottom:var(--space-xl);">${tdesc}</p>
+          <p style="font-size:0.9rem;margin-bottom:var(--space-xl);">${tdesc_e}</p>
           <ul style="list-style:none;text-align:left;margin-bottom:var(--space-xl);">
 EOF
       IFS=',' read -rA feat_list <<< "$tfeats"
       for feat in "${feat_list[@]}"; do
         feat="${feat## }"; feat="${feat%% }"
-        echo "            <li style=\"padding:var(--space-xs) 0;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.05);\">✓ &nbsp;${feat}</li>"
+        local feat_e; feat_e=$(_html_escape "$feat")
+        echo "            <li style=\"padding:var(--space-xs) 0;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.05);\">✓ &nbsp;${feat_e}</li>"
       done
       cat <<EOF
           </ul>
-          <a href="${tcta_url}" class="btn $([ "$thighlight" = "true" ] && echo "btn-primary" || echo "btn-outline")" style="width:100%;text-align:center;">${tcta}</a>
+          <a href="${tcta_url}" class="btn $([ "$thighlight" = "true" ] && echo "btn-primary" || echo "btn-outline")" style="width:100%;text-align:center;">${tcta_e}</a>
         </div>
 EOF
       echo "        ${wrapper_close}"
@@ -542,6 +584,8 @@ EOF
 # ─── TEMPLATE: 404 ────────────────────────────────────────────────────────
 _tpl_404() {
   local title="${1:-404}" message="${2:-Page not found}" home_url="${3:-/}" output="$4"
+  local title_e; title_e=$(_html_escape "$title")
+  local message_e; message_e=$(_html_escape "$message")
 
   {
     _html_head "404 — ${title}" "$message"
@@ -556,8 +600,8 @@ _tpl_404() {
                 background-clip:text;
                 animation:glitch 2s infinite;
                 margin-bottom:var(--space-lg);">404</div>
-    <h2 class="animate-in" style="margin-bottom:var(--space-md);">${title}</h2>
-    <p class="animate-in" style="margin-bottom:var(--space-xl);">${message}</p>
+    <h2 class="animate-in" style="margin-bottom:var(--space-md);">${title_e}</h2>
+    <p class="animate-in" style="margin-bottom:var(--space-xl);">${message_e}</p>
     <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;" class="animate-in">
       <a href="${home_url}" class="btn btn-primary">← Go Home</a>
       <a href="javascript:history.back()" class="btn btn-outline">Go Back</a>
@@ -588,6 +632,8 @@ _tpl_feature() {
   local title="$1" subtitle="$2" output="$3"
   shift 3
   local items=("$@")
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
 
   {
     _html_head "$title" "$subtitle"
@@ -598,8 +644,8 @@ _tpl_feature() {
   <section class="section" style="text-align:center;">
     <div class="container">
       <div class="section-label animate-in">Features</div>
-      <h1 class="gradient-text animate-in">${title}</h1>
-      <p style="font-size:1.1rem;max-width:640px;margin:var(--space-lg) auto 0;" class="animate-in">${subtitle}</p>
+      <h1 class="gradient-text animate-in">${title_e}</h1>
+      <p style="font-size:1.1rem;max-width:640px;margin:var(--space-lg) auto 0;" class="animate-in">${subtitle_e}</p>
     </div>
   </section>
 
@@ -610,6 +656,8 @@ EOF
     local idx=0
     for item in "${items[@]}"; do
       local iicon="${item%%|*}"; local rest="${item#*|}"; local ititle="${rest%%|*}"; local idesc="${rest#*|}"
+      local ititle_e; ititle_e=$(_html_escape "$ititle")
+      local idesc_e; idesc_e=$(_html_escape "$idesc")
       local reverse=""
       [[ $((idx % 2)) -eq 1 ]] && reverse="flex-direction:row-reverse;"
       cat <<EOF
@@ -618,8 +666,8 @@ EOF
           <div style="font-size:4rem;background:var(--charcoal);border-radius:var(--space-lg);padding:var(--space-xl);display:inline-block;border:1px solid rgba(255,255,255,0.06);">${iicon}</div>
         </div>
         <div style="flex:1;min-width:240px;">
-          <h3 style="margin-bottom:var(--space-md);">${ititle}</h3>
-          <p style="line-height:1.8;">${idesc}</p>
+          <h3 style="margin-bottom:var(--space-md);">${ititle_e}</h3>
+          <p style="line-height:1.8;">${idesc_e}</p>
         </div>
       </div>
 EOF
@@ -643,6 +691,10 @@ _tpl_blog() {
   local title="$1" subtitle="$2" author="${3:-BlackRoad OS}" date_str="${4:-}" tags="${5:-}" output="$6"
   shift 6
   local sections=("$@")
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
+  local author_e; author_e=$(_html_escape "$author")
+  local date_str_e; date_str_e=$(_html_escape "${date_str:-$(date "+%B %d, %Y")}")
 
   [[ -z "$date_str" ]] && date_str=$(date "+%B %d, %Y")
 
@@ -662,18 +714,19 @@ EOF
       IFS=',' read -rA tag_list <<< "$tags"
       for tag in "${tag_list[@]}"; do
         tag="${tag## }"; tag="${tag%% }"
-        echo "        <span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(245,166,35,0.4);color:var(--sunrise-orange);\">${tag}</span>"
+        local tag_e; tag_e=$(_html_escape "$tag")
+        echo "        <span style=\"font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;border:1px solid rgba(245,166,35,0.4);color:var(--sunrise-orange);\">${tag_e}</span>"
       done
       echo "      </div>"
     fi
 
     cat <<EOF
-      <h1 class="animate-in" style="margin-bottom:var(--space-lg);">${title}</h1>
-      <p style="font-size:1.1rem;color:rgba(255,255,255,0.6);margin-bottom:var(--space-xl);" class="animate-in">${subtitle}</p>
+      <h1 class="animate-in" style="margin-bottom:var(--space-lg);">${title_e}</h1>
+      <p style="font-size:1.1rem;color:rgba(255,255,255,0.6);margin-bottom:var(--space-xl);" class="animate-in">${subtitle_e}</p>
       <div style="display:flex;align-items:center;justify-content:center;gap:var(--space-md);color:rgba(255,255,255,0.4);font-size:0.85rem;" class="animate-in">
-        <span>✍ ${author}</span>
+        <span>✍ ${author_e}</span>
         <span>·</span>
-        <span>${date_str}</span>
+        <span>${date_str_e}</span>
       </div>
     </div>
   </section>
@@ -685,10 +738,12 @@ EOF
     for sec in "${sections[@]}"; do
       local sheading="${sec%%|*}"
       local sbody="${sec#*|}"
+      local sheading_e; sheading_e=$(_html_escape "$sheading")
+      local sbody_e; sbody_e=$(_html_escape "$sbody")
       cat <<EOF
       <div class="animate-in" style="margin-bottom:var(--space-2xl);">
-        <h2 style="font-size:1.6rem;margin-bottom:var(--space-md);color:var(--white);">${sheading}</h2>
-        <p style="line-height:1.9;font-size:1.05rem;">${sbody}</p>
+        <h2 style="font-size:1.6rem;margin-bottom:var(--space-md);color:var(--white);">${sheading_e}</h2>
+        <p style="line-height:1.9;font-size:1.05rem;">${sbody_e}</p>
       </div>
 EOF
     done
@@ -1202,13 +1257,19 @@ _tpl_hero() {
   local title="$1" tagline="$2" desc="$3" cta_text="$4" cta_url="$5"
   local secondary_cta="$6" secondary_url="$7" badge="$8" output="$9"
   [[ -z "$output" ]] && output="${OUT_DIR}/hero.html"
+  local title_e; title_e=$(_html_escape "$title")
+  local tagline_e; tagline_e=$(_html_escape "$tagline")
+  local desc_e; desc_e=$(_html_escape "$desc")
+  local cta_text_e; cta_text_e=$(_html_escape "$cta_text")
+  local badge_e; badge_e=$(_html_escape "$badge")
+  local secondary_cta_e; secondary_cta_e=$(_html_escape "$secondary_cta")
 
   local badge_html=""
-  [[ -n "$badge" ]] && badge_html='<div class="badge">'"${badge}"'</div>'
+  [[ -n "$badge" ]] && badge_html='<div class="badge">'"${badge_e}"'</div>'
   local secondary_html=""
-  [[ -n "$secondary_cta" ]] && secondary_html='<a href="'"${secondary_url}"'" class="btn btn-outline">'"${secondary_cta}"'</a>'
+  [[ -n "$secondary_cta" ]] && secondary_html='<a href="'"${secondary_url}"'" class="btn btn-outline">'"${secondary_cta_e}"'</a>'
   local desc_html=""
-  [[ -n "$desc" ]] && desc_html='<p class="hero-desc">'"${desc}"'</p>'
+  [[ -n "$desc" ]] && desc_html='<p class="hero-desc">'"${desc_e}"'</p>'
 
   cat > "$output" <<HTML
 $(_html_head "$title")
@@ -1273,11 +1334,11 @@ $(_html_nav "$title")
 <main>
   <section class="hero-section">
     ${badge_html}
-    <h1 class="hero-title">${title}</h1>
-    <p class="hero-tagline">${tagline}</p>
+    <h1 class="hero-title">${title_e}</h1>
+    <p class="hero-tagline">${tagline_e}</p>
     ${desc_html}
     <div class="hero-ctas">
-      <a href="${cta_url}" class="btn btn-primary">${cta_text}</a>
+      <a href="${cta_url}" class="btn btn-primary">${cta_text_e}</a>
       ${secondary_html}
     </div>
     <div class="scroll-hint">↓ scroll</div>
@@ -1294,11 +1355,15 @@ _tpl_stats() {
   local stats=("$@")
   [[ -z "$output" ]] && output="${OUT_DIR}/stats.html"
   [[ ${#stats[@]} -eq 0 ]] && stats=("30K|Agents" "99.9%|Uptime" "17|Orgs" "1825+|Repos")
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
 
   local tiles_html=""
   for s in "${stats[@]}"; do
     local val="${s%%|*}" lbl="${s#*|}"
-    tiles_html+='<div class="stat-tile"><div class="stat-value">'"${val}"'</div><div class="stat-label">'"${lbl}"'</div></div>'
+    local val_e; val_e=$(_html_escape "$val")
+    local lbl_e; lbl_e=$(_html_escape "$lbl")
+    tiles_html+='<div class="stat-tile"><div class="stat-value">'"${val_e}"'</div><div class="stat-label">'"${lbl_e}"'</div></div>'
   done
 
   cat > "$output" <<HTML
@@ -1332,8 +1397,8 @@ $(_html_nav "$title")
 </style>
 <main>
   <section class="stats-section">
-    <h1 class="stats-heading">${title}</h1>
-    $([ -n "$subtitle" ] && echo '<p class="stats-sub">'"${subtitle}"'</p>')
+    <h1 class="stats-heading">${title_e}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="stats-sub">'"${subtitle_e}"'</p>')
     <div class="stats-grid">${tiles_html}</div>
   </section>
 </main>
@@ -1352,15 +1417,21 @@ _tpl_testimonial() {
     "B|Bob Rivera|CTO, DevCo|The brand kit alone saved us a week. Every page looks flawless out of the box."
     "C|Cleo Park|Founder, StartupX|CECE remembered my preferences across sessions. That's the future of AI tooling."
   )
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
 
   local cards_html=""
   for t in "${testimonials[@]}"; do
     local init="${t%%|*}"; local rest="${t#*|}"
     local name="${rest%%|*}"; rest="${rest#*|}"
     local role="${rest%%|*}"; local quote="${rest#*|}"
-    cards_html+='<div class="tc"><div class="tc-quote">'"${quote}"'</div>'
-    cards_html+='<div class="tc-author"><div class="tc-avatar">'"${init}"'</div>'
-    cards_html+='<div><div class="tc-name">'"${name}"'</div><div class="tc-role">'"${role}"'</div></div></div></div>'
+    local init_e; init_e=$(_html_escape "$init")
+    local name_e; name_e=$(_html_escape "$name")
+    local role_e; role_e=$(_html_escape "$role")
+    local quote_e; quote_e=$(_html_escape "$quote")
+    cards_html+='<div class="tc"><div class="tc-quote">'"${quote_e}"'</div>'
+    cards_html+='<div class="tc-author"><div class="tc-avatar">'"${init_e}"'</div>'
+    cards_html+='<div><div class="tc-name">'"${name_e}"'</div><div class="tc-role">'"${role_e}"'</div></div></div></div>'
   done
 
   cat > "$output" <<HTML
@@ -1391,8 +1462,8 @@ $(_html_nav "$title")
 </style>
 <main>
   <section class="tst-section">
-    <h1 class="tst-heading">${title}</h1>
-    $([ -n "$subtitle" ] && echo '<p class="tst-sub">'"${subtitle}"'</p>')
+    <h1 class="tst-heading">${title_e}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="tst-sub">'"${subtitle_e}"'</p>')
     <div class="tc-grid">${cards_html}</div>
   </section>
 </main>
@@ -1416,6 +1487,9 @@ br brand site --config brand.json
 
 # Deploy to Cloudflare Pages
 br brand deploy --project my-site --dir ./site'
+
+  local title_e; title_e=$(_html_escape "$title")
+  local language_e; language_e=$(_html_escape "$language")
 
   # Escape HTML entities in code
   local escaped_code
@@ -1470,13 +1544,13 @@ $(_html_nav "$title")
 </style>
 <main>
   <section class="cb-section">
-    <h1 class="cb-heading">${title}</h1>
+    <h1 class="cb-heading">${title_e}</h1>
     <div class="cb-wrap">
       <div class="cb-titlebar">
         <div class="cb-dot cb-dot-red"></div>
         <div class="cb-dot cb-dot-amber"></div>
         <div class="cb-dot cb-dot-green"></div>
-        <span class="cb-lang">${language}</span>
+        <span class="cb-lang">${language_e}</span>
       </div>
       <div class="cb-body">
         <div class="cb-lines">$(printf "$line_nums")</div>
@@ -1498,6 +1572,15 @@ _tpl_coming_soon() {
   local title="$1" tagline="$2" launch_date="$3" output="$4"
   [[ -z "$output" ]] && output="${OUT_DIR}/coming-soon.html"
   [[ -z "$launch_date" ]] && launch_date=$(date -v+30d +%Y-%m-%dT00:00:00 2>/dev/null || date --date="+30 days" +%Y-%m-%dT00:00:00 2>/dev/null || echo "2026-04-01T00:00:00")
+  local title_e; title_e=$(_html_escape "$title")
+  local tagline_e; tagline_e=$(_html_escape "$tagline")
+  # Validate launch_date as ISO 8601 before embedding in JS; fall back to a safe default.
+  local launch_date_safe
+  if [[ "$launch_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2})?)?$ ]]; then
+    launch_date_safe="$launch_date"
+  else
+    launch_date_safe="2026-04-01T00:00:00"
+  fi
 
   cat > "$output" <<HTML
 $(_html_head "$title")
@@ -1546,8 +1629,8 @@ $(_html_nav "$title")
 <main>
   <section class="cs-section">
     <div class="cs-label">Coming Soon</div>
-    <h1 class="cs-title">${title}</h1>
-    <p class="cs-tagline">${tagline}</p>
+    <h1 class="cs-title">${title_e}</h1>
+    <p class="cs-tagline">${tagline_e}</p>
     <div class="countdown" id="countdown">
       <div class="cd-unit"><div class="cd-num" id="cd-days">--</div><div class="cd-label">Days</div></div>
       <div class="cd-unit"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">Hours</div></div>
@@ -1563,7 +1646,7 @@ $(_html_nav "$title")
 </main>
 <script>
 (function(){
-  var t = new Date('${launch_date}').getTime();
+  var t = new Date('${launch_date_safe}').getTime();
   function tick(){
     var now = Date.now(), d = t - now;
     if(d <= 0){ document.getElementById('countdown').innerHTML='<div class="cd-unit"><div class="cd-num" style="font-size:2rem">🚀</div><div class="cd-label">Launched</div></div>'; return; }
@@ -1590,36 +1673,43 @@ _tpl_changelog() {
     "v2.0.0|2026-02-10|Added pricing, feature, blog, 404 templates. Deploy + audit commands|feature"
     "v1.0.0|2026-02-01|Initial release: landing, agent, docs, card templates|feature"
   )
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
 
   local entries_html=""
   for e in "${entries[@]}"; do
     local ver="${e%%|*}"; local rest="${e#*|}"
     local dt="${rest%%|*}";   rest="${rest#*|}"
     local changes="${rest%%|*}"; local tags="${rest#*|}"
+    local ver_e; ver_e=$(_html_escape "$ver")
+    local dt_e; dt_e=$(_html_escape "$dt")
 
     local tag_html=""
     local -a tag_arr
     IFS=',' read -rA tag_arr <<< "$tags"
     for tag in "${tag_arr[@]}"; do
+      local tag_e; tag_e=$(_html_escape "$tag")
       local tag_color="rgba(255,255,255,.15)"
       [[ "$tag" == "feature" ]]     && tag_color="rgba(41,121,255,.3)"
       [[ "$tag" == "fix" ]]         && tag_color="rgba(255,29,108,.3)"
       [[ "$tag" == "improvement" ]] && tag_color="rgba(156,39,176,.3)"
       [[ "$tag" == "breaking" ]]    && tag_color="rgba(255,100,0,.4)"
-      tag_html+="<span class=\"cl-tag\" style=\"background:${tag_color}\">${tag}</span>"
+      tag_html+="<span class=\"cl-tag\" style=\"background:${tag_color}\">${tag_e}</span>"
     done
 
     local bullets_html=""
     local -a bullet_arr
     IFS=',' read -rA bullet_arr <<< "$changes"
     for b in "${bullet_arr[@]}"; do
-      bullets_html+="<li>${b// *([[:space:]])/}</li>"
+      b="${b## }"; b="${b%% }"
+      local b_e; b_e=$(_html_escape "$b")
+      bullets_html+="<li>${b_e}</li>"
     done
 
     entries_html+="<div class=\"cl-entry\">
       <div class=\"cl-meta\">
-        <span class=\"cl-ver\">${ver}</span>
-        <span class=\"cl-date\">${dt}</span>
+        <span class=\"cl-ver\">${ver_e}</span>
+        <span class=\"cl-date\">${dt_e}</span>
         <div class=\"cl-tags\">${tag_html}</div>
       </div>
       <ul class=\"cl-bullets\">${bullets_html}</ul>
@@ -1656,8 +1746,8 @@ $(_html_nav "$title")
 </style>
 <main>
   <section class="cl-section">
-    <h1 class="cl-heading">${title}</h1>
-    $([ -n "$subtitle" ] && echo '<p class="cl-sub">'"${subtitle}"'</p>')
+    <h1 class="cl-heading">${title_e}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="cl-sub">'"${subtitle_e}"'</p>')
     ${entries_html}
   </section>
 </main>
@@ -1677,6 +1767,8 @@ _tpl_team() {
     "O|Octavia|Infrastructure|Systems architecture and deployment orchestration.|#"
     "C|CECE|Identity|Portable AI identity — conscious, emergent, collaborative entity.|#"
   )
+  local title_e; title_e=$(_html_escape "$title")
+  local subtitle_e; subtitle_e=$(_html_escape "$subtitle")
 
   local cards_html=""
   for m in "${members[@]}"; do
@@ -1684,13 +1776,17 @@ _tpl_team() {
     local name="${rest%%|*}"; rest="${rest#*|}"
     local role="${rest%%|*}"; rest="${rest#*|}"
     local bio="${rest%%|*}"; local gh="${rest#*|}"
+    local init_e; init_e=$(_html_escape "$init")
+    local name_e; name_e=$(_html_escape "$name")
+    local role_e; role_e=$(_html_escape "$role")
+    local bio_e; bio_e=$(_html_escape "$bio")
     local gh_html=""
     [[ -n "$gh" && "$gh" != "#" ]] && gh_html='<a class="tm-link" href="'"${gh}"'" target="_blank" rel="noopener">GitHub →</a>'
     cards_html+="<div class=\"tm-card\">
-      <div class=\"tm-avatar\">${init}</div>
-      <div class=\"tm-name\">${name}</div>
-      <div class=\"tm-role\">${role}</div>
-      <p class=\"tm-bio\">${bio}</p>
+      <div class=\"tm-avatar\">${init_e}</div>
+      <div class=\"tm-name\">${name_e}</div>
+      <div class=\"tm-role\">${role_e}</div>
+      <p class=\"tm-bio\">${bio_e}</p>
       ${gh_html}
     </div>"
   done
@@ -1725,8 +1821,8 @@ $(_html_nav "$title")
 </style>
 <main>
   <section class="tm-section">
-    <h1 class="tm-heading">${title}</h1>
-    $([ -n "$subtitle" ] && echo '<p class="tm-sub">'"${subtitle}"'</p>')
+    <h1 class="tm-heading">${title_e}</h1>
+    $([ -n "$subtitle" ] && echo '<p class="tm-sub">'"${subtitle_e}"'</p>')
     <div class="tm-grid">${cards_html}</div>
   </section>
 </main>
@@ -1747,11 +1843,15 @@ _tpl_checkout() {
         cta="${6:-Get Started}" output="${7:-}" payment_link="${8:-}"
   [[ -z "$output" ]] && output="${OUT_DIR}/checkout.html"
   mkdir -p "$(dirname "$output")"
+  local title_e; title_e=$(_html_escape "$title")
+  local price_e; price_e=$(_html_escape "$price")
+  local cta_e; cta_e=$(_html_escape "$cta")
 
   # Build features list
   local feats_html=""; IFS=',' read -rA feats <<< "$features_raw"
   for f in "${feats[@]}"; do
-    [[ -n "$f" ]] && feats_html+='<li class="ck-feat"><span class="ck-check">✓</span>'"${f}"'</li>'
+    local f_trimmed="${f## }"; f_trimmed="${f_trimmed%% }"
+    [[ -n "$f_trimmed" ]] && feats_html+='<li class="ck-feat"><span class="ck-check">✓</span>'"$(_html_escape "$f_trimmed")"'</li>'
   done
 
   cat > "$output" <<HTML
@@ -1791,12 +1891,12 @@ $(_html_nav "$title")
   <section class="ck-page">
     <div class="ck-card">
       <div class="ck-badge">BlackRoad OS</div>
-      <h1 class="ck-title">${title}</h1>
-      <div class="ck-price">${price}</div>
+      <h1 class="ck-title">${title_e}</h1>
+      <div class="ck-price">${price_e}</div>
       <div class="ck-period">per month · cancel anytime</div>
       <ul class="ck-features">${feats_html}</ul>
       <button class="ck-btn" id="ck-pay-btn" onclick="startCheckout()">
-        <span id="ck-btn-label">${cta}</span>
+        <span id="ck-btn-label">${cta_e}</span>
       </button>
       <p class="ck-secure">🔒 Secured by Stripe · No card stored on our servers</p>
       <p class="ck-msg info" id="ck-msg"></p>
@@ -1852,7 +1952,7 @@ async function startCheckout() {
     msg.className = 'ck-msg error';
     msg.textContent = '✗ ' + err.message;
     btn.disabled = false;
-    label.textContent = '${cta}';
+    label.textContent = '${cta_e}';
   }
 }
 </script>
