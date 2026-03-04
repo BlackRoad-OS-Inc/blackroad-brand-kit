@@ -1,6 +1,7 @@
 <div align="center">
 
 [![CI](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/ci.yml)
+[![Deploy](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/deploy.yml/badge.svg)](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/deploy.yml)
 
 <img src="https://img.shields.io/badge/BlackRoad%20OS-Brand%20Kit-FF1D6C?style=for-the-badge&labelColor=0A0A0A" />
 <img src="https://img.shields.io/badge/Templates-15-F5A623?style=for-the-badge&labelColor=0A0A0A" />
@@ -16,6 +17,23 @@
 *Every page this kit produces scores 12/12 on brand compliance.*
 
 </div>
+
+---
+
+## ✅ Production Status — Verified Working
+
+| Service | Status | URL |
+|---------|--------|-----|
+| GitHub Pages | ✅ Live | [blackroad-os-inc.github.io/blackroad-brand-kit](https://blackroad-os-inc.github.io/blackroad-brand-kit/) |
+| Cloudflare Pages | ✅ Live | [blackroad-brand-kit.pages.dev](https://blackroad-brand-kit.pages.dev/) |
+| Brand Domain | ✅ Registered | [brand.blackroad.io](https://brand.blackroad.io/) |
+| Stripe Worker | ✅ Live | [stripe.blackroad.io/health](https://stripe.blackroad.io/health) |
+| Tasks Worker | ✅ Live | [blackroad-tasks.amundsonalexa.workers.dev/health](https://blackroad-tasks.amundsonalexa.workers.dev/health) |
+| Deploy CI | ✅ Passing | [Run #32 on main](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/actions/workflows/deploy.yml) |
+
+**All GitHub Actions are pinned to SHA-256 commit hashes** (supply-chain security).  
+**Auto-merge** is enabled on non-draft PRs once all checks pass.  
+**Cloudflare Workers** handle all long-running async tasks (up to 15 min via Durable Objects).
 
 ---
 

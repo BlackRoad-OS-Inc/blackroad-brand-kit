@@ -1,0 +1,28 @@
+{
+  "name": "BlackRoad OS",
+  "tagline": "Your AI. Your Hardware. Your Rules.",
+  "description": "The AI-native developer platform.",
+  "cta_text": "Get Started",
+  "cta_url": "/blackroad-brand-kit/docs/",
+  "footer": "\u00a9 2026 BlackRoad OS, Inc.",
+  "og_url": "https://blackroad-os-inc.github.io/blackroad-brand-kit/",
+  "twitter": "@blackroadOS",
+  "nav": [
+    {
+      "label": "Docs",
+      "url": "/blackroad-brand-kit/docs/"
+    },
+    {
+      "label": "Pricing",
+      "url": "/blackroad-brand-kit/pricing/"
+    },
+    {
+      "label": "Agents",
+      "url": "/blackroad-brand-kit/agents.html"
+    },
+    {
+      "label": "About",
+      "url": "/blackroad-brand-kit/about/"
+    }
+  ]
+}
