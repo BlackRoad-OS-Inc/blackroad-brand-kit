@@ -2,7 +2,7 @@ name: Deploy Brand Kit
 
 # ✅ VERIFIED WORKING — Build, GitHub Pages, Cloudflare Pages, and Workers all pass.
 # Last verified: 2026-03-04 | Run #32 on main → success
-# All actions pinned to SHA-256 commit hashes for supply-chain security.
+# All actions pinned to full commit SHAs for supply-chain security.
 
 on:
   push:
