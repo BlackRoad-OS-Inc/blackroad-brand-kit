@@ -1,7 +1,7 @@
 name: CI
 
 # ✅ VERIFIED WORKING — Build passes on ubuntu-latest, zsh site generation confirmed.
-# All actions pinned to SHA-256 commit hashes for supply-chain security.
+# All actions pinned to full commit SHAs for supply-chain security.
 
 on:
   push:
