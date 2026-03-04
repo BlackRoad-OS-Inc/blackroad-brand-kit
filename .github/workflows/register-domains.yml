@@ -1,7 +1,7 @@
 name: Register Custom Domains
 
 # ✅ VERIFIED WORKING — Registers brand/stripe/chat/os domains on Cloudflare.
-# All actions pinned to SHA-256 commit hashes for supply-chain security.
+# Uses only shell commands in run: steps (no third-party GitHub Actions).
 
 on:
   workflow_dispatch:
