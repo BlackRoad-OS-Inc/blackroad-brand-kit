@@ -15,6 +15,13 @@ const BRAND_COLORS = {
   'hot-pink': '#FF1D6C',
   'electric-blue': '#2979FF',
   violet: '#9C27B0',
+  // Accent palette (v2)
+  ember: '#FF6B2B',
+  fuse: '#FF2255',
+  pulse: '#CC00AA',
+  drift: '#8844FF',
+  signal: '#4488FF',
+  arc: '#00D4FF',
 };
 
 const GRADIENT = 'linear-gradient(135deg, #F5A623 0%, #FF1D6C 38.2%, #9C27B0 61.8%, #2979FF 100%)';

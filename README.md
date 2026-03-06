@@ -9,8 +9,6 @@
 
 <br/><br/>
 
-# BlackRoad OS — Brand Kit
-
 **Official design system, HTML templates, and CLI generator for all BlackRoad OS projects.**
 
 *Every page this kit produces scores 12/12 on brand compliance.*
@@ -19,7 +17,30 @@
 
 ---
 
-## 🎨 Template Gallery
+## Overview
+
+BlackRoad OS Brand Kit is the single source of truth for all visual identity across the BlackRoad ecosystem. It includes:
+
+- **15 HTML templates** generated via the `br brand` CLI
+- **Design system** with CSS custom properties, golden ratio spacing, and brand gradients
+- **Brand audit tool** that validates 12-point compliance on any generated page
+- **Stripe integration** with Cloudflare Worker for checkout, billing portal, and webhooks
+- **CI/CD pipeline** that builds, validates, and deploys to GitHub Pages and Cloudflare Pages
+
+### Ecosystem Portals
+
+| Portal | Description |
+|--------|-------------|
+| **RoadWork** | Task management and workflow automation |
+| **RoadView** | Monitoring and observability dashboard |
+| **RoadGlitch** | Error tracking and incident management |
+| **RoadWorld** | Global deployment and edge infrastructure |
+| **BackRoad** | Internal tools and admin panels |
+| **CashRoad** | Billing, payments, and revenue |
+
+---
+
+## Template Gallery
 
 ### `landing` — Landing Page
 
@@ -96,7 +117,7 @@ br brand new pricing \
   --output pricing.html
 ```
 
-> Tier format: `"Name|Price|Period|Desc|feat1,feat2,feat3|CTA text|CTA url|highlight"`  
+> Tier format: `"Name|Price|Period|Desc|feat1,feat2,feat3|CTA text|CTA url|highlight"`
 > Set `highlight=true` to wrap a tier in the brand gradient border.
 
 ---
@@ -298,19 +319,20 @@ br brand new team \
 
 ---
 
-## 🛠️ Commands
+## Commands
 
 | Command | Description |
 |---|---|
 | `br brand init [brand.json]` | Interactive wizard — creates `brand.json` config |
-| `br brand site [--config brand.json]` | Generate full 5-page site from config |
-| `br brand new <template> [flags]` | Generate a single page |
+| `br brand site [--config brand.json]` | Generate full site from config (index, pricing, docs, about, 404 + extras) |
+| `br brand new <template> [flags]` | Generate a single page from any of the 15 templates |
 | `br brand audit <file.html>` | 12-point brand compliance check |
 | `br brand watch [--config brand.json]` | Auto-rebuild site on file change (requires `fswatch`) |
 | `br brand open [file.html]` | Open page in browser |
 | `br brand export [--dir ./site]` | Zip all pages for download |
 | `br brand deploy --project x --dir y` | Push to Cloudflare Pages |
 | `br brand preview <template>` | Show template structure |
+| `br brand list` | List all available templates |
 
 ### Quick Start — Full Site
 
@@ -318,7 +340,7 @@ br brand new team \
 # 1. Create your brand config (interactive wizard)
 br brand init
 
-# 2. Generate a full 5-page site (index, pricing, docs, about, 404)
+# 2. Generate a full site (index, pricing, docs, about, 404 + team/changelog if configured)
 br brand site --config brand.json --out ./site
 
 # 3. Preview
@@ -370,7 +392,7 @@ When `team`, `changelog`, or `launch_date` are present, `br brand site` auto-gen
 
 ---
 
-## ✅ Brand Audit
+## Brand Audit
 
 Every generated page passes a 12-point compliance check automatically:
 
@@ -397,52 +419,83 @@ br brand audit my-page.html
 
 ---
 
-## 🎨 Design System
+## Design System
+
+### Core Brand Colors
+
+| Token | Value | Usage |
+|---|---|---|
+| `--sunrise-orange` | `#F5A623` | Primary brand accent |
+| `--hot-pink` | `#FF1D6C` | CTA highlights, gradient midpoint |
+| `--deep-magenta` | `#9C27B0` | Gradient transition, badges |
+| `--vivid-purple` | `#9C27B0` | Alias for deep-magenta |
+| `--cyber-blue` | `#2979FF` | Links, gradient endpoint |
+
+### Accent Palette (v2)
+
+| Token | Value | Name |
+|---|---|---|
+| `--accent-ember` | `#FF6B2B` | Ember |
+| `--accent-fuse` | `#FF2255` | Fuse |
+| `--accent-pulse` | `#CC00AA` | Pulse |
+| `--accent-drift` | `#8844FF` | Drift |
+| `--accent-signal` | `#4488FF` | Signal |
+| `--accent-arc` | `#00D4FF` | Arc |
+
+### Gradients
 
 | Token | Value |
 |---|---|
-| `--sunrise-orange` | `#F5A623` |
-| `--hot-pink` | `#FF1D6C` |
-| `--deep-magenta` | `#9C27B0` |
-| `--vivid-purple` | `#9C27B0` |
-| `--cyber-blue` | `#2979FF` |
-| `--gradient-brand` | `180deg` full spectrum |
-| `--space-xs … --space-3xl` | `8 13 21 34 55 89 144px` (φ) |
-| `line-height` | `1.618` (Golden Ratio) |
-| Font | `JetBrains Mono` / `SF Mono` / `Courier New` |
+| `--gradient-br` | `135deg` orange → pink |
+| `--gradient-os` | `135deg` purple → blue |
+| `--gradient-brand` | `135deg` full spectrum (orange → pink → purple → blue) |
+
+### Spacing (Golden Ratio)
+
+| Token | Value |
+|---|---|
+| `--space-xs` | `8px` |
+| `--space-sm` | `13px` |
+| `--space-md` | `21px` |
+| `--space-lg` | `34px` |
+| `--space-xl` | `55px` |
+| `--space-2xl` | `89px` |
+| `--space-3xl` | `144px` |
+
+### Typography
+
+| Property | Value |
+|---|---|
+| Font stack | `JetBrains Mono` / `SF Mono` / `Fira Code` / `Courier New` |
+| Line height | `1.618` (Golden Ratio) |
+| Heading scale | `φ` multiplier (h1 = 2.5rem × 1.618) |
 
 Full CSS: [`css/brand.css`](css/brand.css)
 
 ---
 
-## 🚀 Install
+## Install
 
 ```bash
-# The tool ships with the blackroad monorepo
+# Clone the brand kit
 git clone https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit
-# or use via br CLI (already wired in)
+
+# List available templates
 br brand list
 ```
 
 ---
 
-<div align="center">
+## Stripe Integration
 
-© 2026 BlackRoad OS, Inc. All rights reserved. Proprietary — not open source.
-
-</div>
-
----
-
-## 💳 Stripe Integration
-
-Full Stripe Checkout infrastructure — worker, products, and checkout template included.
+Full Stripe Checkout infrastructure — Cloudflare Worker, products, and checkout template included.
 
 ### Products
+
 | Plan | Price | Features |
 |------|-------|----------|
 | **Starter** | Free | 5 templates, community support |
-| **Pro** | $49/mo | All 16 templates, deploy, priority support |
+| **Pro** | $49/mo | All 15 templates, deploy, priority support |
 | **Enterprise** | $299/mo | Multi-seat, white-label, SLA 99.9% |
 
 ### Setup (3 steps)
@@ -464,12 +517,37 @@ br brand new checkout \
   --price '$49/mo' \
   --price-id "$STRIPE_PRICE_PRO_MONTHLY" \
   --worker "https://blackroad-stripe.<account>.workers.dev" \
-  --feature "All 16 brand templates" \
+  --feature "All 15 brand templates" \
   --feature "br brand deploy" \
   --feature "Priority support" \
   --cta "Start Free Trial" \
   --output site/checkout/index.html
 ```
 
-→ Full guide: [docs/stripe-setup.md](docs/stripe-setup.md)
+Full guide: [docs/stripe-setup.md](docs/stripe-setup.md)
 
+---
+
+## CI/CD
+
+The repository includes two GitHub Actions workflows:
+
+- **CI** (`ci.yml`) — Runs on every push and PR to `main`. Validates brand colors, checks template files, verifies design tokens, lints `br-brand.sh` syntax, and scans for hardcoded secrets.
+- **Deploy** (`deploy.yml`) — Runs on push to `main`. Builds the full site with `br-brand.sh`, deploys to GitHub Pages and Cloudflare Pages, deploys the Stripe worker, and registers custom domains.
+
+### Required Secrets
+
+| Secret | Description |
+|--------|-------------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Pages and Workers permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account identifier |
+| `STRIPE_SECRET_KEY` | Stripe secret key for the checkout worker |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+
+---
+
+<div align="center">
+
+© 2026 BlackRoad OS, Inc. All rights reserved. Proprietary — not open source.
+
+</div>

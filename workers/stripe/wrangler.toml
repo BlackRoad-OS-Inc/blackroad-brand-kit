@@ -3,7 +3,7 @@ main = "index.js"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-account_id = "848cf0b18d51e0170e0d1537aec3505a"
+# account_id — set via CLOUDFLARE_ACCOUNT_ID environment variable or wrangler config
 
 [vars]
 ALLOWED_ORIGIN = "https://blackroad-brand-kit.pages.dev"

@@ -15,8 +15,20 @@
  *   GET  /health             — health check
  */
 
-const CORS_HEADERS = (origin) => ({
-  'Access-Control-Allow-Origin': origin || '*',
+const ALLOWED_ORIGINS = [
+  'https://blackroad-brand-kit.pages.dev',
+  'https://brand.blackroad.io',
+  'https://os.blackroad.io',
+];
+
+function isAllowedOrigin(origin, env) {
+  if (!origin) return false;
+  if (env.ALLOWED_ORIGIN && origin === env.ALLOWED_ORIGIN) return true;
+  return ALLOWED_ORIGINS.includes(origin);
+}
+
+const CORS_HEADERS = (origin, env) => ({
+  'Access-Control-Allow-Origin': isAllowedOrigin(origin, env) ? origin : ALLOWED_ORIGINS[0],
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400',
@@ -245,8 +257,8 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const origin = request.headers.get('Origin') || env.ALLOWED_ORIGIN || '*';
-    const cors = CORS_HEADERS(origin);
+    const origin = request.headers.get('Origin');
+    const cors = CORS_HEADERS(origin, env);
 
     // Preflight
     if (request.method === 'OPTIONS') {
