@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pi Services — BlackRoad OS</title>
+<style>
+  :root {
+    --black: #000; --white: #fff; --amber: #F5A623; --hot-pink: #FF1D6C;
+    --electric-blue: #2979FF; --violet: #9C27B0;
+    --gradient: linear-gradient(135deg, var(--amber) 0%, var(--hot-pink) 38.2%, var(--violet) 61.8%, var(--electric-blue) 100%);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; min-height: 100vh; }
+  header { background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
+  .logo { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.4rem; font-weight: 800; }
+  nav { margin-left: auto; display: flex; gap: 20px; }
+  nav a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+  nav a:hover, nav a.active { color: #fff; }
+  .hero { padding: 40px 24px 20px; }
+  h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
+  h1 span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: rgba(255,255,255,0.5); font-size: 0.95rem; }
+  .stats-row { display: flex; gap: 12px; padding: 16px 24px; flex-wrap: wrap; }
+  .stat-chip { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; color: rgba(255,255,255,0.7); }
+  .stat-chip strong { color: #fff; }
+  .filter-row { padding: 16px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filter-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 6px 14px; color: rgba(255,255,255,0.6); font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+  .filter-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .filter-btn.active { background: var(--hot-pink); border-color: var(--hot-pink); color: #fff; }
+  .search { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 6px 14px; color: #fff; font-size: 0.85rem; outline: none; width: 200px; }
+  .search::placeholder { color: rgba(255,255,255,0.3); }
+  .section { padding: 24px; }
+  .section-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+  .pi-node { margin-bottom: 32px; }
+  .node-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
+  .node-dot { width: 10px; height: 10px; border-radius: 50%; background: #00C853; box-shadow: 0 0 8px #00C853; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .node-name { font-size: 1rem; font-weight: 700; }
+  .node-ip { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-left: auto; font-family: monospace; }
+  .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .service-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
+  .service-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+  .svc-top { display: flex; align-items: center; gap: 10px; }
+  .svc-icon { font-size: 1.5rem; }
+  .svc-name { font-size: 0.9rem; font-weight: 600; flex: 1; }
+  .svc-status { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.2); flex-shrink: 0; }
+  .svc-status.online { background: #00C853; box-shadow: 0 0 6px #00C853; }
+  .svc-status.offline { background: #f44336; }
+  .svc-status.degraded { background: #FF9800; }
+  .svc-url { font-size: 0.72rem; color: rgba(255,255,255,0.35); font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .svc-category { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 2px 8px; border-radius: 4px; width: fit-content; font-weight: 600; }
+  .cat-agent { background: rgba(255,29,108,0.2); color: var(--hot-pink); }
+  .cat-ai { background: rgba(156,39,176,0.2); color: #CE93D8; }
+  .cat-api { background: rgba(41,121,255,0.2); color: #90CAF9; }
+  .cat-app { background: rgba(245,166,35,0.2); color: var(--amber); }
+  .cat-infra { background: rgba(0,200,83,0.2); color: #69F0AE; }
+  .cat-monitor { background: rgba(0,188,212,0.2); color: #80DEEA; }
+  .hidden { display: none !important; }
+  footer { text-align: center; padding: 32px 24px; color: rgba(255,255,255,0.2); font-size: 0.75rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">BlackRoad OS</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/agents/">Agents</a>
+    <a href="/models-explorer/">Models</a>
+    <a href="/pi/">Pi Fleet</a>
+    <a href="/services/" class="active">Services</a>
+    <a href="/console/">Console</a>
+  </nav>
+</header>
+
+<div class="hero" style="padding:40px 24px 20px">
+  <h1><span>Pi Services</span> Directory</h1>
+  <p class="subtitle">All live services running on BlackRoad OS Raspberry Pi hardware</p>
+</div>
+
+<div class="stats-row" id="statsRow">
+  <div class="stat-chip">Loading services...</div>
+</div>
+
+<div class="filter-row">
+  <button class="filter-btn active" data-cat="all" onclick="filterCat('all',this)">All</button>
+  <button class="filter-btn" data-cat="ai" onclick="filterCat('ai',this)">🧠 AI</button>
+  <button class="filter-btn" data-cat="agent" onclick="filterCat('agent',this)">🤖 Agents</button>
+  <button class="filter-btn" data-cat="api" onclick="filterCat('api',this)">⚡ APIs</button>
+  <button class="filter-btn" data-cat="monitor" onclick="filterCat('monitor',this)">📊 Monitor</button>
+  <button class="filter-btn" data-cat="infra" onclick="filterCat('infra',this)">🏗️ Infra</button>
+  <button class="filter-btn" data-cat="app" onclick="filterCat('app',this)">📱 Apps</button>
+  <input class="search" id="searchInput" placeholder="Search services..." oninput="search(this.value)">
+</div>
+
+<div class="section">
+  <div class="pi-node" id="ariaNode">
+    <div class="node-header">
+      <div class="node-dot"></div>
+      <div class="node-name">aria64</div>
+      <div style="font-size:0.75rem;color:rgba(255,255,255,0.4)">18 services · Hailo AI Accelerator · NVMe</div>
+      <div class="node-ip">192.168.4.38</div>
+    </div>
+    <div class="services-grid" id="ariaGrid"><div style="color:rgba(255,255,255,0.3);padding:24px">Loading...</div></div>
+  </div>
+  <div class="pi-node" id="lucidiaNode">
+    <div class="node-header">
+      <div class="node-dot" style="background:#9C27B0;box-shadow:0 0 8px #9C27B0"></div>
+      <div class="node-name">lucidia</div>
+      <div style="font-size:0.75rem;color:rgba(255,255,255,0.4)">2 services · Primary agent host</div>
+      <div class="node-ip">192.168.4.64</div>
+    </div>
+    <div class="services-grid" id="lucidiaGrid"><div style="color:rgba(255,255,255,0.3);padding:24px">Loading...</div></div>
+  </div>
+</div>
+
+<footer>BlackRoad OS · Pi Fleet · Powered by Cloudflare Tunnel</footer>
+
+<script>
+let allServices = {};
+let probeData = {};
+let currentCat = 'all';
+
+async function loadServices() {
+  const gw = 'https://blackroad-ollama-gateway.amundsonalexa.workers.dev';
+  const [piRes, probeRes] = await Promise.all([
+    fetch(gw + '/pi').then(r=>r.json()).catch(()=>({})),
+    fetch(gw + '/pi/probe').then(r=>r.json()).catch(()=>({services:[]}))
+  ]);
+  allServices = piRes.services || {};
+  (probeRes.services||[]).forEach(s => { probeData[s.url] = s.status; });
+  renderAll();
+  updateStats(probeRes);
+}
+
+function updateStats(probe) {
+  const stats = document.getElementById('statsRow');
+  const total = (allServices.aria||[]).length + (allServices.lucidia||[]).length;
+  const online = (probe.services||[]).filter(s=>s.status==='online').length;
+  stats.innerHTML = `
+    <div class="stat-chip">Total <strong>${total}</strong></div>
+    <div class="stat-chip" style="color:#69F0AE">Online <strong>${online}</strong></div>
+    <div class="stat-chip" style="color:rgba(255,255,255,0.5)">Nodes <strong>2</strong></div>
+    <div class="stat-chip">2× Raspberry Pi 4</div>
+    <div class="stat-chip" style="color:#CE93D8">Hailo-8 AI Accelerator</div>
+  `;
+}
+
+function renderGrid(services, gridId) {
+  const grid = document.getElementById(gridId);
+  const cards = services.map(s => {
+    const statusClass = probeData[s.url] || 'unknown';
+    const catClass = 'cat-' + s.category;
+    return `<a href="${s.url}" target="_blank" class="service-card" data-cat="${s.category}" data-name="${s.name.toLowerCase()}">
+      <div class="svc-top">
+        <span class="svc-icon">${s.icon}</span>
+        <span class="svc-name">${s.name}</span>
+        <div class="svc-status ${statusClass}"></div>
+      </div>
+      <div class="svc-url">${s.url.replace('https://','')}</div>
+      <div class="svc-category ${catClass}">${s.category}</div>
+    </a>`;
+  }).join('');
+  grid.innerHTML = cards || '<div style="color:rgba(255,255,255,0.3);padding:24px">No services</div>';
+}
+
+function renderAll() {
+  renderGrid(allServices.aria || [], 'ariaGrid');
+  renderGrid(allServices.lucidia || [], 'lucidiaGrid');
+  applyFilters();
+}
+
+function applyFilters() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.service-card').forEach(card => {
+    const cat = card.dataset.cat;
+    const name = card.dataset.name;
+    const matchCat = currentCat === 'all' || cat === currentCat;
+    const matchSearch = !searchTerm || name.includes(searchTerm);
+    card.classList.toggle('hidden', !(matchCat && matchSearch));
+  });
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function search(val) { applyFilters(); }
+
+loadServices();
+setInterval(loadServices, 30000);
+</script>
+</body>
+</html>
