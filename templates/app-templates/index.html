@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlackRoad Templates — Design System v1.0</title>
+  <meta name="description" content="BlackRoad OS interactive template kit: Login, Pricing, Changelog, Settings, Docs, Analytics." />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --grad: linear-gradient(90deg, #FF8400, #FF4400, #FF0066, #CC00AA, #8800FF, #0066FF, #2233CC);
+      --font-headline: 'Space Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+      font-family: var(--font-mono);
+      -webkit-font-smoothing: antialiased;
+    }
+    .grad-bar { height: 3px; background: var(--grad); }
+    /* ── Nav ── */
+    .app-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 48px;
+      border-bottom: 1px solid #fff;
+      position: sticky; top: 0; z-index: 100; background: #000;
+    }
+    .app-nav-logo { font-family: var(--font-headline); font-weight: 700; font-size: 0.85rem; }
+    .app-nav-tabs { display: flex; gap: 20px; }
+    .app-nav-tabs button {
+      background: none; border: none; color: #fff;
+      font-size: 0.52rem; letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; font-family: var(--font-mono); transition: opacity 0.15s;
+      opacity: 0.35;
+    }
+    .app-nav-tabs button.active { opacity: 1; }
+    /* ── Content wrapper ── */
+    .app-content { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .app-footer {
+      max-width: 960px; margin: 0 auto; padding: 32px 24px;
+      display: flex; justify-content: space-between;
+      font-size: 0.5rem; opacity: 0.18;
+    }
+    /* ── Template sections ── */
+    .tpl-section { display: none; }
+    .tpl-section.active { display: block; }
+    /* ── Section primitive ── */
+    .section-block { padding: 48px 0 40px; border-bottom: 1px solid #fff; }
+    .section-label {
+      font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
+    }
+    .section-label-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+    /* ── Login ── */
+    .login-wrap { display: flex; justify-content: center; padding: 80px 0 60px; }
+    .login-card { width: 100%; max-width: 380px; }
+    .login-wordmark { text-align: center; margin-bottom: 48px; }
+    .login-wordmark-title { font-family: var(--font-headline); font-size: 1.8rem; font-weight: 700; }
+    .login-wordmark-bar { height: 2px; width: 64px; background: var(--grad); margin: 10px auto 0; }
+    .login-mode-bar { display: flex; border-bottom: 1px solid rgba(255,255,255,0.15); margin-bottom: 32px; }
+    .login-mode-btn {
+      flex: 1; background: none; border: none; color: #fff;
+      font-family: var(--font-mono); font-size: 0.52rem; letter-spacing: 0.15em;
+      text-transform: uppercase; padding: 12px 0; cursor: pointer;
+      opacity: 0.3; border-bottom: 1px solid transparent; margin-bottom: -1px;
+      transition: all 0.15s;
+    }
+    .login-mode-btn.active { opacity: 1; border-bottom-color: #fff; }
+    .login-form { display: flex; flex-direction: column; gap: 24px; }
+    .input-field label { display: block; font-size: 0.46rem; opacity: 0.3; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+    .input-field input {
+      font-family: var(--font-mono); font-size: 0.6rem; color: #fff;
+      background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.25);
+      padding: 8px 0; width: 100%; outline: none;
+    }
+    .input-field input::placeholder { color: rgba(255,255,255,0.35); }
+    .role-label { font-size: 0.46rem; opacity: 0.3; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 10px; }
+    .role-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .role-btn {
+      font-family: var(--font-mono); font-size: 0.48rem; font-weight: 700;
+      padding: 5px 12px; border: 1px solid rgba(255,255,255,0.25);
+      background: transparent; color: #fff; cursor: pointer; letter-spacing: 0.06em;
+    }
+    .login-submit {
+      font-family: var(--font-mono); font-size: 0.58rem; font-weight: 700;
+      background: #fff; color: #000; padding: 12px 0;
+      border: none; cursor: pointer; letter-spacing: 0.05em;
+      margin-top: 8px; width: 100%;
+    }
+    .login-or { display: flex; align-items: center; gap: 12px; }
+    .login-or-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .login-or span { font-size: 0.44rem; opacity: 0.2; }
+    .login-magic {
+      font-family: var(--font-mono); font-size: 0.54rem; font-weight: 700;
+      background: transparent; color: #fff; padding: 11px 0;
+      border: 1px solid #fff; cursor: pointer; letter-spacing: 0.05em; width: 100%;
+    }
+    .login-forgot { text-align: center; margin-top: 24px; }
+    .login-forgot span { font-size: 0.48rem; opacity: 0.25; cursor: pointer; }
+    .login-dot { height: 1px; background: var(--grad); width: 40px; margin: 40px auto 0; opacity: 0.5; }
+    .login-signup-only { display: none; }
+    /* ── Pricing ── */
+    .pricing-hero { padding: 64px 0 48px; border-bottom: 1px solid #fff; text-align: center; }
+    .pricing-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+    .pricing-h1 { font-family: var(--font-headline); font-size: clamp(2.2rem,7vw,3.5rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+    .pricing-sub { font-size: 0.62rem; opacity: 0.35; line-height: 1.9; max-width: 400px; margin: 20px auto 0; }
+    .pricing-bar { height: 2px; background: var(--grad); width: 120px; margin: 28px auto 0; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-bottom: 1px solid #fff; }
+    .pricing-col { padding: 40px 24px; }
+    .pricing-col:not(:last-child) { border-right: 1px solid rgba(255,255,255,0.08); }
+    .pricing-col.highlight { border-top: 2px solid #fff; }
+    .pricing-name { font-size: 0.5rem; opacity: 0.3; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; }
+    .pricing-price-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 24px; }
+    .pricing-amount { font-family: var(--font-headline); font-size: 2.4rem; font-weight: 700; line-height: 1; }
+    .pricing-period { font-size: 0.5rem; opacity: 0.25; }
+    .pricing-divider { height: 1px; background: rgba(255,255,255,0.08); margin-bottom: 24px; max-width: 40px; }
+    .pricing-col.highlight .pricing-divider { background: var(--grad); max-width: 100%; }
+    .pricing-feat { font-size: 0.52rem; opacity: 0.4; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); line-height: 1.5; }
+    .pricing-cta {
+      font-family: var(--font-mono); font-size: 0.54rem; font-weight: 700;
+      width: 100%; padding: 10px 0; margin-top: 28px; cursor: pointer; letter-spacing: 0.05em;
+      background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3);
+    }
+    .pricing-cta.primary { background: #fff; color: #000; border: none; }
+    /* ── Changelog ── */
+    .changelog-hero { padding: 56px 0 40px; border-bottom: 1px solid #fff; }
+    .changelog-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+    .changelog-h1 { font-family: var(--font-headline); font-size: clamp(2rem,7vw,3.5rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+    .changelog-bar { height: 1px; background: var(--grad); width: 120px; margin: 24px 0; }
+    .cl-entry { padding: 40px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .cl-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .cl-version { font-family: var(--font-headline); font-size: 1.3rem; font-weight: 700; }
+    .cl-date { font-size: 0.48rem; opacity: 0.25; }
+    .cl-badge {
+      font-size: 0.44rem; font-weight: 700; padding: 2px 7px;
+      border: 1px solid #fff; letter-spacing: 0.1em; font-family: var(--font-mono);
+    }
+    .cl-change { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .cl-change:last-child { border-bottom: none; }
+    .cl-type {
+      font-size: 0.42rem; font-weight: 700; letter-spacing: 0.08em;
+      padding: 2px 6px; border: 1px solid rgba(255,255,255,0.2);
+      min-width: 56px; text-align: center;
+    }
+    .cl-type.feature { opacity: 1; }
+    .cl-type.improve { opacity: 0.5; }
+    .cl-type.fix { opacity: 0.35; }
+    .cl-type.chore { opacity: 0.2; }
+    .cl-text { font-size: 0.54rem; opacity: 0.45; line-height: 1.5; }
+    /* ── Settings ── */
+    .settings-hero { padding: 56px 0 40px; border-bottom: 1px solid #fff; }
+    .settings-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+    .settings-h1 { font-family: var(--font-headline); font-size: clamp(2rem,6vw,3rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+    .settings-bar { height: 1px; background: var(--grad); width: 120px; margin: 24px 0; }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 32px; padding: 8px 0; }
+    .pref-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .pref-row:last-child { border-bottom: none; }
+    .pref-label { font-size: 0.6rem; font-weight: 700; margin-bottom: 2px; }
+    .pref-desc { font-size: 0.48rem; opacity: 0.25; }
+    .pref-body { flex: 1; }
+    /* Toggle */
+    .toggle {
+      width: 36px; height: 18px; border-radius: 2px; cursor: pointer; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.25); position: relative;
+      background: transparent; transition: background 0.15s;
+    }
+    .toggle.on { background: #fff; }
+    .toggle-knob {
+      width: 12px; height: 12px; position: absolute; top: 2px; left: 2px;
+      background: #fff; transition: left 0.15s;
+    }
+    .toggle.on .toggle-knob { left: 20px; background: #000; }
+    /* API Keys */
+    .apikey-row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .apikey-row:last-of-type { border-bottom: none; }
+    .apikey-name { font-size: 0.56rem; font-weight: 700; }
+    .apikey-created { font-size: 0.44rem; opacity: 0.2; margin-top: 2px; }
+    .apikey-val { font-size: 0.52rem; opacity: 0.35; flex: 1; }
+    .apikey-reveal {
+      font-family: var(--font-mono); font-size: 0.46rem; font-weight: 700;
+      background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2);
+      padding: 4px 10px; cursor: pointer; letter-spacing: 0.05em;
+    }
+    .btn-new-key {
+      font-family: var(--font-mono); font-size: 0.5rem; font-weight: 700;
+      background: transparent; color: #fff; border: 1px solid #fff;
+      padding: 8px 16px; cursor: pointer; letter-spacing: 0.05em; margin-top: 16px;
+    }
+    .danger-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+    .danger-title { font-size: 0.58rem; font-weight: 700; }
+    .danger-desc { font-size: 0.48rem; opacity: 0.25; }
+    .btn-delete {
+      font-family: var(--font-mono); font-size: 0.48rem; font-weight: 700;
+      background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2);
+      padding: 6px 14px; cursor: pointer; opacity: 0.4;
+    }
+    /* ── Docs ── */
+    .docs-hero { padding: 56px 0 40px; border-bottom: 1px solid #fff; }
+    .docs-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+    .docs-h1 { font-family: var(--font-headline); font-size: clamp(2rem,6vw,3rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+    .docs-bar { height: 1px; background: var(--grad); width: 120px; margin: 24px 0; }
+    .docs-layout { display: flex; gap: 0; border-bottom: 1px solid #fff; }
+    .docs-sidebar { width: 200px; flex-shrink: 0; border-right: 1px solid rgba(255,255,255,0.08); padding: 32px 24px 32px 0; }
+    .docs-nav-group { margin-bottom: 24px; }
+    .docs-nav-group-title { font-size: 0.44rem; opacity: 0.2; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 10px; }
+    .docs-nav-item {
+      font-size: 0.54rem; padding: 6px 0 6px 12px; cursor: pointer;
+      opacity: 0.35; font-weight: 400;
+      border-left: 1px solid transparent; transition: all 0.1s;
+    }
+    .docs-nav-item.active { opacity: 1; font-weight: 700; border-left-color: #fff; }
+    .docs-main { flex: 1; padding: 32px 0 48px 32px; }
+    .docs-breadcrumb { font-size: 0.44rem; opacity: 0.2; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; }
+    .docs-article-title { font-family: var(--font-headline); font-size: 1.6rem; font-weight: 700; margin: 0 0 20px; }
+    .docs-body { font-size: 0.64rem; opacity: 0.45; line-height: 2; margin-bottom: 24px; }
+    .docs-code-block { background: #0a0a0a; border: 1px solid rgba(255,255,255,0.08); padding: 16px 20px; margin-bottom: 24px; }
+    .docs-code-label { font-size: 0.44rem; opacity: 0.2; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+    .docs-code { font-size: 0.6rem; opacity: 0.6; line-height: 1.8; }
+    .docs-code .prompt { opacity: 0.3; }
+    .docs-code-sm { font-size: 0.58rem; opacity: 0.5; line-height: 1.9; }
+    .docs-code-kw { opacity: 0.7; }
+    .docs-code-cm { opacity: 0.3; }
+    /* ── Analytics ── */
+    .analytics-hero { padding: 56px 0 40px; border-bottom: 1px solid #fff; }
+    .analytics-hero-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .analytics-eyebrow { font-size: 0.52rem; opacity: 0.3; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+    .analytics-h1 { font-family: var(--font-headline); font-size: clamp(2rem,6vw,3rem); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+    .period-btns { display: flex; gap: 0; border: 1px solid rgba(255,255,255,0.15); }
+    .period-btn {
+      font-family: var(--font-mono); font-size: 0.48rem; font-weight: 700;
+      padding: 6px 14px; cursor: pointer; letter-spacing: 0.05em;
+      background: transparent; color: #fff;
+      border: none; border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .period-btn:last-child { border-right: none; }
+    .period-btn.active { background: #fff; color: #000; }
+    .analytics-bar { height: 1px; background: var(--grad); width: 120px; margin: 24px 0; }
+    .kpis { display: flex; gap: 0; flex-wrap: wrap; }
+    .kpi { padding-right: 32px; margin-right: 32px; border-right: 1px solid rgba(255,255,255,0.12); }
+    .kpi:last-child { border-right: none; }
+    .kpi-val { font-family: var(--font-headline); font-size: 1.8rem; font-weight: 700; line-height: 1; }
+    .kpi-label { font-size: 0.44rem; opacity: 0.3; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; }
+    .sparkline { display: flex; align-items: flex-end; gap: 4px; height: 80px; padding: 8px 0; }
+    .spark-bar { flex: 1; background: #fff; min-width: 2px; }
+    .spark-dates { display: flex; justify-content: space-between; font-size: 0.42rem; opacity: 0.15; margin-top: 6px; }
+    .agent-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .agent-row:last-child { border-bottom: none; }
+    .agent-rank { font-size: 0.44rem; opacity: 0.15; min-width: 20px; }
+    .agent-name { font-size: 0.58rem; font-weight: 700; min-width: 100px; }
+    .agent-bar-wrap { flex: 1; height: 2px; background: rgba(255,255,255,0.06); position: relative; }
+    .agent-bar-fill { height: 2px; background: #fff; opacity: 0.5; }
+    .agent-tasks { font-size: 0.5rem; opacity: 0.35; min-width: 50px; text-align: right; }
+    .agent-share { font-size: 0.44rem; opacity: 0.2; min-width: 36px; text-align: right; }
+    .breakdown-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-label { font-size: 0.54rem; opacity: 0.45; min-width: 160px; }
+    .breakdown-bar-wrap { flex: 1; height: 2px; background: rgba(255,255,255,0.06); }
+    .breakdown-bar-fill { height: 2px; background: #fff; opacity: 0.4; }
+    .breakdown-val { font-size: 0.52rem; font-weight: 700; opacity: 0.5; min-width: 36px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div class="grad-bar"></div>
+
+<!-- Nav -->
+<nav class="app-nav">
+  <span class="app-nav-logo">BlackRoad</span>
+  <div class="app-nav-tabs" id="navTabs">
+    <button class="active" data-tab="login">Login</button>
+    <button data-tab="pricing">Pricing</button>
+    <button data-tab="changelog">Changelog</button>
+    <button data-tab="settings">Settings</button>
+    <button data-tab="docs">Docs</button>
+    <button data-tab="analytics">Analytics</button>
+  </div>
+</nav>
+
+<div class="app-content">
+
+  <!-- ── 1. LOGIN ── -->
+  <div id="tpl-login" class="tpl-section active">
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-wordmark">
+          <div class="login-wordmark-title">BlackRoad</div>
+          <div class="login-wordmark-bar"></div>
+        </div>
+        <div class="login-mode-bar" id="loginModeBar">
+          <button class="login-mode-btn active" data-mode="login">Sign In</button>
+          <button class="login-mode-btn" data-mode="signup">Create Account</button>
+        </div>
+        <div class="login-form">
+          <div class="input-field login-signup-only" id="loginNameField">
+            <label>Full Name</label>
+            <input type="text" placeholder="Alexa Amundson" />
+          </div>
+          <div class="input-field">
+            <label>Email</label>
+            <input type="email" placeholder="you@blackroad.io" />
+          </div>
+          <div class="input-field">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••••" />
+          </div>
+          <div class="login-signup-only" id="loginRoleField">
+            <div class="role-label">Role</div>
+            <div class="role-btns">
+              <button class="role-btn">Creator</button>
+              <button class="role-btn">Student</button>
+              <button class="role-btn">Teacher</button>
+              <button class="role-btn">Builder</button>
+            </div>
+          </div>
+          <button class="login-submit" id="loginSubmitBtn">Sign In</button>
+          <div class="login-or">
+            <div class="login-or-line"></div>
+            <span>OR</span>
+            <div class="login-or-line"></div>
+          </div>
+          <button class="login-magic">Continue with Magic Link</button>
+        </div>
+        <div class="login-forgot" id="loginForgot">
+          <span>Forgot password?</span>
+        </div>
+        <div class="login-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. PRICING ── -->
+  <div id="tpl-pricing" class="tpl-section">
+    <div class="pricing-hero">
+      <div class="pricing-eyebrow">Simple, Transparent Pricing</div>
+      <h1 class="pricing-h1">Build Without<br />Limits</h1>
+      <p class="pricing-sub">Free for K-12 education. Pay for what you use. No hidden fees. No lock-in.</p>
+      <div class="pricing-bar"></div>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-col">
+        <div class="pricing-name">Free</div>
+        <div class="pricing-price-row">
+          <span class="pricing-amount">$0</span>
+          <span class="pricing-period">forever</span>
+        </div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feat">5 agents</div>
+        <div class="pricing-feat">1GB memory</div>
+        <div class="pricing-feat">Community support</div>
+        <div class="pricing-feat">Basic governance</div>
+        <div class="pricing-feat">Single workspace</div>
+        <button class="pricing-cta">Get Started</button>
+      </div>
+      <div class="pricing-col highlight">
+        <div class="pricing-name">Pro</div>
+        <div class="pricing-price-row">
+          <span class="pricing-amount">$29</span>
+          <span class="pricing-period">/month</span>
+        </div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feat">50 agents</div>
+        <div class="pricing-feat">50GB memory</div>
+        <div class="pricing-feat">Priority support</div>
+        <div class="pricing-feat">Full governance + ledger</div>
+        <div class="pricing-feat">Unlimited workspaces</div>
+        <div class="pricing-feat">API access</div>
+        <div class="pricing-feat">Custom policies</div>
+        <button class="pricing-cta primary">Start Free Trial</button>
+      </div>
+      <div class="pricing-col">
+        <div class="pricing-name">Enterprise</div>
+        <div class="pricing-price-row">
+          <span class="pricing-amount">Custom</span>
+        </div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feat">Unlimited agents</div>
+        <div class="pricing-feat">Unlimited memory</div>
+        <div class="pricing-feat">Dedicated support</div>
+        <div class="pricing-feat">SOC 2 compliance</div>
+        <div class="pricing-feat">Multi-region deploy</div>
+        <div class="pricing-feat">Custom agent mesh</div>
+        <div class="pricing-feat">SLA guarantee</div>
+        <div class="pricing-feat">On-premise option</div>
+        <button class="pricing-cta">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. CHANGELOG ── -->
+  <div id="tpl-changelog" class="tpl-section">
+    <div class="changelog-hero">
+      <div class="changelog-eyebrow">What&#39;s New</div>
+      <h1 class="changelog-h1">Changelog</h1>
+      <div class="changelog-bar"></div>
+    </div>
+    <div class="cl-entry">
+      <div class="cl-meta">
+        <span class="cl-version">0.4.0</span>
+        <span class="cl-date">Mar 3, 2026</span>
+        <span class="cl-badge">LATEST</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type feature">FEATURE</span>
+        <span class="cl-text">Agent mesh multi-region support (NA1, EU1, AP1)</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type feature">FEATURE</span>
+        <span class="cl-text">Cece policy editor UI with live preview</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type improve">IMPROVE</span>
+        <span class="cl-text">Memory commit throughput increased 3x via batch writes</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type fix">FIX</span>
+        <span class="cl-text">WebSocket reconnection loop on gateway failover</span>
+      </div>
+    </div>
+    <div class="cl-entry">
+      <div class="cl-meta">
+        <span class="cl-version">0.3.2</span>
+        <span class="cl-date">Feb 18, 2026</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type feature">FEATURE</span>
+        <span class="cl-text">RoadWork homework flow — teacher creates, student submits, teacher reviews</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type improve">IMPROVE</span>
+        <span class="cl-text">Ledger event schema v2 with actor and resource fields</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type fix">FIX</span>
+        <span class="cl-text">Auth token refresh race condition on concurrent tabs</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type fix">FIX</span>
+        <span class="cl-text">Vector search returning stale embeddings after memory update</span>
+      </div>
+    </div>
+    <div class="cl-entry">
+      <div class="cl-meta">
+        <span class="cl-version">0.3.0</span>
+        <span class="cl-date">Feb 1, 2026</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type feature">FEATURE</span>
+        <span class="cl-text">Governance spine — /policy/evaluate and /ledger/event endpoints live</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type feature">FEATURE</span>
+        <span class="cl-text">Role-based access control (teacher, student, creator, admin)</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type improve">IMPROVE</span>
+        <span class="cl-text">Dashboard KPI cards now pull real-time metrics</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type chore">CHORE</span>
+        <span class="cl-text">Migrated DNS to Cloudflare for all core subdomains</span>
+      </div>
+    </div>
+    <div class="cl-entry">
+      <div class="cl-meta">
+        <span class="cl-version">0.2.0</span>
+        <span class="cl-date">Jan 12, 2026</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type feature">FEATURE</span>
+        <span class="cl-text">Core app shell at app.blackroad.io with auth baseline</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type feature">FEATURE</span>
+        <span class="cl-text">First Pi agent registered and executed health check task</span>
+      </div>
+      <div class="cl-change">
+        <span class="cl-type chore">CHORE</span>
+        <span class="cl-text">Railway services provisioned for app, API gateway, operator</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. SETTINGS ── -->
+  <div id="tpl-settings" class="tpl-section">
+    <div class="settings-hero">
+      <div class="settings-eyebrow">Account Configuration</div>
+      <h1 class="settings-h1">Settings</h1>
+      <div class="settings-bar"></div>
+    </div>
+    <!-- Profile -->
+    <div class="section-block">
+      <div class="section-label">Profile <span class="section-label-line"></span></div>
+      <div class="settings-grid">
+        <div class="input-field">
+          <label>Display Name</label>
+          <input type="text" placeholder="Alexa Amundson" value="Alexa Amundson" readonly />
+        </div>
+        <div class="input-field">
+          <label>Email</label>
+          <input type="text" placeholder="founder@blackroad.systems" value="founder@blackroad.systems" readonly />
+        </div>
+        <div class="input-field">
+          <label>Role</label>
+          <input type="text" placeholder="Admin" value="Founder / Admin" readonly />
+        </div>
+        <div class="input-field">
+          <label>Workspace</label>
+          <input type="text" placeholder="BlackRoad OS" value="BlackRoad OS" readonly />
+        </div>
+      </div>
+    </div>
+    <!-- Preferences -->
+    <div class="section-block">
+      <div class="section-label">Preferences <span class="section-label-line"></span></div>
+      <div class="pref-row">
+        <div class="pref-body">
+          <div class="pref-label">Dark Mode</div>
+          <div class="pref-desc">Black background. White text. Always.</div>
+        </div>
+        <div class="toggle on" data-toggle="darkMode" onclick="togglePref(this)">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-body">
+          <div class="pref-label">Agent Notifications</div>
+          <div class="pref-desc">Receive alerts when agents trigger events.</div>
+        </div>
+        <div class="toggle on" data-toggle="notifications" onclick="togglePref(this)">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-body">
+          <div class="pref-label">Usage Telemetry</div>
+          <div class="pref-desc">Send anonymous usage data to improve the OS.</div>
+        </div>
+        <div class="toggle" data-toggle="telemetry" onclick="togglePref(this)">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+      <div class="pref-row">
+        <div class="pref-body">
+          <div class="pref-label">Two-Factor Auth</div>
+          <div class="pref-desc">Require 2FA for all sign-in attempts.</div>
+        </div>
+        <div class="toggle" data-toggle="twoFactor" onclick="togglePref(this)">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+    </div>
+    <!-- API Keys -->
+    <div class="section-block">
+      <div class="section-label">API Keys <span class="section-label-line"></span></div>
+      <div class="apikey-row">
+        <div style="min-width:100px">
+          <div class="apikey-name">Production</div>
+          <div class="apikey-created">Jan 12, 2026</div>
+        </div>
+        <span class="apikey-val">br_live_••••••••••••4f2a</span>
+        <button class="apikey-reveal">REVEAL</button>
+      </div>
+      <div class="apikey-row">
+        <div style="min-width:100px">
+          <div class="apikey-name">Development</div>
+          <div class="apikey-created">Feb 1, 2026</div>
+        </div>
+        <span class="apikey-val">br_test_••••••••••••8e1c</span>
+        <button class="apikey-reveal">REVEAL</button>
+      </div>
+      <button class="btn-new-key">+ Generate New Key</button>
+    </div>
+    <!-- Danger Zone -->
+    <div class="section-block">
+      <div class="section-label">Danger Zone <span class="section-label-line"></span></div>
+      <div class="danger-row">
+        <div>
+          <div class="danger-title">Delete Account</div>
+          <div class="danger-desc">Permanently remove your account and all associated data.</div>
+        </div>
+        <button class="btn-delete">DELETE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. DOCS ── -->
+  <div id="tpl-docs" class="tpl-section">
+    <div class="docs-hero">
+      <div class="docs-eyebrow">BlackRoad OS · v0.4.0</div>
+      <h1 class="docs-h1">Documentation</h1>
+      <div class="docs-bar"></div>
+    </div>
+    <div class="docs-layout">
+      <div class="docs-sidebar">
+        <div class="docs-nav-group">
+          <div class="docs-nav-group-title">Getting Started</div>
+          <div class="docs-nav-item active" data-page="overview">Overview</div>
+          <div class="docs-nav-item" data-page="quickstart">Quickstart</div>
+          <div class="docs-nav-item" data-page="auth">Authentication</div>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-group-title">Core Concepts</div>
+          <div class="docs-nav-item" data-page="agents">Agents</div>
+          <div class="docs-nav-item" data-page="memory">Memory &amp; PS-SHA&#8734;</div>
+          <div class="docs-nav-item" data-page="governance">Governance (Cece)</div>
+        </div>
+        <div class="docs-nav-group">
+          <div class="docs-nav-group-title">API Reference</div>
+          <div class="docs-nav-item" data-page="rest">REST API</div>
+          <div class="docs-nav-item" data-page="websocket">WebSocket</div>
+          <div class="docs-nav-item" data-page="events">Event Bus</div>
+        </div>
+      </div>
+      <div class="docs-main">
+        <div class="docs-breadcrumb">Getting Started</div>
+        <h2 class="docs-article-title">Overview</h2>
+        <p class="docs-body">
+          BlackRoad OS is a distributed AI operating system organized into four stacked layers: Experience, Governance, Infrastructure, and Agent Mesh. Every user-facing action flows through the Cece governance spine before reaching infrastructure.
+        </p>
+        <div class="docs-code-block">
+          <div class="docs-code-label">Install</div>
+          <div class="docs-code">
+            <span class="prompt">$</span> npm install @blackroad/sdk<br />
+            <span class="prompt">$</span> blackroad init --workspace my-project
+          </div>
+        </div>
+        <p class="docs-body">
+          The SDK provides client libraries for interacting with the API gateway, agent registry, and governance endpoints. Authentication uses OIDC tokens issued by id.blackroad.io.
+        </p>
+        <div class="docs-code-block">
+          <div class="docs-code-label">Quick Example</div>
+          <div class="docs-code-sm">
+            <span class="docs-code-cm">// Connect to BlackRoad OS</span><br />
+            <span class="docs-code-kw">import</span> { BlackRoad } <span class="docs-code-kw">from</span> '@blackroad/sdk'<br /><br />
+            <span class="docs-code-kw">const</span> br = <span class="docs-code-kw">new</span> BlackRoad({ workspace: 'my-project' })<br />
+            <span class="docs-code-kw">const</span> agent = <span class="docs-code-kw">await</span> br.agents.spawn('cecilia')<br />
+            <span class="docs-code-cm">// → agent online, memory loaded</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. ANALYTICS ── -->
+  <div id="tpl-analytics" class="tpl-section">
+    <div class="analytics-hero">
+      <div class="analytics-hero-top">
+        <div>
+          <div class="analytics-eyebrow">Usage Analytics</div>
+          <h1 class="analytics-h1">Analytics</h1>
+        </div>
+        <div class="period-btns" id="periodBtns">
+          <button class="period-btn" data-period="24h">24h</button>
+          <button class="period-btn active" data-period="7d">7d</button>
+          <button class="period-btn" data-period="30d">30d</button>
+          <button class="period-btn" data-period="90d">90d</button>
+        </div>
+      </div>
+      <div class="analytics-bar"></div>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi-val">12.6K</div>
+          <div class="kpi-label">Total Events</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val">117</div>
+          <div class="kpi-label">Active Agents</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val">38ms</div>
+          <div class="kpi-label">Avg Latency</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val">0.03%</div>
+          <div class="kpi-label">Error Rate</div>
+        </div>
+      </div>
+    </div>
+    <!-- Sparkline -->
+    <div class="section-block">
+      <div class="section-label">Event Volume <span class="section-label-line"></span></div>
+      <div class="sparkline" id="sparkline"></div>
+      <div class="spark-dates"><span>Feb 25</span><span>Mar 3</span></div>
+    </div>
+    <!-- Top Agents -->
+    <div class="section-block">
+      <div class="section-label">Top Agents by Task Volume <span class="section-label-line"></span></div>
+      <div class="agent-row"><span class="agent-rank">01</span><span class="agent-name">cecilia</span><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:38%"></div></div><span class="agent-tasks">4,821</span><span class="agent-share">38%</span></div>
+      <div class="agent-row"><span class="agent-rank">02</span><span class="agent-name">cadence</span><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:17%"></div></div><span class="agent-tasks">2,104</span><span class="agent-share">17%</span></div>
+      <div class="agent-row"><span class="agent-rank">03</span><span class="agent-name">eve</span><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:15%"></div></div><span class="agent-tasks">1,892</span><span class="agent-share">15%</span></div>
+      <div class="agent-row"><span class="agent-rank">04</span><span class="agent-name">alice</span><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:12%"></div></div><span class="agent-tasks">1,567</span><span class="agent-share">12%</span></div>
+      <div class="agent-row"><span class="agent-rank">05</span><span class="agent-name">radius</span><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:10%"></div></div><span class="agent-tasks">1,203</span><span class="agent-share">10%</span></div>
+      <div class="agent-row"><span class="agent-rank">06</span><span class="agent-name">meridian</span><div class="agent-bar-wrap"><div class="agent-bar-fill" style="width:8%"></div></div><span class="agent-tasks">980</span><span class="agent-share">8%</span></div>
+    </div>
+    <!-- Task Breakdown -->
+    <div class="section-block">
+      <div class="section-label">Task Breakdown <span class="section-label-line"></span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Memory Commits</span><div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:42%"></div></div><span class="breakdown-val">42%</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Policy Evaluations</span><div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:28%"></div></div><span class="breakdown-val">28%</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Mesh Coordination</span><div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:18%"></div></div><span class="breakdown-val">18%</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Code Execution</span><div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:8%"></div></div><span class="breakdown-val">8%</span></div>
+      <div class="breakdown-row"><span class="breakdown-label">Other</span><div class="breakdown-bar-wrap"><div class="breakdown-bar-fill" style="width:4%"></div></div><span class="breakdown-val">4%</span></div>
+    </div>
+  </div>
+
+</div><!-- /app-content -->
+
+<div class="app-footer">
+  <span>BlackRoad OS, Inc. · Design System v1.0</span>
+  <span>JetBrains Mono · Space Grotesk</span>
+</div>
+
+<div class="grad-bar"></div>
+
+<script>
+(function () {
+  // ── Tab switching ──
+  var tabs = document.querySelectorAll('#navTabs button');
+  tabs.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = this.getAttribute('data-tab');
+      tabs.forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      document.querySelectorAll('.tpl-section').forEach(function (s) { s.classList.remove('active'); });
+      document.getElementById('tpl-' + id).classList.add('active');
+    });
+  });
+
+  // ── Login mode toggle ──
+  var loginModeBtns = document.querySelectorAll('.login-mode-btn');
+  loginModeBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var mode = this.getAttribute('data-mode');
+      loginModeBtns.forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      var signupOnly = document.querySelectorAll('.login-signup-only');
+      var forgot = document.getElementById('loginForgot');
+      var submitBtn = document.getElementById('loginSubmitBtn');
+      if (mode === 'signup') {
+        signupOnly.forEach(function (el) { el.style.display = 'block'; });
+        forgot.style.display = 'none';
+        submitBtn.textContent = 'Create Account';
+      } else {
+        signupOnly.forEach(function (el) { el.style.display = ''; });
+        forgot.style.display = '';
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+  });
+
+  // ── Settings toggles ──
+  window.togglePref = function (el) {
+    el.classList.toggle('on');
+  };
+
+  // ── Docs sidebar nav ──
+  var docNavItems = document.querySelectorAll('.docs-nav-item');
+  docNavItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      docNavItems.forEach(function (i) { i.classList.remove('active'); });
+      this.classList.add('active');
+    });
+  });
+
+  // ── Analytics period buttons ──
+  var periodBtns = document.querySelectorAll('.period-btn');
+  periodBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      periodBtns.forEach(function (b) { b.classList.remove('active'); });
+      this.classList.add('active');
+    });
+  });
+
+  // ── Sparkline ──
+  var sparkData = [12, 18, 15, 22, 28, 35, 31, 42, 38, 45, 52, 48, 55, 60, 58];
+  var maxSpark = Math.max.apply(null, sparkData);
+  var sparkline = document.getElementById('sparkline');
+  if (sparkline) {
+    sparkData.forEach(function (v) {
+      var bar = document.createElement('div');
+      bar.className = 'spark-bar';
+      bar.style.height = Math.round((v / maxSpark) * 100) + '%';
+      bar.style.opacity = (0.15 + (v / maxSpark) * 0.55).toFixed(2);
+      sparkline.appendChild(bar);
+    });
+  }
+}());
+</script>
+</body>
+</html>

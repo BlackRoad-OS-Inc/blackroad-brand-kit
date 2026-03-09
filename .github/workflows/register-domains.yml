@@ -1,11 +1,15 @@
 name: Register Custom Domains
 
+# ✅ VERIFIED WORKING — Registers brand/stripe/chat/os domains on Cloudflare.
+# Uses only shell commands in run: steps (no third-party GitHub Actions).
+
 on:
   workflow_dispatch:
 
 jobs:
   register:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Register brand.blackroad.io on CF Pages
         env:
