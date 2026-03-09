@@ -1,0 +1,28 @@
+name = "blackroad-tasks"
+main = "index.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+account_id = "848cf0b18d51e0170e0d1537aec3505a"
+
+[vars]
+ENVIRONMENT = "production"
+
+# Worker URL: https://blackroad-tasks.amundsonalexa.workers.dev
+# Custom URL:  https://tasks.blackroad.io  (register via CF dashboard)
+
+# Optional secrets — set via: wrangler secret put WORKER_AUTH_TOKEN
+# WORKER_AUTH_TOKEN = "..."   ← protects POST endpoints; omit for open access
+# NOTIFY_WEBHOOK_URL = "..."  ← Slack/Discord webhook for build notifications
+
+# ── Durable Objects ─────────────────────────────────────────────────────────
+[[durable_objects.bindings]]
+name = "TASK_STORE"
+class_name = "TaskStore"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["TaskStore"]
+
+[triggers]
+crons = []
