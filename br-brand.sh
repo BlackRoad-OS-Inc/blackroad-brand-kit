@@ -901,6 +901,10 @@ _cmd_list() {
   echo -e "  ${GREEN}changelog${NC}    Release notes — version badge, date, tagged bullet lists"
   echo -e "  ${GREEN}team${NC}         Team member card grid — avatar, name, role, bio, link"
   echo -e "  ${GREEN}checkout${NC}     Stripe checkout card — price, features, buy button (Stripe Checkout)"
+  echo -e "  ${GREEN}dashboard${NC}    KPI tiles + agent status rows + activity timeline"
+  echo -e "  ${GREEN}report${NC}       Metrics header + narrative sections (ops/perf report)"
+  echo -e "  ${GREEN}table${NC}        Service status data table with dot indicators"
+  echo -e "  ${GREEN}cards${NC}        Product/portal card grid — name, domain, desc, status badge"
   echo -e "  ${GREEN}app-templates${NC}  Tabbed app template kit — Login, Pricing, Changelog, Settings, Docs, Analytics"
   echo ""
   echo -e "${YELLOW}Commands:${NC}"
@@ -933,6 +937,10 @@ _cmd_list() {
   echo -e "  changelog   : --title --subtitle --entry \"v1.0|2026-01-01|Added X,Fixed Y|feature,fix\" --output"
   echo -e "  team        : --title --subtitle --member \"A|Alice|CEO|Bio here|https://github.com/...\" --output"
   echo -e "  checkout    : --title \"Pro Plan\" --price \"\$49/mo\" --price-id \"price_xxx\" --worker URL --feature X --cta \"Buy\" --output"
+  echo -e "  dashboard   : --title --subtitle --kpi \"Label|Value|Delta\" --agent-item \"name|status|color|load\" --event \"time|event|tag\" --output"
+  echo -e "  report      : --title --subtitle --date \"March 3, 2026\" --metric \"Label|Value|Prev\" --section \"Title|Body\" --output"
+  echo -e "  table       : --title --subtitle --header \"Svc,Status,Latency\" --row \"api.x.io|UP|12ms\" --output"
+  echo -e "  cards       : --title --subtitle --card-item \"Name|domain.io|Description|Status\" --output"
   echo -e "  app-templates : --title \"BlackRoad Templates\" --output"
   echo ""
   echo -e "  ${YELLOW}All templates accept:${NC} --config brand.json  (pre-fill from config file)"
@@ -959,7 +967,11 @@ _cmd_preview() {
     coming-soon) echo -e "${CYAN}coming-soon${NC}: Full-gradient page — live countdown, email capture form" ;;
     changelog)   echo -e "${CYAN}changelog${NC}:   Release log — version + date + tagged bullets per entry" ;;
     team)        echo -e "${CYAN}team${NC}:        Card grid — avatar initial, name, role, bio, GitHub link" ;;
-    checkout)        echo -e "${CYAN}checkout${NC}:       Stripe checkout page — price card, features list, buy button" ;;
+checkout)    echo -e "${CYAN}checkout${NC}:   Stripe checkout page — price card, features list, buy button" ;;
+    dashboard)   echo -e "${CYAN}dashboard${NC}:  KPI tiles → agent status rows → activity timeline" ;;
+    report)      echo -e "${CYAN}report${NC}:     Metrics header → narrative sections (ops report)" ;;
+    table)       echo -e "${CYAN}table${NC}:      Service status data table with dot indicators" ;;
+    cards)           echo -e "${CYAN}cards${NC}:           Product/portal card grid — name, domain, desc, status badge" ;;
     app-templates)   echo -e "${CYAN}app-templates${NC}: Tabbed app template kit — Login, Pricing, Changelog, Settings, Docs, Analytics" ;;
     *)               echo -e "${RED}Unknown template: $1${NC}"; _cmd_list ;;
   esac
@@ -981,6 +993,8 @@ _cmd_new() {
   local output="" config_file=""
   local price="" price_id="" stripe_worker="https://blackroad-stripe.workers.dev" payment_link=""
   local -a features skills sections tiers items stats testimonials members entries
+  local -a kpis agent_items events metrics rows card_items
+  local header=""
 
   # Pre-scan for --config so we can load defaults before flag parsing
   local -a _argv=("$@")
@@ -1054,6 +1068,13 @@ print(''.join(f'<a href=\"{i[\"url\"]}\">{i[\"label\"]}</a>' for i in items))
       --price-id)      price_id="$2";         shift 2 ;;
       --worker)        stripe_worker="$2";    shift 2 ;;
       --payment-link)  payment_link="$2";     shift 2 ;;
+      --kpi)           kpis+=("$2");          shift 2 ;;
+      --agent-item)    agent_items+=("$2");   shift 2 ;;
+      --event)         events+=("$2");        shift 2 ;;
+      --metric)        metrics+=("$2");       shift 2 ;;
+      --header)        header="$2";           shift 2 ;;
+      --row)           rows+=("$2");          shift 2 ;;
+      --card-item)     card_items+=("$2");    shift 2 ;;
       --output)        output="$2";           shift 2 ;;
       --config)        shift 2 ;;  # already processed above
       *) shift ;;
@@ -1121,6 +1142,18 @@ print(''.join(f'<a href=\"{i[\"url\"]}\">{i[\"label\"]}</a>' for i in items))
     checkout)
       _tpl_checkout "$title" "$price" "$price_id" "$stripe_worker" \
         "$(IFS=','; echo "${features[*]}")" "$cta_text" "$output" "$payment_link"
+      ;;
+dashboard)
+      _tpl_dashboard "$title" "$subtitle" "$output" "${kpis[@]}" -- "${agent_items[@]}" -- "${events[@]}"
+      ;;
+    report)
+      _tpl_report "$title" "$subtitle" "$date_str" "$output" "${metrics[@]}" -- "${sections[@]}"
+      ;;
+    table)
+      _tpl_table "$title" "$subtitle" "$header" "$output" "${rows[@]}"
+      ;;
+    cards)
+      _tpl_cards "$title" "$subtitle" "$output" "${card_items[@]}"
       ;;
     app-templates)
       _tpl_app_templates "$title" "$output"
@@ -1967,6 +2000,361 @@ HTML
   echo -e "  ${GREEN}✓${NC} checkout   → ${output}"
 }
 
+# ─── TEMPLATE: DASHBOARD ─────────────────────────────────────────────────
+# Usage: _tpl_dashboard title subtitle output [kpi...] -- [agent_item...] -- [event...]
+# kpi format:    "Label|Value|Delta"
+# agent format:  "name|status|color|load"
+# event format:  "time|event description|TAG"
+_tpl_dashboard() {
+  local title="${1:-Dashboard}" subtitle="${2:-System Overview}" output="$3"
+  shift 3
+  local -a kpis agent_items events
+  local section="kpis"
+  for arg in "$@"; do
+    if [[ "$arg" == "--" ]]; then
+      [[ "$section" == "kpis" ]] && section="agents" || section="events"
+    elif [[ "$section" == "kpis" ]]; then
+      kpis+=("$arg")
+    elif [[ "$section" == "agents" ]]; then
+      agent_items+=("$arg")
+    else
+      events+=("$arg")
+    fi
+  done
+
+  # Build KPI HTML
+  local kpi_html="" i=0 klabel krest kval kdelta border
+  for kpi in "${kpis[@]}"; do
+    klabel="${kpi%%|*}"; krest="${kpi#*|}"; kval="${krest%%|*}"; kdelta="${krest#*|}"
+    border=""; (( i < ${#kpis[@]} - 1 )) && border="border-right:1px solid rgba(255,255,255,0.12);"
+    kpi_html+="<div style=\"padding-right:32px;margin-right:32px;${border}\">"
+    kpi_html+="<div style=\"font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:700;line-height:1;\">$(echo "$kval" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    kpi_html+="<div style=\"font-size:0.46rem;opacity:0.3;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;\">$(echo "$klabel" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    [[ -n "$kdelta" ]] && kpi_html+="<div style=\"font-size:0.48rem;opacity:0.4;margin-top:2px;\">$(echo "$kdelta" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    kpi_html+="</div>"
+    (( i++ ))
+  done
+
+  # Build agent rows HTML
+  local agent_html="" ai=0 aname arest astatus arest2 acolor aload
+  for a in "${agent_items[@]}"; do
+    aname="${a%%|*}"; arest="${a#*|}"; astatus="${arest%%|*}"
+    arest2="${arest#*|}"; acolor="${arest2%%|*}"; aload="${arest2#*|}"
+    border=""; (( ai < ${#agent_items[@]} - 1 )) && border="border-bottom:1px solid rgba(255,255,255,0.06);"
+    agent_html+="<div style=\"display:flex;align-items:center;gap:16px;padding:14px 0;${border}flex-wrap:wrap;\">"
+    agent_html+="<div style=\"display:flex;align-items:center;gap:8px;min-width:140px;\">"
+    agent_html+="<span style=\"width:7px;height:7px;border-radius:50%;background:$(echo "$acolor" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g');display:inline-block;flex-shrink:0;\"></span>"
+    agent_html+="<span style=\"font-size:0.62rem;font-weight:700;\">$(echo "$aname" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</span></div>"
+    agent_html+="<span style=\"font-size:0.5rem;opacity:0.35;letter-spacing:0.1em;text-transform:uppercase;min-width:90px;\">$(echo "$astatus" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</span>"
+    agent_html+="<div style=\"flex:1;height:2px;background:rgba(255,255,255,0.06);position:relative;\">"
+    agent_html+="<div style=\"height:2px;background:#fff;width:$(echo "$aload" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')%;opacity:0.6;\"></div></div>"
+    agent_html+="<span style=\"font-size:0.48rem;opacity:0.25;min-width:40px;text-align:right;\">$(echo "$aload" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')%</span>"
+    agent_html+="</div>"
+    (( ai++ ))
+  done
+
+  # Build timeline rows HTML
+  local event_html="" ei=0 etime erest eevent etag
+  for ev in "${events[@]}"; do
+    etime="${ev%%|*}"; erest="${ev#*|}"; eevent="${erest%%|*}"; etag="${erest#*|}"
+    border=""; (( ei < ${#events[@]} - 1 )) && border="border-bottom:1px solid rgba(255,255,255,0.06);"
+    event_html+="<div style=\"display:flex;align-items:center;gap:16px;padding:14px 0;${border}flex-wrap:wrap;\">"
+    event_html+="<span style=\"font-size:0.5rem;opacity:0.25;min-width:48px;\">$(echo "$etime" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</span>"
+    event_html+="<span style=\"font-size:0.54rem;opacity:0.5;flex:1;\">$(echo "$eevent" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</span>"
+    event_html+="<span style=\"font-size:0.44rem;font-weight:700;padding:2px 7px;border:1px solid #fff;letter-spacing:0.1em;\">$(echo "$etag" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</span>"
+    event_html+="</div>"
+    (( ei++ ))
+  done
+
+  local esctitle; esctitle=$(echo "$title" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local escsubtitle; escsubtitle=$(echo "$subtitle" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local GRAD="linear-gradient(90deg,#FF8400,#FF4400,#FF0066,#CC00AA,#8800FF,#0066FF,#2233CC)"
+
+  {
+    _html_head "$title" "$subtitle"
+    cat <<HTML
+<style>
+.bg-grid,.bg-orb{display:none!important;}
+body{background:#000;font-family:'JetBrains Mono',monospace;}
+.brd-wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+.brd-top{height:3px;background:${GRAD};}
+.brd-nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:48px;border-bottom:1px solid #fff;position:sticky;top:0;z-index:100;background:#000;}
+.brd-nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.85rem;}
+.brd-hero{padding:56px 0 40px;border-bottom:1px solid #fff;}
+.brd-label{font-size:0.52rem;opacity:0.3;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:16px;}
+.brd-h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.4rem,8vw,4rem);font-weight:700;line-height:1;letter-spacing:-0.02em;margin:0;}
+.brd-rule{height:1px;background:${GRAD};width:120px;margin:24px 0;}
+.brd-kpis{display:flex;gap:0;flex-wrap:wrap;}
+.brd-section{padding:48px 0 40px;border-bottom:1px solid #fff;}
+.brd-section-label{font-size:0.52rem;opacity:0.3;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:28px;display:flex;align-items:center;gap:12px;}
+.brd-section-rule{flex:1;height:1px;background:rgba(255,255,255,0.1);}
+.brd-footer{max-width:960px;margin:0 auto;padding:32px 24px;display:flex;justify-content:space-between;font-size:0.5rem;opacity:0.18;}
+</style>
+<div class="brd-top"></div>
+<nav class="brd-nav">
+  <span class="brd-nav-logo">BlackRoad</span>
+</nav>
+<div class="brd-wrap">
+  <div class="brd-hero">
+    <div class="brd-label">${escsubtitle}</div>
+    <h1 class="brd-h1">${esctitle}</h1>
+    <div class="brd-rule"></div>
+    <div class="brd-kpis">${kpi_html}</div>
+  </div>
+HTML
+    [[ -n "$agent_html" ]] && cat <<HTML
+  <div class="brd-section">
+    <div class="brd-section-label">Agent Status<span class="brd-section-rule"></span></div>
+    ${agent_html}
+  </div>
+HTML
+    [[ -n "$event_html" ]] && cat <<HTML
+  <div class="brd-section">
+    <div class="brd-section-label">Activity Timeline<span class="brd-section-rule"></span></div>
+    ${event_html}
+  </div>
+HTML
+    cat <<HTML
+</div>
+<div class="brd-footer">
+  <span>BlackRoad OS, Inc. · Design System v1.0</span>
+  <span>JetBrains Mono · Space Grotesk</span>
+</div>
+<div class="brd-top"></div>
+HTML
+    _html_close
+  } > "$output"
+  echo -e "  ${GREEN}✓${NC} dashboard  → ${output}"
+}
+
+# ─── TEMPLATE: REPORT ────────────────────────────────────────────────────
+# Usage: _tpl_report title subtitle date output [metric...] -- [section...]
+# metric format:  "Label|Value|Prev"
+# section format: "Title|Body text"
+_tpl_report() {
+  local title="${1:-System Performance}" subtitle="${2:-Weekly Operations Report}" date_str="${3:-}" output="$4"
+  shift 4
+  local -a metrics sections
+  local section_mode="metrics"
+  for arg in "$@"; do
+    if [[ "$arg" == "--" ]]; then
+      section_mode="sections"
+    elif [[ "$section_mode" == "metrics" ]]; then
+      metrics+=("$arg")
+    else
+      sections+=("$arg")
+    fi
+  done
+
+  # Build metric tiles HTML
+  local metric_html="" mi=0 mlabel mrest mval mprev border
+  for m in "${metrics[@]}"; do
+    mlabel="${m%%|*}"; mrest="${m#*|}"; mval="${mrest%%|*}"; mprev="${mrest#*|}"
+    border=""; (( mi < ${#metrics[@]} - 1 )) && border="border-right:1px solid rgba(255,255,255,0.12);"
+    metric_html+="<div style=\"padding-right:32px;margin-right:32px;${border}\">"
+    metric_html+="<div style=\"font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;line-height:1;\">$(echo "$mval" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    metric_html+="<div style=\"font-size:0.46rem;opacity:0.3;letter-spacing:0.15em;text-transform:uppercase;margin-top:4px;\">$(echo "$mlabel" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    [[ -n "$mprev" ]] && metric_html+="<div style=\"font-size:0.44rem;opacity:0.2;margin-top:2px;\">prev: $(echo "$mprev" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    metric_html+="</div>"
+    (( mi++ ))
+  done
+
+  # Build narrative sections HTML
+  local sections_html="" si=0 stitle sbody
+  for s in "${sections[@]}"; do
+    stitle="${s%%|*}"; sbody="${s#*|}"
+    sections_html+="<div style=\"padding:48px 0 40px;border-bottom:1px solid #fff;\">"
+    sections_html+="<div style=\"font-size:0.52rem;opacity:0.3;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:28px;display:flex;align-items:center;gap:12px;\">0$((si+1)) · $(echo "$stitle" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')<span style=\"flex:1;height:1px;background:rgba(255,255,255,0.1);\"></span></div>"
+    sections_html+="<div style=\"font-size:0.68rem;opacity:0.45;line-height:2;max-width:640px;\">$(echo "$sbody" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    sections_html+="</div>"
+    (( si++ ))
+  done
+
+  local esctitle; esctitle=$(echo "$title" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local escsubtitle; escsubtitle=$(echo "$subtitle" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local escdate; escdate=$(echo "$date_str" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local GRAD="linear-gradient(90deg,#FF8400,#FF4400,#FF0066,#CC00AA,#8800FF,#0066FF,#2233CC)"
+  local label_text="$escsubtitle"; [[ -n "$escdate" ]] && label_text="${escsubtitle} · ${escdate}"
+
+  {
+    _html_head "$title" "$subtitle"
+    cat <<HTML
+<style>
+.bg-grid,.bg-orb{display:none!important;}
+body{background:#000;font-family:'JetBrains Mono',monospace;}
+.brd-wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+.brd-top{height:3px;background:${GRAD};}
+.brd-nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:48px;border-bottom:1px solid #fff;position:sticky;top:0;z-index:100;background:#000;}
+.brd-nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.85rem;}
+.brd-footer{max-width:960px;margin:0 auto;padding:32px 24px;display:flex;justify-content:space-between;font-size:0.5rem;opacity:0.18;}
+</style>
+<div class="brd-top"></div>
+<nav class="brd-nav"><span class="brd-nav-logo">BlackRoad</span></nav>
+<div class="brd-wrap">
+  <div style="padding:56px 0 40px;border-bottom:1px solid #fff;">
+    <div style="font-size:0.52rem;opacity:0.3;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:16px;">${label_text}</div>
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,7vw,3.5rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;margin:0;">${esctitle}</h1>
+    <div style="height:1px;background:${GRAD};width:160px;margin:28px 0;"></div>
+    <div style="display:flex;gap:0;flex-wrap:wrap;">${metric_html}</div>
+  </div>
+  ${sections_html}
+</div>
+<div class="brd-footer">
+  <span>BlackRoad OS, Inc. · Design System v1.0</span>
+  <span>JetBrains Mono · Space Grotesk</span>
+</div>
+<div class="brd-top"></div>
+HTML
+    _html_close
+  } > "$output"
+  echo -e "  ${GREEN}✓${NC} report     → ${output}"
+}
+
+# ─── TEMPLATE: TABLE ─────────────────────────────────────────────────────
+# Usage: _tpl_table title subtitle header output [row...]
+# header: comma-separated column names, e.g. "Service,Status,Latency,Req/s,Errors,Region"
+# row:    pipe-separated cell values, e.g. "api.x.io|UP|12ms|4200|0.01%|NA1"
+#         If column 2 (Status) is "UP", an orange dot is shown; any other value gets a pink dot.
+_tpl_table() {
+  local title="${1:-Service Status}" subtitle="${2:-Infrastructure · Real-Time}" header="${3:-}" output="$4"
+  shift 4
+  local rows=("$@")
+
+  # Build table header HTML
+  local thead_html=""
+  IFS=',' read -rA cols <<< "$header"
+  for col in "${cols[@]}"; do
+    [[ -n "$col" ]] && thead_html+="<th style=\"font-size:0.46rem;opacity:0.3;letter-spacing:0.15em;text-transform:uppercase;text-align:left;padding:8px 12px 12px;border-bottom:1px solid rgba(255,255,255,0.15);font-weight:400;\">$(echo "$col" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</th>"
+  done
+
+  # Build table body HTML
+  local tbody_html="" ri=0 cells_html ci cell_content style dot_color cells
+  for row in "${rows[@]}"; do
+    cells_html=""; ci=0
+    IFS='|' read -rA cells <<< "$row"
+    for cell in "${cells[@]}"; do
+      style="font-size:0.56rem;padding:10px 12px;opacity:0.45;font-weight:400;"
+      (( ci == 0 )) && style="font-size:0.56rem;padding:10px 12px;opacity:0.8;font-weight:700;"
+      cell_content=$(echo "$cell" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+      if (( ci == 1 )); then
+        dot_color="#FF8400"; [[ "$cell" != "UP" ]] && dot_color="#FF0066"
+        cell_content="<span style=\"display:flex;align-items:center;gap:6px;\"><span style=\"width:6px;height:6px;border-radius:50%;background:${dot_color};display:inline-block;\"></span>${cell_content}</span>"
+      fi
+      cells_html+="<td style=\"${style}\">${cell_content}</td>"
+      (( ci++ ))
+    done
+    tbody_html+="<tr style=\"border-bottom:1px solid rgba(255,255,255,0.06);\">${cells_html}</tr>"
+    (( ri++ ))
+  done
+
+  local esctitle; esctitle=$(echo "$title" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local escsubtitle; escsubtitle=$(echo "$subtitle" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local GRAD="linear-gradient(90deg,#FF8400,#FF4400,#FF0066,#CC00AA,#8800FF,#0066FF,#2233CC)"
+
+  {
+    _html_head "$title" "$subtitle"
+    cat <<HTML
+<style>
+.bg-grid,.bg-orb{display:none!important;}
+body{background:#000;font-family:'JetBrains Mono',monospace;}
+.brd-wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+.brd-top{height:3px;background:${GRAD};}
+.brd-nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:48px;border-bottom:1px solid #fff;position:sticky;top:0;z-index:100;background:#000;}
+.brd-nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.85rem;}
+.brd-footer{max-width:960px;margin:0 auto;padding:32px 24px;display:flex;justify-content:space-between;font-size:0.5rem;opacity:0.18;}
+</style>
+<div class="brd-top"></div>
+<nav class="brd-nav"><span class="brd-nav-logo">BlackRoad</span></nav>
+<div class="brd-wrap">
+  <div style="padding:56px 0 40px;border-bottom:1px solid #fff;">
+    <div style="font-size:0.52rem;opacity:0.3;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:16px;">${escsubtitle}</div>
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,6vw,3rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;margin:0;">${esctitle}</h1>
+    <div style="height:1px;background:${GRAD};width:120px;margin:24px 0;"></div>
+  </div>
+  <div style="padding:32px 0 48px;border-bottom:1px solid #fff;overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr>${thead_html}</tr></thead>
+      <tbody>${tbody_html}</tbody>
+    </table>
+  </div>
+</div>
+<div class="brd-footer">
+  <span>BlackRoad OS, Inc. · Design System v1.0</span>
+  <span>JetBrains Mono · Space Grotesk</span>
+</div>
+<div class="brd-top"></div>
+HTML
+    _html_close
+  } > "$output"
+  echo -e "  ${GREEN}✓${NC} table      → ${output}"
+}
+
+# ─── TEMPLATE: CARDS ─────────────────────────────────────────────────────
+# Usage: _tpl_cards title subtitle output [card_item...]
+# card format: "Name|domain.io|Description|Status"
+_tpl_cards() {
+  local title="${1:-Portals}" subtitle="${2:-Product Portfolio}" output="$3"
+  shift 3
+  local card_items=("$@")
+
+  local GRAD="linear-gradient(90deg,#FF8400,#FF4400,#FF0066,#CC00AA,#8800FF,#0066FF,#2233CC)"
+
+  # Build card grid HTML
+  local cards_html="" ci=0 cname crest cdomain crest2 cdesc cstatus border_right pad_right pad_left
+  for card in "${card_items[@]}"; do
+    cname="${card%%|*}"; crest="${card#*|}"; cdomain="${crest%%|*}"
+    crest2="${crest#*|}"; cdesc="${crest2%%|*}"; cstatus="${crest2#*|}"
+    border_right=""; (( ci % 2 == 0 )) && border_right="border-right:1px solid rgba(255,255,255,0.08);"
+    pad_right=""; (( ci % 2 == 0 )) && pad_right="padding-right:28px;"
+    pad_left=""; (( ci % 2 == 1 )) && pad_left="padding-left:28px;"
+    cards_html+="<div style=\"padding:28px 0;border-bottom:1px solid rgba(255,255,255,0.08);${border_right}${pad_right}${pad_left}\">"
+    cards_html+="<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;\">"
+    cards_html+="<span style=\"font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;\">$(echo "$cname" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</span>"
+    cards_html+="<span style=\"font-size:0.44rem;font-weight:700;padding:2px 7px;border:1px solid #fff;letter-spacing:0.1em;font-family:'JetBrains Mono',monospace;\">$(echo "$cstatus" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</span>"
+    cards_html+="</div>"
+    cards_html+="<div style=\"font-size:0.48rem;opacity:0.25;margin-bottom:10px;letter-spacing:0.05em;\">$(echo "$cdomain" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    cards_html+="<div style=\"font-size:0.56rem;opacity:0.4;line-height:1.7;\">$(echo "$cdesc" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')</div>"
+    cards_html+="<div style=\"height:1px;background:${GRAD};width:40px;margin-top:16px;opacity:0.6;\"></div>"
+    cards_html+="</div>"
+    (( ci++ ))
+  done
+
+  local esctitle; esctitle=$(echo "$title" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+  local escsubtitle; escsubtitle=$(echo "$subtitle" | sed 's/&/\&amp;/g;s/</\&lt;/g;s/>/\&gt;/g')
+
+  {
+    _html_head "$title" "$subtitle"
+    cat <<HTML
+<style>
+.bg-grid,.bg-orb{display:none!important;}
+body{background:#000;font-family:'JetBrains Mono',monospace;}
+.brd-wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+.brd-top{height:3px;background:${GRAD};}
+.brd-nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:48px;border-bottom:1px solid #fff;position:sticky;top:0;z-index:100;background:#000;}
+.brd-nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.85rem;}
+.brd-footer{max-width:960px;margin:0 auto;padding:32px 24px;display:flex;justify-content:space-between;font-size:0.5rem;opacity:0.18;}
+.brd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));}
+</style>
+<div class="brd-top"></div>
+<nav class="brd-nav"><span class="brd-nav-logo">BlackRoad</span></nav>
+<div class="brd-wrap">
+  <div style="padding:56px 0 40px;border-bottom:1px solid #fff;">
+    <div style="font-size:0.52rem;opacity:0.3;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:16px;">${escsubtitle}</div>
+    <h1 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,7vw,3.5rem);font-weight:700;line-height:1.05;letter-spacing:-0.02em;margin:0;">${esctitle}</h1>
+    <div style="height:1px;background:${GRAD};width:120px;margin:24px 0;"></div>
+  </div>
+  <div class="brd-grid">${cards_html}</div>
+</div>
+<div class="brd-footer">
+  <span>BlackRoad OS, Inc. · Design System v1.0</span>
+  <span>JetBrains Mono · Space Grotesk</span>
+</div>
+<div class="brd-top"></div>
+HTML
+    _html_close
+  } > "$output"
+  echo -e "  ${GREEN}✓${NC} cards      → ${output}"
+}
 # ─── TEMPLATE: APP-TEMPLATES ──────────────────────────────────────────────
 _tpl_app_templates() {
   local title="${1:-BlackRoad Templates}" output="${2:-}"
