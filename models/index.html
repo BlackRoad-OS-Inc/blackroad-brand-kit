@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Models — BlackRoad OS</title>
+  <style>
+    :root {
+      --black:#000; --white:#fff;
+      --amber:#F5A623; --pink:#FF1D6C; --blue:#2979FF; --violet:#9C27B0;
+      --grad:linear-gradient(135deg,#F5A623 0%,#FF1D6C 38.2%,#9C27B0 61.8%,#2979FF 100%);
+      --surface:#080808; --card:#111; --border:#1e1e1e; --text:#e8e8e8; --muted:#666;
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:var(--surface);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(8,8,8,.95);backdrop-filter:blur(12px);z-index:100}
+    .logo{font-size:18px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+    .nav-links{display:flex;gap:28px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:color .2s}
+    .nav-links a:hover,.nav-links a.active{color:var(--text)}
+    main{max-width:1000px;margin:0 auto;padding:60px 24px}
+    .hero{text-align:center;margin-bottom:64px}
+    .hero h1{font-size:52px;font-weight:900;letter-spacing:-2px;margin-bottom:16px}
+    .hero p{font-size:18px;color:var(--muted);max-width:560px;margin:0 auto;line-height:1.618}
+    .grad-text{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .live-badge{display:inline-flex;align-items:center;gap:6px;background:#22c55e11;border:1px solid #22c55e33;color:#22c55e;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:24px}
+    .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite;box-shadow:0 0 0 0 rgba(34,197,94,.6)}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.6)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+
+    .endpoint-toggle{display:flex;gap:8px;justify-content:center;margin-bottom:40px}
+    .endpoint-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s}
+    .endpoint-btn.active{border-color:var(--pink);color:var(--pink)}
+
+    .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;justify-content:center}
+    .filter-chip{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.3px;transition:all .2s}
+    .filter-chip.active{background:var(--pink)22;border-color:var(--pink);color:var(--pink)}
+
+    .models-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:60px}
+    .model-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+    .model-card::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:opacity .25s}
+    .model-card:hover{border-color:#333;transform:translateY(-2px)}
+    .model-card:hover::before{opacity:.04}
+    .model-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+    .model-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+    .model-size{font-size:11px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px 8px;color:var(--muted)}
+    .model-provider{font-size:12px;color:var(--muted);margin-bottom:8px}
+    .model-desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+    .model-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+    .tag{font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:10px;text-transform:uppercase}
+    .tag-code{background:#2979FF22;color:#2979FF}
+    .tag-reason{background:#9C27B022;color:#9C27B0}
+    .tag-fast{background:#22c55e22;color:#22c55e}
+    .tag-chat{background:#F5A62322;color:#F5A623}
+    .tag-vision{background:#FF1D6C22;color:#FF1D6C}
+    .model-stats{display:flex;gap:16px}
+    .stat{text-align:center}
+    .stat-val{font-size:15px;font-weight:700}
+    .stat-lbl{font-size:10px;color:var(--muted);letter-spacing:.3px}
+    .model-action{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:8px}
+    .btn-try{flex:1;background:var(--grad);border:none;color:#fff;padding:8px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.3px;text-decoration:none;text-align:center;display:block}
+    .btn-copy{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+    .btn-copy:hover{border-color:#444;color:var(--text)}
+
+    .section-title{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+    .cloud-models{margin-bottom:60px}
+    .cloud-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .cloud-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;align-items:center;gap:14px}
+    .cloud-logo{font-size:28px;flex-shrink:0}
+    .cloud-name{font-size:14px;font-weight:600;margin-bottom:2px}
+    .cloud-sub{font-size:12px;color:var(--muted)}
+    .cloud-via{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic}
+
+    footer{text-align:center;padding:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
+    footer a{color:var(--muted);text-decoration:none}
+    @media(max-width:600px){.hero h1{font-size:34px}nav{padding:14px 20px}main{padding:40px 16px}}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="/" class="logo">⬡ BlackRoad OS</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/docs/">Docs</a>
+    <a href="/chat/">Chat</a>
+    <a href="/status/">Status</a>
+  </div>
+</nav>
+<main>
+  <div class="hero">
+    <div class="live-badge"><span class="dot"></span>LIVE · aria Pi</div>
+    <h1>AI <span class="grad-text">Models</span></h1>
+    <p>Local Ollama models running on BlackRoad hardware — zero latency, zero cloud fees, fully private.</p>
+  </div>
+
+  <div class="endpoint-toggle">
+    <button class="endpoint-btn active" onclick="setEndpoint('http://192.168.4.38:9083',this)">aria Pi (LAN)</button>
+    <button class="endpoint-btn" onclick="setEndpoint('https://blackroad-ollama-gateway.amundsonalexa.workers.dev',this)">Gateway (WAN)</button>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    <span class="filter-chip active" onclick="filter('all',this)">All</span>
+    <span class="filter-chip" onclick="filter('code',this)">Code</span>
+    <span class="filter-chip" onclick="filter('reasoning',this)">Reasoning</span>
+    <span class="filter-chip" onclick="filter('fast',this)">Fast</span>
+    <span class="filter-chip" onclick="filter('chat',this)">Chat</span>
+  </div>
+
+  <div class="models-grid" id="models-grid">
+    <div style="color:var(--muted);font-size:14px;text-align:center;padding:40px;grid-column:1/-1">
+      Loading models from aria…
+    </div>
+  </div>
+
+  <div class="cloud-models">
+    <div class="section-title">Cloud Models (via BlackRoad Gateway)</div>
+    <div class="cloud-grid">
+      <div class="cloud-card">
+        <div class="cloud-logo">🤖</div>
+        <div><div class="cloud-name">Claude Sonnet 4.5</div><div class="cloud-sub">Anthropic</div><div class="cloud-via">via tokenless gateway</div></div>
+      </div>
+      <div class="cloud-card">
+        <div class="cloud-logo">⚡</div>
+        <div><div class="cloud-name">GPT-4o</div><div class="cloud-sub">OpenAI</div><div class="cloud-via">via tokenless gateway</div></div>
+      </div>
+      <div class="cloud-card">
+        <div class="cloud-logo">💎</div>
+        <div><div class="cloud-name">Gemini 2.5 Pro</div><div class="cloud-sub">Google</div><div class="cloud-via">via tokenless gateway</div></div>
+      </div>
+      <div class="cloud-card">
+        <div class="cloud-logo">🧠</div>
+        <div><div class="cloud-name">DeepSeek R1</div><div class="cloud-sub">DeepSeek AI</div><div class="cloud-via">via tokenless gateway</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>BlackRoad OS, Inc. · Models hosted on BlackRoad hardware · <a href="/chat/">Try the chat →</a></p>
+</footer>
+
+<script>
+const MODEL_META = {
+  'llama3.2:1b':       { desc:'Ultra-fast 1B Llama model. Great for quick responses and classification.', tags:['fast','chat'], ctx:128000 },
+  'llama3.2:3b':       { desc:'Balanced 3B Llama model. Strong reasoning for its size.', tags:['chat','reasoning'], ctx:128000 },
+  'llama3.2':          { desc:'Llama 3.2 — Meta\'s latest general-purpose model.', tags:['chat'], ctx:128000 },
+  'tinyllama:latest':  { desc:'0.6GB TinyLlama. Extremely fast inference, perfect for edge devices.', tags:['fast'], ctx:2048 },
+  'qwen2.5-coder:3b':  { desc:'3B Qwen Coder — specialized for code generation, debugging, and analysis.', tags:['code','fast'], ctx:32768 },
+  'qwen2.5-coder:7b':  { desc:'7B Qwen Coder — top-tier code model rivaling GPT-4 on benchmarks.', tags:['code','reasoning'], ctx:32768 },
+  'qwen2.5:7b':        { desc:'Qwen 2.5 7B — excellent general model with strong multilingual support.', tags:['chat','reasoning'], ctx:32768 },
+  'deepseek-r1:7b':    { desc:'DeepSeek R1 7B — strong reasoning and chain-of-thought capabilities.', tags:['reasoning'], ctx:32768 },
+  'mistral:7b':        { desc:'Mistral 7B — fast European model, excellent instruction following.', tags:['chat','fast'], ctx:8192 },
+  'codellama:7b':      { desc:'Meta CodeLlama 7B — specialized code completion and generation.', tags:['code'], ctx:16384 },
+};
+
+const TAG_CONFIG = {
+  code:      { label:'CODE',      cls:'tag-code' },
+  reasoning: { label:'REASONING', cls:'tag-reason' },
+  fast:      { label:'FAST',      cls:'tag-fast' },
+  chat:      { label:'CHAT',      cls:'tag-chat' },
+  vision:    { label:'VISION',    cls:'tag-vision' },
+};
+
+let currentEndpoint = 'http://192.168.4.38:9083';
+let allModels = [];
+let activeFilter = 'all';
+
+function setEndpoint(ep, btn) {
+  currentEndpoint = ep;
+  document.querySelectorAll('.endpoint-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  loadModels();
+}
+
+function filter(type, el) {
+  activeFilter = type;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderModels(allModels);
+}
+
+async function loadModels() {
+  const grid = document.getElementById('models-grid');
+  grid.innerHTML = '<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px;grid-column:1/-1">Loading models…</div>';
+  try {
+    const res = await fetch(currentEndpoint + '/api/tags', { signal: AbortSignal.timeout(5000) });
+    const data = await res.json();
+    allModels = data.models || [];
+    renderModels(allModels);
+  } catch(e) {
+    grid.innerHTML = `<div style="color:var(--muted);font-size:14px;text-align:center;padding:40px;grid-column:1/-1">
+      Could not reach ${currentEndpoint}<br><small>LAN models only accessible on local network</small>
+    </div>`;
+  }
+}
+
+function renderModels(models) {
+  const grid = document.getElementById('models-grid');
+  const filtered = activeFilter === 'all' ? models : models.filter(m => {
+    const meta = MODEL_META[m.name] || {};
+    return (meta.tags || []).includes(activeFilter);
+  });
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1">No models match this filter.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(m => modelCard(m)).join('');
+}
+
+function modelCard(m) {
+  const meta = MODEL_META[m.name] || { desc:'Available on your BlackRoad infrastructure.', tags:['chat'], ctx:4096 };
+  const sizeGB = m.size ? (m.size / 1e9).toFixed(1) + 'GB' : '?';
+  const tags = (meta.tags || []).map(t => {
+    const tc = TAG_CONFIG[t] || { label:t.toUpperCase(), cls:'tag-chat' };
+    return `<span class="tag ${tc.cls}">${tc.label}</span>`;
+  }).join('');
+  const ctx = meta.ctx >= 1000 ? (meta.ctx/1000).toFixed(0)+'K' : meta.ctx;
+  const chatUrl = `/chat/?model=${encodeURIComponent(m.name)}&endpoint=${encodeURIComponent(currentEndpoint)}`;
+  return `
+    <div class="model-card">
+      <div class="model-top">
+        <div class="model-name">${m.name}</div>
+        <div class="model-size">${sizeGB}</div>
+      </div>
+      <div class="model-provider">Ollama · Local inference</div>
+      <div class="model-desc">${meta.desc}</div>
+      <div class="model-tags">${tags}</div>
+      <div class="model-stats">
+        <div class="stat"><div class="stat-val">${ctx}</div><div class="stat-lbl">CONTEXT</div></div>
+        <div class="stat"><div class="stat-val">${sizeGB}</div><div class="stat-lbl">SIZE</div></div>
+        <div class="stat"><div class="stat-val">Local</div><div class="stat-lbl">PRIVACY</div></div>
+      </div>
+      <div class="model-action">
+        <a href="${chatUrl}" class="btn-try">Try in Chat →</a>
+        <button class="btn-copy" onclick="copyPull('${m.name}',this)">Copy</button>
+      </div>
+    </div>`;
+}
+
+function copyPull(name, btn) {
+  navigator.clipboard.writeText('ollama pull ' + name).then(() => {
+    btn.textContent = '✓';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+loadModels();
+</script>
+</body>
+</html>
